@@ -1,8 +1,8 @@
 import React, { useEffect, useState} from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/router'  ;
 import Image from 'next/image';
 import languagePopupImg from '@Images/languagePopup.svg';
-import Heading from "@components/Heading";
+import Heading from "@components/Heading"   ;
 import BuyTractors from '@Images/home/buytractors.svg';
 import BuyTractorsHi from '@Images/home/buytractorsHi.svg';
 import BuyTractorsMr from '@Images/home/buytractorsMr.svg';
