@@ -54,41 +54,9 @@ import Modal from "@components/Modal";
 import Crossmark from '@Images/inventory/closeIcon.svg';
 import { useTranslation } from 'next-i18next';
 import { HomeHPRanges, getTabLabel, getHomePageTractorsListBasedOnInventory } from '@utils';
-//import { getLocaleProps } from "@helpers"; 
-
-
-export async function getStaticProps() {
-    // debugger;
-  const apiUrl = LiveInventoryAPIURL;
- 
-  console.log('Starting getStaticProps in test');
- 
-  let Inventorydata = {};
-  try { 
-    const res = await fetch(apiUrl);
-    console.log('API response status:', res.status);
-    if (!res.ok) throw new Error('Failed to fetch data');
-    Inventorydata = await res.json();
-    alert(Inventorydata+"Inventorydata");
-    console.log('Fetched data:', Inventorydata);
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
- 
-  console.log('Returning data from getStaticProps');
- 
-  return {
-    props: {
-      Inventorydata,
-    },
-    revalidate: 10,
-  };
-}
- 
+  
 export default function HomePage({ locale, Inventorydata }) {
-
-    console.log("Inventorydata"+JSON.stringify(Inventorydata, null, 2))
-
+ 
     const [isMobile, setIsMobile] = useState(false);
     const [activeTab, setActiveTab] = useState('oneData');
     const [isVisible, setIsVisible] = useState(true);

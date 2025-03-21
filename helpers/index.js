@@ -2,17 +2,20 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import {LiveInventoryAPIURL } from "@utils/constants";
 
 export async function getLocaleProps(context) {
+
   console.log("🛠 getLocaleProps is running with locale:", context.locale);
 
   const locale = context.locale;
   let inventoryData = [];
 
   try {
-    const res = await fetch(LiveInventoryAPIURL);
-    if (!res.ok) throw new Error(`Failed to fetch data: ${res.status}`);
+     const res = await fetch(LiveInventoryAPIURL);
+    if (!res.ok) throw new Error(`Failed to fetch data: ${res.status}`); 
 
+ 
     const rawData = await res.json();
-    inventoryData = Array.isArray(rawData?.data) ? rawData.data : []; 
+    inventoryData = Array.isArray(rawData?.data) ? rawData.data : [];  
+   
 
   } catch (error) {
     console.error("❌ Error fetching data in getLocaleProps:", error);
