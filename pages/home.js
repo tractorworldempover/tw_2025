@@ -58,7 +58,7 @@ import { HomeHPRanges, getTabLabel, getHomePageTractorsListBasedOnInventory } fr
 
 
 export async function getStaticProps() {
-    debugger;
+    // debugger;
   const apiUrl = LiveInventoryAPIURL;
  
   console.log('Starting getStaticProps in test');
