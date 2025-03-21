@@ -13,7 +13,7 @@ import vs from '@Images/compareTractorImg/vs.svg';
 import { useRouter } from 'next/router';
 import { getLocaleProps } from "@helpers";
 import { useTranslation } from 'next-i18next';
-import { getHomePageTractorsListBasedOnInventory } from "../../utils";
+import { calculateEMI,formatPrice, getHomePageTractorsListBasedOnInventory } from "@utils";
 
 
 export async function getServerSideProps(context) {
@@ -22,8 +22,7 @@ export async function getServerSideProps(context) {
 
 export default function CompareTractorDetails({ locale , inventoryData }) {
 
-    console.log("inventoryData"+JSON.stringify(inventoryData));
-
+ 
     const router = useRouter();
     const { t1, t2, id1, id2 } = router.query; // Extract query parameters
     const { t, i18n } = useTranslation('common');
@@ -39,8 +38,7 @@ export default function CompareTractorDetails({ locale , inventoryData }) {
     const [SimilarTractorsListData, setSimilarTractorsListData] = useState([]);
 
     useEffect(() => {
-        if (id1 && id2 && inventoryData.length > 0) {
-            debugger
+        if (id1 && id2 && inventoryData.length > 0) { 
             const tractor1 = inventoryData.find(tractor => tractor.tractor_id === Number(id1));
             const tractor2 = inventoryData.find(tractor => tractor.tractor_id === Number(id2));
 
@@ -49,16 +47,16 @@ export default function CompareTractorDetails({ locale , inventoryData }) {
                 const imagesData = [
                     {
                         name: `${tractor1.brand} ${tractor1.model}`,
-                        emiStartsFrom: "EMI starts from ₹ 13,810*",
-                        price: `₹ ${tractor1.max_price || 'N/A'}`,
+                        emiStartsFrom: calculateEMI(tractor1.max_price),
+                        price: formatPrice(tractor1.max_price),
                         checkPrice: "Check Tractor Price",
                         image: "/images/compareTractorImg/mahindra.svg", // Replace with actual image
                         tractorId: tractor1.tractor_id
                     },
                     {
                         name: `${tractor2.brand} ${tractor2.model}`,
-                        emiStartsFrom: "EMI starts from ₹ 24,055*",
-                        price: `₹ ${tractor2.max_price || 'N/A'}`,
+                        emiStartsFrom: calculateEMI(tractor2.max_price),
+                        price: formatPrice(tractor2.max_price),
                         checkPrice: "Check Tractor Price",
                         image: "/images/compareTractorImg/massey.svg", // Replace with actual image
                         tractorId: tractor1.tractor_id
@@ -133,62 +131,57 @@ export default function CompareTractorDetails({ locale , inventoryData }) {
     };
 
     //similarTractors
+    useEffect(() => {
+        if (inventoryData.length > 0 && id1 && id2) {
+            const tractor1 = inventoryData.find(t => Number(t.tractor_id) === Number(id1));
+            const tractor2 = inventoryData.find(t => Number(t.tractor_id) === Number(id2));
     
-    let similarTractorsListData = [];
-
-    if (inventoryData.length > 0 && id1 && id2) {
-        debugger;
+            if (!tractor1 || !tractor2) {
+                console.warn("One or both tractors not found in inventoryData");
+                return;
+            }
     
-        // Ensure id1 and id2 are numbers
-        const tractor1 = inventoryData.find(t => Number(t.tractor_id) === Number(id1));
-        const tractor2 = inventoryData.find(t => Number(t.tractor_id) === Number(id2));
+            const enginePower1 = tractor1?.engine_power;
+            const enginePower2 = tractor2?.engine_power;
     
-        console.log("Found Tractor 1:", tractor1);
-        console.log("Found Tractor 2:", tractor2);
+            let filteredSimilarTractors = inventoryData
+                .filter(item => 
+                    (item.engine_power === enginePower1 || item.engine_power === enginePower2) &&
+                    item.tractor_id !== Number(id1) &&
+                    item.tractor_id !== Number(id2)
+                )
+                .slice(0, 10) // ✅ Limit results to 10 similar tractors
+                .map(item => ({
+                    title: `${item.brand} ${item.model}`,
+                    price: item.max_price,
+                    engineHours: item.engine_hours,
+                    driveType: item.drive_type,
+                    enginePower: item.engine_power,
+                    tractorId: item.tractor_id,
+                }));
     
-        if (!tractor1 || !tractor2) {
-            console.warn("One or both tractors not found in inventoryData");
+            setSimilarTractorsListData(filteredSimilarTractors);
         }
+    }, [id1, id2, inventoryData]); // ✅ Runs only when these values change
     
-        // Extract engine power safely
-        const enginePower1 = tractor1?.engine_power;
-        const enginePower2 = tractor2?.engine_power;
-    
-        console.log("Engine Power 1:", enginePower1);
-        console.log("Engine Power 2:", enginePower2);
-    
-        if (enginePower1 === null || enginePower2 === null) {
-            console.warn("Missing engine power for one or both tractors");
-        }
-    
-        // 🚀 Filter tractors with the same engine power
-        let similarTractorsListData = inventoryData
-            .filter(item => 
-                (item.engine_power === enginePower1 || item.engine_power === enginePower2) &&
-                item.tractor_id !== Number(id1) &&
-                item.tractor_id !== Number(id2)
-            )
-            .slice(0, 10) // ✅ Limit results to 10 similar tractors
-            .map(item => ({
-                title: `${item.brand} ${item.model}`,
-                price: item.max_price,
-                engineHours: item.engine_hours,
-                driveType: item.drive_type,
-                enginePower: item.engine_power,
-                tractorId: item.tractor_id,
-            }));
-    
-        console.log("Filtered Similar Tractors:", JSON.stringify(similarTractorsListData));
-        setSimilarTractorsListData(similarTractorsListData)
-    }
     
     // 🏗️ Pass filtered data for comparison
     const compareTractorData = getHomePageTractorsListBasedOnInventory(SimilarTractorsListData);
 
+    console.log("compareTractorData"+JSON.stringify(compareTractorData));
+
 
     const [activeTab, setActiveTab] = useState("oneData");
+    // Automatically highlight the first available tab from compareTractorData
+    useEffect(() => {
+    const availableTabs = Object.keys(compareTractorData);
+    if (availableTabs.length > 0 && !availableTabs.includes(activeTab)) {
+        setActiveTab(availableTabs[0]); // Set the first available tab
+    }
+    }, [compareTractorData]);
+
     const handleTabClick = (tabId) => {
-        setActiveTab(tabId);
+    setActiveTab(tabId);
     };
 
 
@@ -318,7 +311,7 @@ export default function CompareTractorDetails({ locale , inventoryData }) {
                             {Object.keys(compareTractorData).map((key) =>
                                 activeTab === key ? (
                                     <>
-                                        {compareTractorData[key].map((item, index) => (
+                                        {compareTractorData[activeTab]?.slice(0, 3).map((item, index) => (
                                             <div key={index} className=' shadow p-2 overflow-hidden flex-none'>
                                                 <Image src={CompareImage} alt='compareImage' layout="responsive" />
                                                 <div className='flex justify-between px-3 mb-3'>

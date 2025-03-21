@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from 'react';
+import React, { useEffect, useState,useMemo} from 'react';
 import { useRouter } from 'next/router'  ;
 import Image from 'next/image';
 import languagePopupImg from '@Images/languagePopup.svg';
@@ -194,16 +194,33 @@ export default function HomePage({ locale, Inventorydata }) {
     }); 
 
     // debugger;
-    const inventoryList = (!Inventorydata || Inventorydata.length === 0) 
-    ? [] 
-    : Inventorydata.slice(0, 50).map((item) => ({
-        title: `${item.brand} ${item.model}`,
-        price: item.max_price,
-        engineHours: item.engine_hours,
-        driveType: item.drive_type,
-        enginePower: item.engine_power,
-        tractorId: item.tractor_id,
-    }));
+
+    const inventoryList = useMemo(() => {
+        if (!Inventorydata || Inventorydata.length === 0) {
+            return [];
+        }
+    
+        return Inventorydata.slice(0, 50).map((item) => ({
+            title: `${item.brand} ${item.model}`,
+            price: item.max_price,
+            engineHours: item.engine_hours,
+            driveType: item.drive_type,
+            enginePower: item.engine_power,
+            tractorId: item.tractor_id,
+        }));
+    }, [Inventorydata]); // ✅ Correct dependency
+ 
+
+    // const inventoryList = (!Inventorydata || Inventorydata.length === 0) 
+    // ? [] 
+    // : Inventorydata.slice(0, 50).map((item) => ({
+    //     title: `${item.brand} ${item.model}`,
+    //     price: item.max_price,
+    //     engineHours: item.engine_hours,
+    //     driveType: item.drive_type,
+    //     enginePower: item.engine_power,
+    //     tractorId: item.tractor_id,
+    // }));
 
     const handleCompareAll = () => {
         router.push('/compare-tractors');
@@ -321,7 +338,11 @@ export default function HomePage({ locale, Inventorydata }) {
     ))
      
    
-    const compareTractorData = getHomePageTractorsListBasedOnInventory(inventoryList);
+    // const compareTractorData = getHomePageTractorsListBasedOnInventory(inventoryList);
+
+    const compareTractorData = useMemo(() => 
+        getHomePageTractorsListBasedOnInventory(inventoryList), 
+    [inventoryList]); 
 
 
     const customStyles = {
@@ -503,7 +524,8 @@ export default function HomePage({ locale, Inventorydata }) {
                         {Object.keys(compareTractorData).map((key) =>
                             activeTab === key ? (
                                 <>
-                                    {compareTractorData[key].map((item, index) => (
+                                 {compareTractorData[activeTab]?.slice(0, 3).map((item, index) => (
+                                    //{compareTractorData[key].map((item, index) => (
                                         <div key={index} className='overflow-hidden flex-none'>
                                             <Image src={CompareImage} alt='compareImage' layout='responsive' />
                                             <div className='flex justify-between px-3 mb-3'>

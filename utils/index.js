@@ -75,6 +75,25 @@ export const HomeHPRanges = [
   };
 
     
+  export const calculateEMI = (maxPrice, interestRate = 8, months = 74) => {
+    console.log("maxPrice"+maxPrice);
+    if (!maxPrice || isNaN(maxPrice) || maxPrice <= 0) {
+        return "N/A";
+    }
+    
+    const principal = maxPrice;
+    const monthlyInterestRate = (interestRate / 100) / 12;
+    const emi = (principal * monthlyInterestRate * Math.pow(1 + monthlyInterestRate, months)) /
+                (Math.pow(1 + monthlyInterestRate, months) - 1);
+    
+    return `EMI starts from ₹ ${Math.round(emi).toLocaleString("en-IN")}*`;
+    };
+
+  export const formatPrice = (price) => {
+    return price ? `₹ ${price.toLocaleString("en-IN")}` : "N/A";
+  };
+
+    
   // Function to dynamically generate labels for tabs
   export const getTabLabel = (min, max) => {
     if (max === Infinity) {
