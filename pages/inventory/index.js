@@ -1,4 +1,4 @@
-//All the important imports
+// All the important imports
 import React, { useState, useEffect } from "react";
 import Layout from "@components/Layout";
 import Banner from "@components/Banner";
@@ -37,10 +37,9 @@ export default function Inventory({ locale , inventoryData}) {
 
   const { locale: activeLocale, locales, asPath } = useRouter();
 
-  // apply,reset btns active 
-  const { t, i18n } = useTranslation('common'); // 'common' refers to common.json
+  // 'common' refers to common.json
+  const { t, i18n } = useTranslation('common'); 
   
-
   // Use Next.js router to redirect to the dynamic page
   const router = useRouter();
   const [showFilter, setShowFilter] = useState(false);
@@ -190,6 +189,24 @@ export default function Inventory({ locale , inventoryData}) {
     setShowFilter(false);
   };
 
+  const [sortOrder, setSortOrder] = useState(""); 
+
+  const handleSort = (order) => {
+    setSortOrder(order); // Update the sorting order state
+  
+    const sortedTractors = [...filteredTractors].sort((a, b) => {
+      if (order === "lowToHigh") {
+        return a.price - b.price; 
+      } else if (order === "highToLow") {
+        return b.price - a.price; 
+      }
+      return 0;
+    });
+  
+    setFilteredTractors(sortedTractors); // Update the filtered tractors with the sorted list
+    setShowModal(false); // Close the modal after sorting
+  };
+
   const [showModal, setShowModal] = useState(false);
 
   const isShowSorting = () => {
@@ -267,10 +284,8 @@ export default function Inventory({ locale , inventoryData}) {
     } 
   }, [inventoryData]);
   
-  
 
-
-  //all brands 
+  // all brands 
   useEffect(() => {
   
     const brandCounts = {};
@@ -414,7 +429,7 @@ useEffect(() => {
 
   console.log("Tractors After Filtering:", filtered.map((t) => ({ state: t.state, name: t.name })));
 
-  setFilteredTractors(filtered); // ✅ Update filteredTractors with the filtered data
+  setFilteredTractors(filtered); // Update filteredTractors with the filtered data
 }, [liveInventoryFilters, PopularTractors]);
 
   // get states list 
@@ -1273,8 +1288,18 @@ useEffect(() => {
             {/* Modal Content */}
             <div className="rounded-tl-[20px] rounded-tr-[20px] bg-white py-10 px-4 flex flex-col items-center sm:flex-row sm:items-start">
               <div className="text-xl">
-                <p className="font-bold text-medium">Price - High to Low</p>
-                <p className="font-bold mt-6 text-medium">Price - Low to High</p>
+              <p
+            className="font-bold text-medium cursor-pointer"
+            onClick={() => handleSort("highToLow")} // Sort by High to Low
+          >
+            Price - High to Low
+          </p>
+          <p
+            className="font-bold mt-6 text-medium cursor-pointer"
+            onClick={() => handleSort("lowToHigh")} // Sort by Low to High
+          >
+            Price - Low to High
+          </p>
               </div>
             </div>
           </>
