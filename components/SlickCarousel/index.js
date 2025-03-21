@@ -11,7 +11,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-
+import { formatPrice } from "@utils"; 
 
 const SlickCarousel = ({ items, settings }) => {
   const router = useRouter();
@@ -37,7 +37,7 @@ const SlickCarousel = ({ items, settings }) => {
                CERTIFIED
               </div>
               {item.price && (<div className='bg-black font-semibold text-white w-auto px-2 py-1 float-right'>
-                ₹{item.price}
+                 {formatPrice(item.price)}
               </div>
               )}
             </div>

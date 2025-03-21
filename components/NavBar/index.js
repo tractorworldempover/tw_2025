@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -23,11 +23,14 @@ import MblLogo from '@Images/navbar/mblLogo.svg'
 import EndTractor from '@Images/navbar/endTractor.png'
 import sellatractor from '@Images/navbar/sellatractor.svg'
 import { useTranslation } from 'next-i18next';
-
+import Loader from '@components/Loader';
+import LoaderHi from '@Images/loader.gif';
+import LoaderMr from '@Images/loaderMr.gif';
+import LoaderEn from '@Images/loaderEn.gif';
 
 export default function Navbar({ currentPage, onClick, onClickForLanguage }) {
   const { locale: activeLocale, locales, asPath } = useRouter();
-
+  const language = "EN";
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
   const openNavbar = () => {
     setIsNavbarOpen(true);
@@ -38,12 +41,30 @@ export default function Navbar({ currentPage, onClick, onClickForLanguage }) {
 
   const { t, i18n } = useTranslation('common'); // 'common' refers to common.json
 
+  const router = useRouter();
+  const [isShowLoader, setIsShowLoader] = useState(false);
+
+  useEffect(() => {
+    const handleStart = () => setIsShowLoader(true);
+    const handleStop = () => setIsShowLoader(false);
+
+    router.events.on("routeChangeStart", handleStart);
+    router.events.on("routeChangeComplete", handleStop);
+    router.events.on("routeChangeError", handleStop);
+
+    return () => {
+      router.events.off("routeChangeStart", handleStart);
+      router.events.off("routeChangeComplete", handleStop);
+      router.events.off("routeChangeError", handleStop);
+    };
+  }, [router]);
 
   return (
     <>
       {/* <Topbar /> */}
-
-      <div className={`${isNavbarOpen ? 'overlay' : 'hidden'}`}></div>
+      {isShowLoader && (<Loader loaderImage={language == 'HI' ? LoaderHi : language == 'MR' ? LoaderMr : LoaderEn} />)}
+ 
+   <div className={`${isNavbarOpen ? 'overlay' : 'hidden'}`}></div>
 
       <nav className=" bg-white z-10 sm:py-0 py-2">
         <div className="flex sm:flex-nowrap flex-wrap items-center sm:justify-between mx-auto sm:py-1
@@ -113,7 +134,7 @@ export default function Navbar({ currentPage, onClick, onClickForLanguage }) {
                     </div>
                   </div> 
                 </div> */}
-                
+
                 <hr className=" border-l border-[#EFEAEA]" />
               </div>
 

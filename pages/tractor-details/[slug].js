@@ -13,7 +13,7 @@ import WhyChoose from '@Images/home/whyChoose.svg';
 import Loader from '@components/Loader';
 import CompareImage from '@Images/liveInventory/compareImage.svg';
 import bannerImg from '@Images/liveInventory/banner.svg';
-//import { getLocaleProps } from "@helpers";
+import { getLocaleProps } from "@helpers";
 import DefaultTractor from "@Images/default_tractor.svg";
 import LiveInventoryContainer from '@components/LiveInventory';
 import Tab from '@components/Tab';
@@ -28,7 +28,7 @@ import LoaderMr from '@Images/loaderMr.gif';
 import LoaderEn from '@Images/loaderEn.gif';
 import { useTranslation } from 'next-i18next';
 import { getHomePageTractorsListBasedOnInventory } from '@utils';
- 
+import { formatPrice } from "@utils";
 export async function getServerSideProps(context) {
     return await getLocaleProps(context);
 }
@@ -413,7 +413,9 @@ export default function TractorDetails({ locale , inventoryData }) {
                                         <Image src='/images/tractordetails/primaymapIcon.svg' width={10} height={10} className='w-3' alt='primaymapIcon' />
                                         {TractorDetails[0].district}, {TractorDetails[0].state}</div>
 
-                                    <div className='font-bold text-xl mb-1'>₹ {TractorDetails[0].price} <span className="line-through text-sm opacity-[30%]"> ₹ 10,84,000 </span></div>
+                                    <div className='font-bold text-xl mb-1'>
+                                         {formatPrice(TractorDetails[0].price)}
+                                        <span className="line-through text-sm opacity-[30%]"> ₹ 10,84,000 </span></div>
 
                                     <div className="">EMI starts at <span className="text-secondaryColor"> ₹ 3,657/month</span> </div>
 
@@ -473,7 +475,7 @@ export default function TractorDetails({ locale , inventoryData }) {
 
                             <div className='sm:w-1/2 w-full'>
 
-                                 <LeftSection state={state} dispatch={dispatch} maxPrice={TractorDetails[0].price} /> 
+                                 <LeftSection state={state} dispatch={dispatch} maxPrice= {formatPrice(TractorDetails[0].price)} /> 
 
 
 

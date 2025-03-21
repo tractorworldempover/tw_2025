@@ -6,7 +6,7 @@ import Image from "next/image";
 import bannerImg from '@Images/contentHub/banner.svg';
 import Tab from '@components/Tab';
 import Heading from '@components/Heading';
-//import { getLocaleProps } from "@helpers";
+import { getLocaleProps } from "@helpers";
 import { useTranslation } from "next-i18next";  
 
 export async function getServerSideProps(context) {

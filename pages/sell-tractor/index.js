@@ -11,9 +11,8 @@ import Notifications from "@Images/sellTractor/notifications.svg";
 import Support from "@Images/sellTractor/support.svg";
 import BannerStrip from "@components/BannerStrip";
 import bannerImg from "@Images/sellTractor/engineering-excellence-banner.svg";
-import mblBannerImg from "@Images/sellTractor/mblBanner.svg";
-
-//import { getLocaleProps } from "@helpers";
+import mblBannerImg from "@Images/sellTractor/mblBanner.svg"; 
+import { getLocaleProps } from "@helpers";
 import { useTranslation } from "next-i18next";
 
 export async function getServerSideProps(context) {

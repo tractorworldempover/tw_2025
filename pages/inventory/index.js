@@ -31,6 +31,8 @@ import { GET_ALL_POPULAR_BRANDS } from "@utils/constants";
 import { useDispatch, useSelector } from 'react-redux';
 import { GET_ALL_STATES } from "@utils/constants";
 import Link from "next/link"; 
+import { formatPrice } from "@utils";
+
 
 // Define the Inventory function
 export default function Inventory({ locale , inventoryData}) {
@@ -503,11 +505,11 @@ useEffect(() => {
 
         <div className={`${showFilter ? 'sm:hidden block' : 'hidden'} transition-max-height duration-300 
         ease-in-out w-full  sm:w-auto`} id="navbar-default">
-          <div className="sm:w-auto w-[312px] sm:h-auto max-h-max min-h-screen h-screen
+          <div className="sm:w-auto w-[362px] sm:h-auto max-h-max min-h-screen h-screen
          sm:bg-transparent z-[99] sm:relative flex fixed top-0 sm:pb-4 sm:pt-4 Navbar">
 
 
-            <div className="px-4 py-4 min-h-screen max-h-fit h-fit bg-white">
+            <div className="px-4 py-4 min-h-screen max-h-fit h-fit bg-white w-[76%]">
 
               <div className="flex">
                 <div className="w-1/2">
@@ -605,7 +607,7 @@ useEffect(() => {
 
             </div>
 
-            <div className="right-0 top-0 z-50 pt-4 pl-2">
+            <div className="right-0 top-0 z-50 pt-4 pl-2 w-[24%]">
               <Image src={Crossmark} width={35} height={35} onClick={isHideFilter} alt="Crossmark" />
             </div>
           </div>
@@ -816,11 +818,11 @@ useEffect(() => {
                               />
                               {item.isVerified && (
                                 <div className="bg-secondaryColor px-2 text-white text-sm absolute top-4 left-4 uppercase font-medium border-gradient">
-                                  {item.price}
+                                   {formatPrice(item.price)}
                                 </div>
                               )}
                               <div className="bg-black font-semibold text-white w-auto px-2 py-1 float-right">
-                                {item.price}
+                              {formatPrice(item.price)}
                               </div>
                             </div>
                             <div className="xl:px-4 bg-[#eeeeee] lg:px-2 sm:px-2 px-2 pt-1 h-24">
@@ -893,7 +895,7 @@ useEffect(() => {
                                     </div>
 
                                     <div className="bg-black font-semibold text-white w-max px-2 py-1 mt-2">
-                                      {item.price}
+                                    {formatPrice(item.price)}
                                     </div>
 
                                     <div className="flex items-center xl:text-base lg:text-sm sm:text-sm text-[0.7rem] my-3">
@@ -985,7 +987,7 @@ useEffect(() => {
                                 </div>
                               )}
                               <div className="bg-black font-semibold text-white w-auto px-2 py-1 float-right">
-                                {item.price}
+                              {formatPrice(item.price)}
                               </div>
                             </div>
                             <div className="xl:px-4 sm:bg-white bg-[#eeeeee] lg:px-2 sm:px-2 px-2 pt-1 h-24">
@@ -1067,7 +1069,7 @@ useEffect(() => {
                               </div>
                             )}
                             <div className="bg-black font-semibold text-white w-auto px-2 py-1 float-right">
-                              {item.price}
+                            {formatPrice(item.price)}
                             </div>
                           </div>
                           <div className="xl:px-4  sm:bg-white bg-[#eeeeee] lg:px-2 sm:px-2 px-2 pt-1 h-24">
@@ -1106,7 +1108,7 @@ useEffect(() => {
                   <div className="">
                     <div className="grid grid-cols-1 gap-4 my-6">
                       {
-                        currentCards.slice(3).map((item, idx) => (
+                        filters.slice(3).map((item, idx) => (
                           <div
                             key={idx}
                             className="gap-4 bg-white border-[#D9D9D9] border-[1px] overflow-hidden shadow-lg flex-none"
@@ -1126,7 +1128,7 @@ useEffect(() => {
                                 </div>
                               )}
                               <div className="bg-black font-semibold text-white w-auto px-2 py-1 float-right">
-                                {item.price}
+                              {formatPrice(item.price)}
                               </div>
                             </div>
                             <div className="xl:px-4 lg:px-2 sm:px-2 px-2 pt-1 h-24">
@@ -1194,7 +1196,7 @@ useEffect(() => {
                                   </div>
 
                                   <div className="bg-black font-semibold text-white w-max px-2 py-1 mt-2">
-                                    {item.price}
+                                  {formatPrice(item.price)}
                                   </div>
 
                                   <div className="flex items-center xl:text-base lg:text-sm sm:text-sm text-[0.7rem] my-3">
