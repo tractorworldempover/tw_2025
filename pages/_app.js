@@ -11,7 +11,7 @@ import LoaderMr from '@Images/loaderMr.gif';
 import LoaderEn from '@Images/loaderEn.gif';
 import Loader from '@components/Loader';
 
-// Import translations 
+// Import 
 
 function MyApp({ Component, pageProps }) {
 
