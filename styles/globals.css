@@ -1,0 +1,733 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import "flowbite";
+
+:root {
+  --theme-color: #652178;
+  --Secondary-theme: #f37021;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+/* .container {
+  min-height: 100vh;
+  padding: 0 0.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.899);
+} */
+
+/* .main {
+  padding: 5rem 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 800px;
+  margin: 0 auto;
+} */
+.poppins-thin {
+  font-family: "Poppins", sans-serif;
+  font-weight: 100;
+  font-style: normal;
+}
+
+.poppins-extralight {
+  font-family: "Poppins", sans-serif;
+  font-weight: 200;
+  font-style: normal;
+}
+
+.poppins-light {
+  font-family: "Poppins", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.poppins-regular {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.poppins-medium {
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.poppins-semibold {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.poppins-bold {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.poppins-extrabold {
+  font-family: "Poppins", sans-serif;
+  font-weight: 800;
+  font-style: normal;
+}
+
+.poppins-black {
+  font-family: "Poppins", sans-serif;
+  font-weight: 900;
+  font-style: normal;
+}
+
+.poppins-thin-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 100;
+  font-style: italic;
+}
+
+.poppins-extralight-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 200;
+  font-style: italic;
+}
+
+.poppins-light-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 300;
+  font-style: italic;
+}
+
+.poppins-regular-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.poppins-medium-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.poppins-semibold-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-style: italic;
+}
+
+.poppins-bold-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.poppins-extrabold-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 800;
+  font-style: italic;
+}
+
+.poppins-black-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 900;
+  font-style: italic;
+}
+
+.poppins-thin {
+  font-family: "Poppins", sans-serif;
+  font-weight: 100;
+  font-style: normal;
+}
+
+.poppins-extralight {
+  font-family: "Poppins", sans-serif;
+  font-weight: 200;
+  font-style: normal;
+}
+
+.poppins-light {
+  font-family: "Poppins", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.poppins-regular {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.poppins-medium {
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.poppins-semibold {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.poppins-bold {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.poppins-extrabold {
+  font-family: "Poppins", sans-serif;
+  font-weight: 800;
+  font-style: normal;
+}
+
+
+.poppins-black {
+  font-family: "Poppins", sans-serif;
+  font-weight: 900;
+  font-style: normal;
+}
+
+.poppins-thin-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 100;
+  font-style: italic;
+}
+
+.poppins-extralight-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 200;
+  font-style: italic;
+}
+
+.poppins-light-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 300;
+  font-style: italic;
+}
+
+.poppins-regular-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.poppins-medium-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.poppins-semibold-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-style: italic;
+}
+
+.poppins-bold-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.poppins-extrabold-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 800;
+  font-style: italic;
+}
+
+.poppins-black-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 900;
+  font-style: italic;
+}
+
+
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: #f6f6f6;
+}
+
+.crossIcon {
+  min-width: 17px !important;
+  min-height: 19px !important;
+}
+
+/* Show the dropdown when hovering over the parent container */
+.language-container:hover #dropdownInformation,
+.sell_tractor:hover #sell_tractorInformation,
+.loanConteiner:hover #loanInformation {
+  display: block;
+}
+
+/* Styles for the dropdown */
+#dropdownInformation,
+#sell_tractorInformation,
+#loanInformation {
+  display: none;
+}
+
+.active::after {
+  content: "";
+  display: block;
+  width: 40%;
+  border-bottom: 2px solid var(--theme-color);
+  transition: border-color 0.3s ease;
+}
+
+/* for footer */
+.footerList-border {
+  position: relative;
+}
+
+.footerList-border::before {
+  content: "";
+  position: absolute;
+  /* top: 1.7rem; */
+  bottom: 0;
+  width: 13px;
+  border-radius: 1rem;
+  border-bottom: 2px solid var(--Secondary-theme);
+}
+
+.footerList-border::after {
+  content: "";
+  position: absolute;
+  /* top: 1.7rem; */
+  bottom: 0;
+  width: 48px;
+  border-radius: 1rem;
+  border-bottom: 2px solid var(--Secondary-theme);
+}
+
+.footerList-border::before {
+  left: 0;
+}
+
+.footerList-border::after {
+  left: 19px;
+}
+
+@media screen and (max-width: 576px) {
+  .chooseImg {
+    width: 90px !important;
+    max-width: 90px !important;
+    min-width: 90px !important;
+    height: 90px !important;
+    min-height: 90px !important;
+    max-height: 90px !important;
+  }
+}
+
+@media screen and (min-width: 576px) {
+  .chooseImg {
+    width: 120px !important;
+    max-width: 120px !important;
+    min-width: 120px !important;
+    height: 120px !important;
+    min-height: 120px !important;
+    max-height: 120px !important;
+  }
+
+  .custom-border-gradient {
+    border-bottom: 2px solid;
+    border-image-source: linear-gradient(90deg,
+        #ffffff 0%,
+        #e9e3e3 49%,
+        #ffffff 100%);
+    border-image-slice: 1;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .Navbar {
+    overflow-y: auto;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  #inventorySlide .slick-slide {
+    margin-right: 1.5rem;
+    padding-bottom: 4rem;
+  }
+}
+
+.tractorTitle::after {
+  content: "";
+  display: block;
+  width: 20%;
+  border-bottom: 2px solid var(--Secondary-theme);
+  transition: border-color 0.3s ease;
+}
+
+.whychooseImg {
+  position: absolute !important;
+  top: 0 !important;
+}
+
+.testimonials:after {
+  content: "";
+  display: block;
+  width: 50%;
+  position: absolute;
+  top: -0.5rem;
+  border-bottom: 3px solid var(--Secondary-theme);
+  transition: border-color 0.3s ease;
+}
+
+/* 
+/// SLick*/
+
+
+#inventorySlide>.slider-container>.slick-slider>span:nth-child(1) {
+  position: absolute !important;
+  z-index: 50 !important;
+  cursor: pointer !important;
+  bottom: 0 !important;
+  right: 100px !important;
+}
+
+#inventorySlide>.slider-container>.slick-slider>span:nth-child(3) {
+  position: absolute !important;
+  z-index: 50 !important;
+  cursor: pointer !important;
+  bottom: 0 !important;
+  right: 0px !important;
+}
+
+
+#contentGallery>.slick-slider>span:nth-child(1) {
+  position: absolute !important;
+  z-index: 50 !important;
+  cursor: pointer !important;
+  top: 50% !important;
+  left: -42px !important;
+  transform: translate(50%) !important;
+}
+
+#contentGallery>.slick-slider>span:nth-child(3) {
+  position: absolute !important;
+  z-index: 50 !important;
+  cursor: pointer !important;
+  top: 50% !important;
+  right: -42px !important;
+  transform: translate(-50%) !important;
+}
+
+.slick-dots li.slick-active {
+  width: 40px !important;
+}
+
+.slick-dots li.slick-active button:before {
+  background-color: var(--Secondary-theme);
+  width: 30px !important;
+  border-radius: 10px !important;
+}
+
+
+
+
+/*  InventoryCarousel */
+
+#inventoryCarousel .slick-dots {
+  width: 100%;
+  position: inherit !important;
+  overflow-x: auto !important;
+  bottom: 5px !important;
+  border-top: 1px solid rgba(217, 217, 217, 1) !important;
+}
+
+#inventoryCarousel .slick-dots li {
+  width: 65px !important;
+  height: 65px !important;
+  /* display: flex; */
+  align-items: center;
+  border: 1px solid rgba(217, 217, 217, 1) !important;
+  margin: 12px 10px 0 10px !important;
+  justify-content: center;
+}
+
+#inventoryCarousel .slick-dots li a img {
+  display: flex;
+  margin: auto;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 0 5px;
+}
+
+#dealerSlide .slick-arrow {
+  display: none !important;
+}
+
+#dealerSlide .slick-dots {
+  position: relative !important;
+  bottom: 0 !important;
+}
+
+.slick-dots li.slick-active button:before {
+  background-color: var(--Secondary-theme);
+  /* width: 30px!important;
+height: 5px!important;
+border-radius: 4px!important; */
+}
+
+.slick-dots li button:before {
+  font-family: "slick";
+  line-height: 20px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 7px !important;
+  height: 7px !important;
+  border-radius: 50%;
+  content: " " !important;
+  text-align: center;
+  background: #d9d9d9;
+  opacity: 1 !important;
+}
+
+.slick-dots li {
+  position: relative;
+  display: inline-block;
+  margin: 0 0px !important;
+  padding: 0 !important;
+  cursor: pointer;
+}
+
+/* range */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border: 3px solid var(--Secondary-theme) !important;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  height: 2px;
+  width: 100%;
+  background: linear-gradient(to right,
+      var(--Secondary-theme) 0%,
+      var(--Secondary-theme) 0%,
+      #7b7979 0%,
+      #7b7979 100%);
+  border-radius: 5px;
+}
+
+.image-wrapper {
+  overflow-x: auto;
+}
+
+.slick-arrow {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .image-wrapper {
+    width: 100%;
+  }
+
+  .image-wrapper img {
+    min-width: 600px !important;
+  }
+}
+
+.border-gradient {
+  border-width: 3px;
+  border-image-source: linear-gradient(90deg, #C28F31 0%, #F6DB87 11.5%, #FBEFB3 22%, #FBEFB5 33.5%, #F4D77F 45%, #DAB156 55.5%, #B47B1B 64%, #D7AC51 76.5%, #F5D883 84.5%, #CA993C 100%);
+  border-image-slice: 1;
+}
+
+.BannerUnderline {
+  max-width: 90px !important;
+  min-width: 90px !important;
+  min-height: 90px !important;
+  max-height: 90px !important;
+  margin-left: inherit !important
+}
+
+
+.ReactModal__Overlay--after-open {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  z-index: 9999;
+}
+
+.ReactModal__Content {
+  padding: 0 !important;
+}
+
+.languageImgSec span {
+  height: 100% !important;
+}
+
+/* .detailsSlideImg {
+  margin-bottom: 2.3rem !important;
+ } */
+
+.storeInventoryBannerImg::-webkit-scrollbar {
+  height: 5px;
+}
+
+.storeInventoryBannerImg::-webkit-scrollbar-thumb {
+  background-color: gray;
+}
+
+.storeInventoryBannerImg::-webkit-scrollbar-track {
+  background-color: #EBEBEB;
+}
+
+::placeholder {
+  color: #B9B9B9 !important;
+  font-size: 14px !important;
+}
+
+[type='text']:focus,
+[type='email']:focus,
+[type='url']:focus,
+[type='password']:focus,
+[type='number']:focus,
+[type='date']:focus,
+[type='datetime-local']:focus,
+[type='month']:focus,
+[type='search']:focus,
+[type='tel']:focus,
+[type='time']:focus,
+[type='week']:focus,
+[multiple]:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  box-shadow: none;
+  border-color: initial;
+  /* or use 'transparent' or 'none' depending on the context */
+}
+
+/* styles.css */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 60;
+}
+
+.languagePopupImg {
+  overflow: hidden !important;
+}
+
+input.error {
+  border: 2px solid red;
+}
+
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.loader {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid var(--theme-color);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.brands-container::-webkit-scrollbar {
+  width: 5px;
+}
+
+.brands-container::-webkit-scrollbar-thumb {
+  background-color: var(--theme-color);
+}
+
+.brands-container::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+  /* Color of the scrollbar track */
+}
+
+/* CSS for Modal Animation */
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.3s ease;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.modal.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  animation: slideIn 0.5s ease-out;
+}
+
+/* Keyframes for slide-in animation */
+@keyframes slideIn {
+  from {
+      transform: translateY(-100%);
+  }
+  to {
+      transform: translateY(0);
+  }
+}
+
+.truncate-3-lines {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.slick-track {
+  margin-left: inherit!important;
+}
