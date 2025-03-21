@@ -16,7 +16,7 @@ import BannerStrip from "@components/BannerStrip";
 import bannerImg from '@Images/sellTractor/engineering-excellence-banner.svg';
 import { useQuery } from '@apollo/client';  
 import {GET_ALL_STATES} from "@utils/constants";
-//import { getLocaleProps } from "@helpers"; 
+import { getLocaleProps } from "@helpers"; 
 import { useTranslation } from "next-i18next";  
 
 export async function getServerSideProps(context) {

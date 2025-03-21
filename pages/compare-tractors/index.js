@@ -19,14 +19,14 @@ import Loader from '@components/Loader';
 import { nanoid } from '@reduxjs/toolkit';
 import { useRouter } from 'next/router';
 import { useTranslation } from "next-i18next";
-//import { getLocaleProps } from "@helpers";
+import { getLocaleProps } from "@helpers";
 import LoaderHi from '@Images/loader.gif';
 import LoaderMr from '@Images/loaderMr.gif';
 import LoaderEn from '@Images/loaderEn.gif';
 
-// export async function getServerSideProps(context) {
-//     return await getLocaleProps(context);
-// }
+export async function getServerSideProps(context) {
+    return await getLocaleProps(context);
+}
 
 export default function CompareTractor({ locale }) {
     const router = useRouter();

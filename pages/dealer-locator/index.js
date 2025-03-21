@@ -16,7 +16,7 @@ import { useRouter } from 'next/router';
 import Pagination from "@components/Pagination";
 import Heading from "../../components/Heading";
 import { useTranslation } from 'next-i18next';
-//import { getLocaleProps } from "@helpers";
+import { getLocaleProps } from "@helpers";
 import { DEALERLIST_DATA } from "@utils/constants";
 import Loader from '@components/Loader';
 import LoaderHi from '@Images/loader.gif';
