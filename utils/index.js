@@ -153,3 +153,20 @@ HomeHPRanges.forEach((range) => {
 
 return compareTractorData;
 };
+
+export const getTractorDetailsById = (inventoryData, tractorId) => {
+  if (!Array.isArray(inventoryData) || !tractorId) {
+      console.warn("Invalid inventory data or tractor ID");
+      return null;
+  }
+
+  // Find the tractor details by ID
+  const tractorDetails = inventoryData.find(item => item.tractor_id === tractorId);
+
+  if (!tractorDetails) {
+      console.warn(`No tractor found for ID: ${tractorId}`);
+      return null;
+  }
+
+  return tractorDetails;
+};

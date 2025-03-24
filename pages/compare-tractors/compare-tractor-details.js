@@ -42,6 +42,10 @@ export default function CompareTractorDetails({ locale , inventoryData }) {
             const tractor1 = inventoryData.find(tractor => tractor.tractor_id === Number(id1));
             const tractor2 = inventoryData.find(tractor => tractor.tractor_id === Number(id2));
 
+            console.log("tractor1"+JSON.stringify(tractor1));
+            console.log("tractor2"+JSON.stringify(tractor2));
+
+
             if (tractor1 && tractor2) {
                 // 🖼️ Format imagesData for UI
                 const imagesData = [
