@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { setDownPayment } from "../../store/slices/userDataSlice";
+import { formatPrice } from "@utils";
 
 export default function RangeSlider({
   step,
@@ -44,14 +45,14 @@ export default function RangeSlider({
           min={min}
           max={max}
           step={step}
-          value={val}
+          value={formatPrice(val)}
           onChange={handleSliderChange}
         />
 
         {/* Input Field */}
         <input
           type="text"
-          value={val}
+          value={formatPrice(val)}
           onChange={handleInputChange}
           className="w-40 p-2 border border-gray-300 rounded-md text-center"
           min={min}
