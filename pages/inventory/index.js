@@ -583,7 +583,7 @@ export default function Inventory({ locale, inventoryData }) {
                       <>
                         {noResults ? (
                           <p className='my-2 text-center text-primaryColor'>No search data available</p>
-                        ) : (
+                         ) : (
                           <div className="p-2 flex flex-col w-full gap-2">
                             {filter.options.map((option, index) => (
                               <div key={index}>
