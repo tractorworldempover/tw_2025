@@ -209,7 +209,7 @@ export default function HomePage({ locale, Inventorydata }) {
             enginePower: item.engine_power,
             tractorId: item.tractor_id,
         }));
-    }, [Inventorydata]);
+    }, [Inventorydata]);  
 
 
     const handleNavigation = (path) => {
