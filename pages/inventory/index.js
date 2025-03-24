@@ -536,6 +536,7 @@ useEffect(() => {
 
               <div className="border mt-4 bg-white">
                 {filters.map((filter) => (
+                  // Mobile view
                   <div key={filter.title}>
                     <div
                       className="bg-[#EEEEEE] cursor-pointer m-[2px] font-semibold p-2 flex items-center justify-between"
@@ -582,7 +583,8 @@ useEffect(() => {
                       </div>
 
                     </div>
-                    {showStates[filter.showKey] && (
+                    {showStates[filter.showKey] && 
+                     (
                       <>
                         {noResults ? (
                           <p className='my-2 text-center text-primaryColor'>No search data available</p>
@@ -590,15 +592,21 @@ useEffect(() => {
                           <div className="p-2 flex flex-col w-full gap-2">
                             {filter.options.map((option, index) => (
                               <div key={index}>
-                                <input type="radio" name={filter.title.toLowerCase()} value={option.value}checked={filter.selected === option.value}
-                                onChange={() => onSelectFilter(filter.showKey, option.value)} />
+                                <input
+                                  type="radio"
+                                  name={filter.showKey}
+                                  value={option.value}
+                                  checked={filter.selected === option.value} 
+                                  onChange={() => onSelectFilter(filter.showKey, option.value)}
+                                  />
                                 <label className="ml-2">{option.label}</label>
                               </div>
                             ))}
                           </div>
                         )}
                       </>
-                    )}
+                     )
+                    }
 
                   </div>
                 ))}
@@ -682,6 +690,7 @@ useEffect(() => {
                       onClick={() => onToggle(filter.showKey)}
                     >
                       <div>{filter.title}</div>
+                      {/* WEB VIEW */}
                       <div>
                         {showStates[filter.showKey] ? (
                           <svg

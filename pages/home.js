@@ -213,8 +213,10 @@ export default function HomePage({ locale, Inventorydata }) {
 
 
     const handleNavigation = (path) => {
-         router.push(path).then(() => setIsShowLoader(false));
+         router.push(path)
     };
+
+    // .then(() => setIsShowLoader(false));
 
     const handleCompareAll = () => handleNavigation('/compare-tractors');
     const handleAllExclusiveOffers = () => handleNavigation('/exclusive-offers');
