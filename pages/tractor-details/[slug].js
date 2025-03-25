@@ -29,6 +29,8 @@ import LoaderEn from '@Images/loaderEn.gif';
 import { useTranslation } from 'next-i18next';
 import { getHomePageTractorsListBasedOnInventory } from '@utils';
 import { formatPrice } from "@utils";
+import Link from 'next/link';
+
 export async function getServerSideProps(context) {
     return await getLocaleProps(context);
 }
@@ -60,6 +62,11 @@ export default function TractorDetails({ locale , inventoryData }) {
     const [compareTractorsData, setcompareTractorsData] = useState([]);
     const [state, dispatch] = useReducer(userDataSlice, initialState);
     const { t, i18n } = useTranslation('common');
+    const Id = Number(slug);
+
+    console.log("nmyid=================="+Id);
+    
+
    
 
     // const slugQuery = slug.replace('-', ' ');
@@ -226,9 +233,9 @@ export default function TractorDetails({ locale , inventoryData }) {
         router.push('/dealer-locator');
     };
 
-    const handleCompareTractor = () => {
-        router.push('/compare-tractors');
-    };
+    // const handleCompareTractor = () => {
+    //     router.push('/compare-tractors');
+    // };
 
     const handleEnquiry = () => {
         router.push('/contact-us');
@@ -424,8 +431,19 @@ export default function TractorDetails({ locale , inventoryData }) {
                                             <Btn text={"Enquiry"} bgColor={true} onClick={handleEnquiry} />
                                         </div>
                                         <div className='sm:w-1/2 w-full my-4'>
-                                            <div className="block bg-primaryColor text-white rounded-[4px] opacity-1 cursor-pointer px-4 py-2 text-center border-primaryColor font-semibold border-[1px] " onClick={handleCompareTractor}>
-                                                Compare Tractor
+                                             <div className="block bg-primaryColor text-white rounded-[4px] opacity-1 cursor-pointer px-4 py-2 text-center border-primaryColor font-semibold border-[1px] ">
+                                             <Link
+                                                href={{
+                                                    pathname: '/compare-tractors',
+                                                    query: {
+                                                        id: Id
+                                                    }
+                                                }}
+                                                passHref
+                                            >
+                                                 <a>Compare Tractors</a>
+                                            </Link>
+                                           
                                             </div>
                                         </div>
                                     </div>

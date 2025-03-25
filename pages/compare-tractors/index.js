@@ -28,6 +28,7 @@ export default function CompareTractor({ locale, inventoryData }) {
 
     const router = useRouter();
     const language = locale?.toUpperCase();
+    const { id } = router.query;
 
     const [showBrandsModal, setShowBrandsModal] = useState(false);
     const [showBrandsModelsModal, setShowBrandsModelsModal] = useState(false);
@@ -55,6 +56,9 @@ export default function CompareTractor({ locale, inventoryData }) {
         setBrandsSearchQuery('');
         setSelectedBrand('');
     };
+
+    const Id = Number(id);
+
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -185,6 +189,25 @@ export default function CompareTractor({ locale, inventoryData }) {
 
     };
 
+    
+    ///if query id is avilable 
+     useEffect(() => {
+        if (Id) {
+            const tractorDetails = getTractorDetailsById(inventoryData, Id);
+            console.log("Full Tractor Details:", tractorDetails);
+            if (tractorDetails) {
+                setSelectedTractorDetails((prevDetails) => {
+                    // If already 3 tractors are selected, replace the oldest one
+                    const updatedDetails = [...prevDetails, tractorDetails].slice(-1);
+                    return updatedDetails;
+                 });
+           
+
+            }
+
+        }
+    }, [Id, inventoryData]);
+
 
     const handleModelsBack = () => {
         setShowBrandsModelsModal(false);
@@ -264,11 +287,12 @@ export default function CompareTractor({ locale, inventoryData }) {
                                     <div className='text-center cursor-pointer'>
                                         <Image
                                             src={tractor ? CompareImage2 : CompareImg} 
-                                            alt='compareImg'
+                                            alt={tractor ? "CompareImage2" : "CompareImg"}
                                             width={350}
                                             height={350}
                                             onClick={brandsModalShow}
                                         />
+                                        <p>{tractor ? `${tractor.brand} ${tractor.model}` : "No Tractor Selected"}</p>
                                     </div>
 
                                     {/* VS Image (skip after the last tractor) */}
