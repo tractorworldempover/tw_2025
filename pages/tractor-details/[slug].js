@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useReducer,useMemo } from 'react'
+import React, { useState, useRef, useEffect, useReducer, useMemo } from 'react'
 import Banner from '@components/Banner';
 import Layout from '@components/Layout';
 import InventoryCarousel from '@components/InventoryCarousel';
@@ -22,13 +22,10 @@ import { useQuery } from '@apollo/client';
 import { useRouter } from 'next/router';
 import LeftSection from '@components/EMI/LeftSection';
 import RightSection from '@components/EMI/RightSection';
+import HP from '@Images/hp.svg';
 import userDataSlice from '@store/userDataSlice';
-import LoaderHi from '@Images/loader.gif';
-import LoaderMr from '@Images/loaderMr.gif';
-import LoaderEn from '@Images/loaderEn.gif';
 import { useTranslation } from 'next-i18next';
-import { getHomePageTractorsListBasedOnInventory } from '@utils';
-import { formatPrice } from "@utils";
+import { getHomePageTractorsListBasedOnInventory, formatPrice, HomeHPRanges, getTabLabel } from '@utils';
 import Link from 'next/link';
 
 export async function getServerSideProps(context) {
@@ -47,11 +44,10 @@ function SamplePrevArrow(props) {
         <Image src='images/slickslider/left_arrow.svg' width={100} height={100} className={'custom-arrow prev-arrow'} alt='LeftArrow' onClick={onClick}></Image>
     );
 }
- 
 
-export default function TractorDetails({ locale , inventoryData }) {
 
- 
+export default function TractorDetails({ locale, inventoryData }) {
+
     const router = useRouter();
     const [isMobile, setIsMobile] = useState(false);
     const { slug } = router.query;
@@ -117,15 +113,7 @@ export default function TractorDetails({ locale , inventoryData }) {
     ]);
 
     // tractor data
-    const [tractorData, setTractorData] = useState([
-        { label: 'Engine HP', value: '49 HP' },
-        { label: 'PTO HP', value: '44.9 HP' },
-        { label: 'Wheel drive', value: '2WD' },
-        { label: 'Forward Gears', value: '2' },
-        { label: 'Reverse Gears', value: '2' },
-        { label: 'Brake Type', value: 'Oil Immersed' },
-        { label: 'Price', value: 'Check Price', isLink: true },
-    ]);
+
 
     // Specifications data
     const [engineData, setEngineData] = useState([
@@ -147,7 +135,6 @@ export default function TractorDetails({ locale , inventoryData }) {
         { label: 'Brake Type', value: 'Oil Immersed' },
         { label: 'Price', value: 'Check Price' },
     ]);
-    
 
     const WhyChooseItems = [
         { src: Warranty, alt: "choose1", label: "Warranty" },
@@ -156,21 +143,15 @@ export default function TractorDetails({ locale , inventoryData }) {
         { src: Finance, alt: "Finance", label: "Mahendra Financing" }
     ];
 
- 
-
     const [activeTab, setActiveTab] = useState("oneData");
 
     const handleTabClick = (tabId) => {
         setActiveTab(tabId);
     };
 
-   
-    useEffect(() => {
-         
-    }, [activeTab]);
-
     // for accordion 
     const [openAccordion, setOpenAccordion] = useState(null);
+
     const toggleAccordion = (index) => {
         setOpenAccordion(openAccordion === index ? null : index);
     };
@@ -221,13 +202,12 @@ export default function TractorDetails({ locale , inventoryData }) {
                 }
             }
         ]
-    };
-
+    }; 
 
     const handleCompareAll = () => {
         router.push('/compare-tractors');
     };
- 
+
 
     const handleDealerLocation = () => {
         router.push('/dealer-locator');
@@ -261,12 +241,12 @@ export default function TractorDetails({ locale , inventoryData }) {
     }, []);
 
     useEffect(() => {
-        debugger;
+        // debugger;
         const tractorId = Number(slug);
         const selectedTractor = inventoryData.find(tractor => tractor.tractor_id === tractorId);
-     
+
         if (selectedTractor) {
-            debugger;
+            // debugger;
             // Extract tractor details
             const tractorDetails = [{
                 certified: selectedTractor.is_verified,
@@ -283,12 +263,12 @@ export default function TractorDetails({ locale , inventoryData }) {
                 finance: selectedTractor.finance,
                 engineHours: selectedTractor.engine_hours
             }];
-    
-            
-    
+
+
+
             // Setting dynamic features based on the selected tractor
             const updatedFeatures = features.map((feature) => {
-                 switch (feature.title) {
+                switch (feature.title) {
                     case 'Battery':
                         return { ...feature, description: tractorDetails[0].battery ? 'Available' : 'Not Available' };
                     case 'Year':
@@ -305,23 +285,23 @@ export default function TractorDetails({ locale , inventoryData }) {
                         return feature;
                 }
             });
-    
+
             setTractorDetails(tractorDetails);
             setFeatures(updatedFeatures);
 
         }
     }, [slug, inventoryData]); // ✅ Only runs when `slug` or `inventoryData` changes
-        
-    console.log("TractorDetails"+JSON.stringify(TractorDetails));
+
+    // console.log("TractorDetails" + JSON.stringify(TractorDetails));
 
     //similarTractors
 
     let similarTractorsListData = [];
 
     if (TractorDetails && TractorDetails.length > 0 && inventoryData) {
-        debugger;
+        // debugger;
         const selectedTractor = TractorDetails[0]; // ✅ Extract first object
-    
+
         similarTractorsListData = inventoryData
             .filter((item) => item.engine_power === selectedTractor.enginePower && item.tractor_id !== selectedTractor.id)
             .slice(0, 10) // 🚀 Limit results to 10 similar tractors
@@ -334,52 +314,55 @@ export default function TractorDetails({ locale , inventoryData }) {
                 tractorId: item.tractor_id,
             }));
     }
-    
-    
-    console.log("Similar Tractors:", JSON.stringify(similarTractorsListData));
- 
 
-   
+
+    // console.log("Similar Tractors:", JSON.stringify(similarTractorsListData));
+
+    const inventoryList = useMemo(() => {
+        // debugger;
+        if (!inventoryData || inventoryData.length === 0) {
+            return [];
+        }
+        return inventoryData.slice(0, 50).map((item) => ({
+            title: `${item.brand} ${item.model}`,
+            price: item.max_price,
+            engineHours: item.engine_hours,
+            driveType: item.drive_type,
+            enginePower: item.engine_power,
+            tractorId: item.tractor_id,
+        }));
+    }, [inventoryData]);
+
     //compareTractors
-    const compareTractorData = getHomePageTractorsListBasedOnInventory(similarTractorsListData); 
-
+    const compareTractorData = useMemo(() =>
+        getHomePageTractorsListBasedOnInventory(inventoryList),
+        [inventoryList]);
     // Automatically highlight the first available tab from compareTractorData
     useEffect(() => {
         const availableTabs = Object.keys(compareTractorData);
         if (availableTabs.length > 0 && !availableTabs.includes(activeTab)) {
-        setActiveTab(availableTabs[0]); // Set the first available tab
+            setActiveTab(availableTabs[0]); // Set the first available tab
         }
-        }, [compareTractorData]);
+    }, [compareTractorData]); 
 
-
-    console.log("compareTractorsData"+JSON.stringify(compareTractorData));
-
-    console.log("stateData"+JSON.stringify(state));
-
-
+    // console.log("compareTractorsData" + JSON.stringify(compareTractorData));  
     const initialState = {
-        principal:0,
+        principal: 0,
         loanAmount: 10000,
         roi: 8, // rate of interest
         tenure: 72,
         downPayment: 100000,
         totalAmtInt: 0
-    };
+    }; 
 
- 
-    return (
-
-        <Layout>
-
+    return ( 
+        <Layout> 
             {TractorDetails && TractorDetails.length > 0 ? (
-                <div className='main-details'>
-
+                <div className='main-details'> 
                     {/* banner sec */}
                     <Banner breadcrumbs={breadcrumbData}
                         bannerImg={bannerImg}
-                        heading={'Tractor Details'} />
-
-
+                        heading={'Tractor Details'} /> 
 
                     {/* slide sec */}
                     <div className='lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-4 sm:pb-8 py-2
@@ -421,7 +404,7 @@ export default function TractorDetails({ locale , inventoryData }) {
                                         {TractorDetails[0].district}, {TractorDetails[0].state}</div>
 
                                     <div className='font-bold text-xl mb-1'>
-                                         {formatPrice(TractorDetails[0].price)}
+                                        {formatPrice(TractorDetails[0].price)}
                                         <span className="line-through text-sm opacity-[30%]"> ₹ 10,84,000 </span></div>
 
                                     <div className="">EMI starts at <span className="text-secondaryColor"> ₹ 3,657/month</span> </div>
@@ -447,18 +430,14 @@ export default function TractorDetails({ locale , inventoryData }) {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-
-                            </div>
-
-
+                                </div> 
+                            </div> 
                         </div>
                     </div>
 
                     {/* Features sec */}
                     <div className='bg-[#F3F3F4]'>
-                        <div className='lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-4 sm:pb-8 py-2'>
-
+                        <div className='lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-4 sm:pb-8 py-2'> 
                             <Heading heading={TractorDetails[0].title} />
                             <div className='py-3 sm:mt-5 mt-1 grid md:grid-cols-6 sm:grid-cols-3 
                     grid-cols-2 sm:gap-4 gap-8'>
@@ -488,32 +467,18 @@ export default function TractorDetails({ locale , inventoryData }) {
                     <div className='bg-white lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-4 sm:pb-8 py-2'>
 
                         <Heading heading={'Calculate ' + TractorDetails[0].title} />
-                        <div className='bg-[#F6F6F6] px-3 py-6 mt-3 flex sm:flex-row flex-col gap-4'>
-
-
-                            <div className='sm:w-1/2 w-full'>
-
-                                 <LeftSection state={state} dispatch={dispatch} maxPrice= {formatPrice(TractorDetails[0].price)} /> 
-
-
-
+                        <div className='bg-[#F6F6F6] px-3 py-6 mt-3 flex sm:flex-row flex-col gap-4'> 
+                            <div className='sm:w-1/2 w-full'> 
+                                <LeftSection state={TractorDetails} dispatch={dispatch} maxPrice={formatPrice(TractorDetails[0].price)} />  
                                 <div className='mt-4'>
                                     <Btn bgColor={true} text={'Calculate Loan'} />
-                                </div>
-
-                            </div>
-
-                            <div className='sm:w-1/2 w-full'>
-
-
-                                <RightSection state={state} />
- 
-
+                                </div> 
+                            </div> 
+                            <div className='sm:w-1/2 w-full'>  
+                                <RightSection state={TractorDetails} /> 
                             </div>
                         </div>
-                    </div>
-
-
+                    </div> 
                     {/* why choose us */}
                     <div className="lg:px-14 md:px-6 sm:px-3 px-2 sm:py-4 py-2 relative bg-white mt-3">
                         <Heading heading={t('Home.Why_Choose_Us')} viewButton={false} />
@@ -569,40 +534,56 @@ export default function TractorDetails({ locale , inventoryData }) {
                             <p className="mb-[-5px]">Compare To Buy The Right Tractor</p>
                         </div>
 
-                        <div className='flex sm:gap-4 gap-2 my-3 font-medium'>
-                            <Tab id="oneData" activeTab={activeTab} onClick={handleTabClick}>
-                                Under 20 HP</Tab>
-                            <Tab id="twoData" activeTab={activeTab} onClick={handleTabClick}>21 - 30 HP</Tab>
-                            <Tab id="ThreeData" activeTab={activeTab} onClick={handleTabClick}>31 - 40 HP</Tab>
-                            <Tab id="FourData" activeTab={activeTab} onClick={handleTabClick}>41 - 45 HP</Tab>
-                            <Tab id="FifthData" activeTab={activeTab} onClick={handleTabClick}>46 - 50 HP</Tab>
-                            <Tab id="SixthData" activeTab={activeTab} onClick={handleTabClick}>Above 50 HP</Tab>
+                        <div className='flex sm:gap-4 gap-2 my-3 font-medium relative z-20'>
+                            {HomeHPRanges.map((range) => (
+                                <Tab
+                                    key={range.key}
+                                    id={range.key}
+                                    activeTab={activeTab}
+                                    onClick={handleTabClick}
+                                >
+                                    {getTabLabel(range.min, range.max)}
+                                </Tab>
+                            ))}
                         </div>
 
                         <div className="">
-                            <div className=' grid sm:grid-cols-3 grid-cols-1 xl:gap-8 gap-4'>
+                            <div className='grid sm:grid-cols-3 md:gap-6 gap-4'>
                                 {Object.keys(compareTractorData).map((key) =>
                                     activeTab === key ? (
                                         <>
-                                             {compareTractorData[activeTab]?.slice(0, 3).map((item, index) => ( // 🚀 Loads only 3 objects
-                                                <div key={index} className='overflow-hidden w-full flex-none'>
+                                            {compareTractorData[activeTab]?.slice(0, 3).map((item, index) => (
+                                                <div key={index} className='overflow-hidden flex-none'>
                                                     <Image src={CompareImage} alt='compareImage' layout='responsive' />
                                                     <div className='flex justify-between px-3 mb-3'>
                                                         <div>
                                                             <div>{item.brand1}</div>
-                                                            <div className='font-semibold my-1'>{item.brand1hrs}</div>
-                                                            <div className='font-semibold my-1'>{item.brand1price}</div>
+                                                            <div className='font-semibold my-1'><Image src={HP} width={15} height={15} /> {item.brand1hp}</div>
+                                                            <div className='font-semibold my-1'>
+                                                                {formatPrice(item.brand1price)}
+                                                            </div>
 
                                                         </div>
                                                         <div>
                                                             <div>{item.brand2}</div>
-                                                            <div className='font-semibold my-1'>{item.brand2hrs}</div>
-                                                            <div className='font-semibold my-1'>{item.brand2price}</div>
-
+                                                            <div className='font-semibold my-1'><Image src={HP} width={15} height={15} /> {item.brand2hp}</div>
+                                                            <div className='font-semibold my-1'> {formatPrice(item.brand2price)}</div>
                                                         </div>
                                                     </div>
-
-                                                    <Btn className="uppercase" text={'COMPARE'} onClick={handleCompareAll} />
+                                                    <Link
+                                                        href={{
+                                                            pathname: '/compare-tractors/compare-tractor-details',
+                                                            query: {
+                                                                t1: item.brand1,
+                                                                t2: item.brand2,
+                                                                id1: item.brand1Id,
+                                                                id2: item.brand2Id
+                                                            }
+                                                        }}
+                                                        passHref
+                                                    >
+                                                        <Btn className="uppercase" text={t('Home.COMPARE')} />
+                                                    </Link>
                                                 </div>
                                             ))}
 
@@ -612,13 +593,14 @@ export default function TractorDetails({ locale , inventoryData }) {
 
                             </div>
                         </div>
+
                     </div>
 
                     <div className='justify-center flex my-4'>
                         <Btn text={t('Home.View_All_Tractor_Comparison')} onClick={handleCompareDetailsAll} bgColor={true}
                         />
                     </div>
- 
+
                 </div>
             ) : null}
         </Layout>

@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import { setDownPayment } from "../../store/slices/userDataSlice";
 import { formatPrice } from "@utils";
+import { useSelector } from "react-redux";
 
 export default function RangeSlider({
   step,
@@ -14,6 +15,9 @@ export default function RangeSlider({
   value
 }) {
   const [val, setVal] = useState(value);
+
+  const downPayment = useSelector((state) => state.user.downPayment); 
+  const [selecteddownPaymentValue, setSelecteddownPaymentValue] = useState(downPayment); 
 
   const handleSliderChange = (event) => {
     const newValue = Number(event.target.value);
@@ -30,6 +34,9 @@ export default function RangeSlider({
       setVal(newValue);
     }
   };
+
+    useEffect(() => {
+    }, [downPayment]); 
 
   return (
     <div className="flex flex-col space-y-2">

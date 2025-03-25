@@ -5,7 +5,7 @@ const initialState = {
     principal: 0,
     loanAmount:0,
     roi: 8, // rate of interest
-    tenure: 12,
+    tenure: 84,
     downPayment:100000,
     addressData: {},
     modalStatus: false,
