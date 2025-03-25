@@ -278,7 +278,7 @@ export default function CompareTractorDetails({ locale, inventoryData }) {
                                             <p className="text-[14px]  text-secondaryColor mt-2">{tractor.emiStartsFrom}</p>
                                             <p className="text-[14px] text-[#000000]  mt-2">{tractor.price}</p>
                                             <p className="text-[14px] text-primaryColor  mt-2 inline-block cursor-pointer">
-                                                Enquire
+                                                <a href="/interested">Enquire</a>
                                             </p>
                                         </div>
                                     </div>
@@ -404,7 +404,7 @@ export default function CompareTractorDetails({ locale, inventoryData }) {
                         </div>
 
                         <div className='flex justify-center my-6'>
-                            <Btn text={t('Home.View_All_Tractor_Comparison')} bgColor={true} />
+                            <a href="/compare-tractors"><Btn text={t('Home.View_All_Tractor_Comparison')} bgColor={true} /></a>
                         </div>
                     </div>
                 </div>
