@@ -53,9 +53,8 @@ import Loader from '@components/Loader';
 import Modal from "@components/Modal";
 import Crossmark from '@Images/inventory/closeIcon.svg';
 import { useTranslation } from 'next-i18next';
-import { HomeHPRanges, getTabLabel, getHomePageTractorsListBasedOnInventory } from '@utils';
-import { formatPrice } from "@utils";
-
+import { HomeHPRanges, getTabLabel, getHomePageTractorsListBasedOnInventory,formatPrice } from '@utils';
+ 
 export default function HomePage({ locale, Inventorydata }) {
 
     const [isMobile, setIsMobile] = useState(false);
@@ -213,7 +212,7 @@ export default function HomePage({ locale, Inventorydata }) {
 
 
     const handleNavigation = (path) => {
-         router.push(path)
+         router.push(path);
     };
 
     // .then(() => setIsShowLoader(false));
@@ -317,8 +316,7 @@ export default function HomePage({ locale, Inventorydata }) {
                 </Link>
             )}
         </div>
-    ))
-
+    )) 
 
     // const compareTractorData = getHomePageTractorsListBasedOnInventory(inventoryList);
 
@@ -483,8 +481,7 @@ export default function HomePage({ locale, Inventorydata }) {
                 </div>
 
                 <div className='flex sm:gap-4 gap-2 my-3 font-medium relative z-20'>
-                    {/* <Tab id="oneData" activeTab={activeTab} onClick={handleTabClick}> Under 20 HP</Tab>  */}
-                    {HomeHPRanges.map((range) => (
+                     {HomeHPRanges.map((range) => (
                         <Tab
                             key={range.key}
                             id={range.key}
