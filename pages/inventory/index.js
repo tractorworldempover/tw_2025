@@ -784,7 +784,7 @@ export default function Inventory({ locale, inventoryData }) {
                                      dark:placeholder-gray-400 dark:text-white  px-8"
                         onChange={handleStateChange}
                       >
-                        <option value="" hidden>{locationDetails}</option>
+                        <option value="">Select State</option>
                         {stateList.map((item, index) => {
                           return (
                             <option key={index} value={item.state}>
