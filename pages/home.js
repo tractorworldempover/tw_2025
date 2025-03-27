@@ -122,11 +122,8 @@ export default function HomePage({ locale, Inventorydata }) {
     const { data, loading, error, networkStatus } = useQuery(HOMEPAGE_QUERIES, {
         variables: { lang: language },
         fetchPolicy: 'cache-first'
-    });
-
-
-
-
+    }); 
+    
     // Combined loading and error handling
     // if (loading) return (
     //     <Loader loaderImage={language == 'HI' ? LoaderHi : language == 'MR' ? LoaderMr : LoaderEn} />
