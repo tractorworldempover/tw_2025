@@ -170,3 +170,37 @@ export const getTractorDetailsById = (inventoryData, tractorId) => {
 
   return tractorDetails;
 };
+
+/**
+ * Gets the first valid processed image URL from image_links.
+ * @param {Array|Object} imageLinks - The array or object of image objects.
+ * @param {string} DefaultTractor - The fallback image URL to use if no valid processed image is found.
+ * @returns {string} - The first valid processed image URL, or the default image if no valid processed image is found.
+ */
+export async function getValidImageUrl(imageLinks, DefaultTractor) {
+  // console.log("imageLinks:", imageLinks); // Log input data
+
+  const imageArray = Array.isArray(imageLinks) ? imageLinks : Object.values(imageLinks);
+
+  if (Array.isArray(imageArray) && imageArray.length > 0) {
+    for (let i = 0; i < imageArray.length; i++) {
+      const imageUrl = imageArray[2]?.processed_image;
+      if (imageUrl) {
+        try {
+          const response = await fetch(imageUrl, { method: "HEAD" }); // Lightweight check
+          if (response.ok) {
+            // console.log(`Valid image found at index ${2}:`, imageUrl);
+            return imageUrl;
+          } else {
+            // console.warn(`Image at index ${2} is broken:`, imageUrl);
+          }
+        } catch (error) {
+          // console.error(`Error fetching image at index ${2}:`, error);
+        }
+      }
+    }
+  }
+
+  // console.warn("No valid processed image found. Falling back to default image.");
+  return typeof DefaultTractor === "string" ? DefaultTractor : DefaultTractor?.src || "";
+}

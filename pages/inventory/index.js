@@ -31,7 +31,7 @@ import { GET_ALL_POPULAR_BRANDS } from "@utils/constants";
 import { useDispatch, useSelector } from 'react-redux';
 import { GET_ALL_STATES } from "@utils/constants";
 import Link from "next/link";
-import { formatPrice } from "@utils";
+import { formatPrice,getValidImageUrl } from "@utils";
 
 
 // Define the Inventory function
@@ -72,12 +72,11 @@ export default function Inventory({ locale, inventoryData }) {
 
   const handleStateChange = (event) => {
     const selectedState = event.target.value;
-    console.log("Dropdown Changed! Selected State:", selectedState);
+    
 
     setLiveInventoryFilters((prevFilters) => {
       const newFilters = [...prevFilters];
       newFilters[3] = selectedState;
-      console.log("Updated liveInventoryFilters:", newFilters);
       return newFilters;
     });
   };
@@ -147,7 +146,6 @@ export default function Inventory({ locale, inventoryData }) {
   ////for filters collpase
   const onToggle = (key) => {
     setShowStates((prev) => ({ ...prev, [key]: !prev[key] }));
-    console.log("Current Filters State:", filters);
   };
 
 
@@ -260,30 +258,34 @@ export default function Inventory({ locale, inventoryData }) {
 
   // Ensure PopularTractors (which is containing all 1725 data) is populated at the start
   useEffect(() => {
-
     console.log("useEffect triggered! inventoryData:", inventoryData);
-    console.log("First Tractor Data:", inventoryData[0]);
+    
+    if (!Array.isArray(inventoryData) || inventoryData.length === 0) return;
 
-    if (Array.isArray(inventoryData) && inventoryData.length > 0) {
-      const allTractors = inventoryData.map((node) => ({
-        certified: node.is_verified,
-        title: `${node.brand} ${node.model}`,
-        price: node.max_price,
-        imageLink: DefaultTractor,
-        tractorId: node.tractor_id,
-        state: node.state || "Unknown",
-        features: [
-          { icon: "/images/time.svg", text: `${node.engine_hours}` },
-          { icon: "/images/wheel.svg", text: node.drive_type },
-          { icon: "/images/hp.svg", text: `${node.engine_power}` },
-          { icon: "/images/mapIcon.svg", text: node.district }
-        ],
-      }));
+    async function fetchTractors() {
+      const tractors = await Promise.all(
+        inventoryData.map(async (node) => ({
+          certified: node.is_verified,
+          title: `${node.brand} ${node.model}`,
+          price: node.max_price,
+          imageLink: await getValidImageUrl(node.image_links, DefaultTractor), // ✅ Wait for valid URL
+          state: node.state || "Unknown",
+          features: [
+            { icon: "/images/time.svg", text: `${node.engine_hours}` },
+            { icon: "/images/wheel.svg", text: node.drive_type },
+            { icon: "/images/hp.svg", text: `${node.engine_power}` },
+            { icon: "/images/mapIcon.svg", text: node.district }
+          ],
+        }))
+      );
 
-      console.log("Mapped Tractors Data:", allTractors);
-      setPopularTractorsData(allTractors);
+      console.log("Mapped Tractors Data:", tractors);
+      setPopularTractorsData(tractors);
     }
+
+    fetchTractors();
   }, [inventoryData]);
+
 
 
   // all brands 
@@ -321,6 +323,7 @@ export default function Inventory({ locale, inventoryData }) {
   // Extract brandsData from inventoryData when it changes
   useEffect(() => {
     if (Array.isArray(inventoryData) && inventoryData.length > 0) {
+      console.log("Sample Data:", inventoryData[0]);
       // Extract all unique brands
       const brandsData = [...new Set(inventoryData.map(item => item.brandSlug?.trim()))].filter(Boolean);
       setBrandsData(brandsData);
@@ -815,7 +818,7 @@ export default function Inventory({ locale, inventoryData }) {
                             <div className="relative" onClick={() => router.push(`/tractor-details/${item.tractorId}`)}>
                               <Image
                                 className="w-full"
-                                src={item.imageLink}
+                                src={item.imageLink || DefaultTractor}
                                 alt="cardImage"
                                 layout="responsive"
                                 width={100}
@@ -878,7 +881,7 @@ export default function Inventory({ locale, inventoryData }) {
                                   <div className="w-full h-[175px]">
                                     <Image
                                       className="w-full h-[600px]"
-                                      src={DefaultTractor}
+                                      src={item.imageLink || DefaultTractor}
                                       height={600}
                                       alt="cardImage"
                                       layout="responsive"
@@ -980,7 +983,7 @@ export default function Inventory({ locale, inventoryData }) {
                             <Image
                               onClick={() => router.push(`/tractor-details/${item.tractorId}`)}
                               className="w-full"
-                              src={DefaultTractor}
+                              src={item.imageLink || DefaultTractor}
                               alt="cardImage"
                               layout="responsive"
                               width={100}
@@ -1061,7 +1064,7 @@ export default function Inventory({ locale, inventoryData }) {
                           <div className="relative" onClick={() => router.push(`/tractor-details/${item.tractorId}`)}>
                             <Image
                               className="w-full"
-                              src={DefaultTractor}
+                              src={item.imageLink || DefaultTractor}
                               alt="cardImage"
                               layout="responsive"
                               width={100}
@@ -1120,7 +1123,7 @@ export default function Inventory({ locale, inventoryData }) {
                             <div className="relative" onClick={() => router.push(`/tractor-details/${item.tractorId}`)}>
                               <Image
                                 className="w-full"
-                                src={DefaultTractor}
+                                src={item.imageLink || DefaultTractor}
                                 alt="cardImage"
                                 layout="responsive"
                                 width={100}
@@ -1178,7 +1181,7 @@ export default function Inventory({ locale, inventoryData }) {
                               <div className="w-[40%] relative" onClick={() => router.push(`/tractor-details/${item.tractorId}`)}>
                                 <Image
                                   className="w-full"
-                                  src={DefaultTractor}
+                                  src={item.imageLink || DefaultTractor}
                                   alt="cardImage"
                                   layout="responsive"
                                   width={100}

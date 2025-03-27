@@ -210,6 +210,9 @@ export default function HomePage({ locale, Inventorydata }) {
         }));
     }, [Inventorydata]);  
 
+    const countJabalpur = Inventorydata.filter((item) => item.district === "Jabalpur").length;
+    console.log(`Number of items in Jabalpur: ${countJabalpur}`);
+
 
     const handleNavigation = (path) => {
          router.push(path);

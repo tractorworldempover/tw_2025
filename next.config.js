@@ -15,7 +15,11 @@ const { i18n } = require('./next-i18next.config');
     config.resolve.fallback = { fs: false };
     return config; 
   }, 
-  images: {
-    domains: ['tractorworld.empover.com']
+  images: 
+  {
+    domains: ['tractorworld.empover.com',
+              'usedtractorstorage.blob.core.windows.net',
+              'castagingstorage.blob.core.windows.net']
   }
 };
+
