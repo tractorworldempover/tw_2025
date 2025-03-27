@@ -7,6 +7,7 @@ import Banner from "@components/Banner";
 import Image from "next/image";
 import Men from "@Images/men.svg";
 import BrandImg from "@Images/dealerLocator/BrandImg.svg";
+import ProfileImg from "@Images/dealerLocator/Profile.png";
 import LocationImg from "@Images/dealerLocator/LocationImg.svg";
 import CallImg from "@Images/dealerLocator/callImg.svg";
 import MailImg from "@Images/dealerLocator/mailImg.svg";
@@ -14,15 +15,17 @@ import Btn from "@components/Btn";
 import bannerImg from "@Images/dealerLocator/dealerBanner.svg";
 import { useRouter } from 'next/router';
 import Pagination from "@components/Pagination";
-import Heading from "../../components/Heading";
+import Heading from "@components/Heading";
 import { useTranslation } from 'next-i18next';
 import { getLocaleProps } from "@helpers";
-import { DEALERLIST_DATA } from "@utils/constants";
-import Loader from '@components/Loader';
-import LoaderHi from '@Images/loader.gif';
-import LoaderMr from '@Images/loaderMr.gif';
-import LoaderEn from '@Images/loaderEn.gif';
-import { useQuery } from "@apollo/client";
+import Instagram from '@Images/dealer/instagram.svg';
+import Twitter from '@Images/dealer/twitter.svg';
+import Facebook from '@Images/dealer/facebook.svg';
+import Phn from "@Images/dealer/phn.svg";
+import Mail from "@Images/dealer/mail.svg";
+import Location from "@Images/dealer/location.svg";
+import { getDealersData } from "../../utils";
+
 
 export async function getServerSideProps(context) {
   return await getLocaleProps(context);
@@ -30,150 +33,81 @@ export async function getServerSideProps(context) {
 
 export default function DealerLocator({ locale }) {
   const { t, i18n } = useTranslation('common');
-  const [currentPage, setCurrentPage] = useState(1); 
+  const [currentPage, setCurrentPage] = useState(1);
   const language = locale?.toUpperCase();
   const router = useRouter();
+
+  const [states, setStates] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [selectedState, setSelectedState] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+  
+  const [locations, setLocations] = useState({});
+  const dealerRightData = getDealersData();
+
   const breadcrumbData = [
     { label: t('Home.Home'), link: '/' },
     { label: t('Dealer.DEALER_LOCATOR'), link: '#' },
   ];
+
   const settings = {
     dots: true,
     infinite: true,
     speed: 100,
     slidesToShow: 1,
     slidesToScroll: 1,
+  }; 
+
+  useEffect(() => {
+    fetch("https://used-tractor-backend.azurewebsites.net/user/web/user-location-details/")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Fetched Data:", data);
+        const locationData = data.data || {}; // Ensure it's an object
+        setLocations(locationData);
+        const uniqueStates = [...new Set(Object.values(locationData).map(item => item.state))];
+        console.log("Extracted States:", uniqueStates);
+        setStates(uniqueStates);
+      })
+      .catch((error) => {
+        console.error("Error fetching states:", error);
+        alert("Error fetching data: " + error.message);
+      });
+  }, []);
+
+  const handleStateChange = (event) => {
+    const selected = event.target.value;
+    setSelectedState(selected);
+    const filteredDistricts = Object.keys(locations).filter(
+      (district) => locations[district].state === selected
+    );
+    console.log("Filtered Districts:", filteredDistricts);
+    setDistricts(filteredDistricts);
   };
 
-  const { data, loading, error } = useQuery(DEALERLIST_DATA, {
-    variables: { lang: language },
-  });
-
+  const handleDistrictChange = (event) => {
+    const selected = event.target.value;
+    setSelectedDistrict(selected);
+  }
  
+  const [filteredDealers, setFilteredDealers] = useState(dealerRightData);
 
-
-  if (error) return <p>Error: {error.message}</p>;
-
-  const dealerListData = data?.dealerslist?.nodes || [];
-
-  const dealersData = dealerListData.map(node => {
-    const address = node.dealerlistFields.address;
-    const dealerName = node.dealerlistFields.dealerName;
-    const googleLocationURL = node.dealerlistFields.dealerName;
-    return { address, dealerName, googleLocationURL };
-  });
-
-  //console.log(JSON.stringify(dealersData) + "dealersData");
-
-  const handleDealerClick = () => {
-    router.push('/store-inventory');
+  const handleDealersShow = () => {
+    const filtered = dealerRightData.filter((dealer) => {
+      return (
+        (!selectedState || dealer.address.includes(selectedState)) &&
+        (!selectedDistrict || dealer.address.includes(selectedDistrict))
+      );
+    });
+    setFilteredDealers(filtered);
   };
-
-  const dealerData = [
-    {
-      dealerCardData: [
-        {
-          location: "Ram Motors, Chandrapur",
-          brand: "Sonalika",
-          address: "Opposite Government Engineering College",
-          phone: "+91 95xxxxxx77",
-          email: "Narayana@gmail.com",
-          images: {
-            men: Men,
-            brand: BrandImg,
-            location: LocationImg,
-            call: CallImg,
-            mail: MailImg
-          }
-        },
-        {
-          location: "Ram Motors, Chandrapur",
-          brand: "Sonalika",
-          address: "Opposite Government Engineering College",
-          phone: "+91 95xxxxxx77",
-          email: "Narayana@gmail.com",
-          images: {
-            men: Men,
-            brand: BrandImg,
-            location: LocationImg,
-            call: CallImg,
-            mail: MailImg
-          }
-        },
-        {
-          location: "Ram Motors, Chandrapur",
-          brand: "Sonalika",
-          address: "Opposite Government Engineering College",
-          phone: "+91 95xxxxxx77",
-          email: "Narayana@gmail.com",
-          images: {
-            men: Men,
-            brand: BrandImg,
-            location: LocationImg,
-            call: CallImg,
-            mail: MailImg
-          }
-        },
-      ]
-    },
-
-    {
-      dealerCardData: [
-        {
-          location: "Ram Motors, Chandrapur",
-          brand: "Sonalika",
-          address: "Opposite Government Engineering College",
-          phone: "+91 95xxxxxx77",
-          email: "Narayana@gmail.com",
-          images: {
-            men: Men,
-            brand: BrandImg,
-            location: LocationImg,
-            call: CallImg,
-            mail: MailImg
-          }
-        },
-        {
-          location: "Ram Motors, Chandrapur",
-          brand: "Sonalika",
-          address: "Opposite Government Engineering College",
-          phone: "+91 95xxxxxx77",
-          email: "Narayana@gmail.com",
-          images: {
-            men: Men,
-            brand: BrandImg,
-            location: LocationImg,
-            call: CallImg,
-            mail: MailImg
-          }
-        },
-        {
-          location: "Ram Motors, Chandrapur",
-          brand: "Sonalika",
-          address: "Opposite Government Engineering College",
-          phone: "+91 95xxxxxx77",
-          email: "Narayana@gmail.com",
-          images: {
-            men: Men,
-            brand: BrandImg,
-            location: LocationImg,
-            call: CallImg,
-            mail: MailImg
-          }
-        },
-      ]
-    },
-
-  ];
-
 
   //pagination
-  const CardsPerPage = 3;
-  const totalPages = Math.ceil(dealerData.length / CardsPerPage);
+  const CardsPerPage = 9;
+  const totalPages = Math.ceil(filteredDealers.length / CardsPerPage);
   const indexOfLastCard = currentPage * CardsPerPage;
   const indexOfFirstCard = indexOfLastCard - CardsPerPage;
-  const currentCards = dealerData.slice(indexOfFirstCard, indexOfLastCard);
-
+  const currentCards = filteredDealers.slice(indexOfFirstCard, indexOfLastCard);
 
   return (
     <Layout currentPage={'dealerLocator'}>
@@ -191,118 +125,182 @@ export default function DealerLocator({ locale }) {
                 <p className="font-bold mb-3 text-[17px]">{t('Dealer.Search_Nearest_Dealer')}</p>
                 <div className="mb-4">
                   <label className="form-label">{t('Dealer.State')}</label>
-                  <select className="block w-full px-2 py-[7px] border 
-                    border-gray-300 rounded-md text-[14px] text-[#B9B9B9] mt-2">
-                    <option selected>{t('Dealer.Select_State')}</option>
-                    <option value="madhyaPradesh">Madhya Pradesh</option>
-                    <option value="maharashtra">Maharashtra</option>
+                  <select
+                    className="block w-full px-2 py-[7px] border border-gray-300 rounded-md text-[14px] mt-2"
+                    onChange={handleStateChange}
+                    value={selectedState}
+                  >
+                    <option value="">{t("Dealer.Select_State")}</option>
+                    {states.map((state, index) => (
+                      <option key={index} value={state}>
+                        {state}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
                 <div className="mb-4">
                   <label className="form-label">{t('Dealer.District')}</label>
-                  <select className="block w-full px-2 py-[7px] 
-                     border border-gray-300 rounded-md  text-[14px] text-[#B9B9B9] mt-2">
-                    <option selected>{t('Dealer.Select_District')}</option>
-                    <option value="bhopal">Bhopal</option>
-                    <option value="alirajpur">Alirajpur</option>
-                    <option value="barwani">Barwani</option>
+                  <select
+                    className="block w-full px-2 py-[7px] border border-gray-300 rounded-md text-[14px] mt-2" onChange={handleDistrictChange}>
+                    <option value="">{t("Dealer.Select_District")}</option>
+                    {districts.map((district, index) => (
+                      <option key={index} value={district}>
+                        {district}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
-                <div className="mb-4">
-                  <label className="form-label">{t('Dealer.Tehsil_or_Taluka')}</label>
-                  <select className="block w-full px-2 py-[7px] border border-gray-300 
-                    rounded-md text-[14px] text-[#B9B9B9] mt-2">
-                    <option value="" selected>{t('Dealer.Select_Taluka')}</option>
-                    <option value="Berasia">Berasia</option>
-                    <option value="Huzur">Huzur</option>
-                  </select>
-                </div>
-                <Btn text={t('Dealer.Find_Dealer')} bgColor={true} />
+                <Btn text={t('Dealer.Find_Dealer')} bgColor={true} onClick={handleDealersShow} />
 
                 <div>
                   <p className="font-bold py-3 text-black text-lg">{t('Dealer.Tractore_Dealer_List')}</p>
                 </div>
 
                 <div className="flex flex-col gap-3">
-                  {currentCards.map((data, dealerDataIndex) => (
+                  {dealerRightData.slice(0, 4).map((card, dealerDataIndex) => (
                     <div className="slider-container pb-4" key={dealerDataIndex}>
-                      <Slider {...settings}>
-                        {data.dealerCardData.map((card, dealerCardDataIndex) => (
-                          <div className="card bg-[#EEEEF0] mb-2" key={dealerCardDataIndex}>
-                            <span className="w-full px-2 py-1 rounded-md inline-block cursor-pointer font-bold text-black text-sm" id="location-span">
-                              {card.location}
-                            </span>
-                            <div className="bg-[#F6F6F6] pt-2">
-                              <div className="flex gap-1 mb-2">
-                                <div>
-                                  <Image src={card.images.men} alt="men" />
-                                </div>
-                                <div>
-                                  <div className="text-[11px]">
-                                    <div className="flex gap-2 mb-1">
-                                      <div className="w-[10%]">
-                                        <Image src={card.images.brand} alt="BrandImg" />
-                                      </div>
-                                      <p className="w-[90%]">Brand - <b>{card.brand}</b></p>
-                                    </div>
-
-                                    <div className="flex gap-2 mb-1">
-                                      <div className="w-[10%]">
-                                        <Image src={card.images.location} alt="LocationImg" />
-                                      </div>
-                                      <p className="w-[90%]">{card.address}</p>
-                                    </div>
-
-                                    <div className="flex gap-2 mb-1">
-                                      <div className="w-[10%]">
-                                        <Image src={card.images.call} alt="callImg" />
-                                      </div>
-                                      <p className="w-[90%]">{card.phone}</p>
-                                    </div>
-
-                                    <div className="flex gap-2 mb-1">
-                                      <div className="w-[10%]">
-                                        <Image src={card.images.mail} alt="mailImg" />
-                                      </div>
-                                      <p className="w-[90%]">{card.email}</p>
-                                    </div>
+                      <div className="card bg-[#EEEEF0] mb-2">
+                        <span className="w-full px-2 py-1 rounded-md inline-block cursor-pointer font-bold text-black text-sm"
+                          id="location-span">
+                          {card.name}
+                        </span>
+                        <div className="bg-[#F6F6F6] pt-2">
+                          <div className="flex gap-1 mb-2">
+                            <div>
+                              <Image src={card.image} alt="men" />
+                            </div>
+                            <div>
+                              <div className="text-[11px]">
+                                <div className="flex gap-2 mb-1">
+                                  <div className="w-[10%]">
+                                    <Image src={ProfileImg} alt="LocationImg" width={13} height={16} />
                                   </div>
+                                  <p className="w-[90%]">
+                                    <b>{card.owner}</b></p>
+                                </div>
+                                <div className="flex gap-2 mb-1">
+                                  <div className="w-[10%]">
+                                    <Image src={LocationImg} alt="LocationImg" width={15} height={15} />
+                                  </div>
+                                  <p className="w-[90%]">{card.address}</p>
+                                </div>
+                                <div className="flex gap-2 mb-1">
+                                  <div className="w-[10%]">
+                                    <Image src={CallImg} alt="callImg" width={14} height={14} />
+                                  </div>
+                                  <p className="w-[90%]">{card.phone}</p>
                                 </div>
                               </div>
-                              <Btn text={t('Dealer.Know_More')} onClick={handleDealerClick} bgColor={true} />
                             </div>
                           </div>
-                        ))}
-                      </Slider>
+                          <Btn text={t('Dealer.Know_More')} onClick={() => router.push(`/store-inventory?state=${card.location}&id=${card.id}`)} bgColor={true} />
+                        </div>
+                      </div>
+
                     </div>
                   ))}
+
                 </div>
-
-                <Pagination
-                  data={dealerData}
-                  TotalPages={totalPages}
-                  CurrentPage={currentPage}
-                  setCurrentPage={setCurrentPage}
-                />
-
-
-
 
               </div>
             </div>
 
             <div className="bg-white p-4 sm:w-[75%] w-full">
-              <iframe
-                className="w-full sm:h-[100%] h-[60vh]"
-                id="map"
-                frameBorder="0"
-                marginHeight="0"
-                marginWidth="0"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d38194496.11757613!2d68.147344015625!3d23.906486820399638!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390f8fb261d14dc7%3A0x4c7b1fb4b77b7e8f!2sIndia!5e0!3m2!1sen!2sin!4v1620772645379!5m2!1sen!2sin"
-                allowfullscreen
-              ></iframe>
+              <>
+                {currentCards.length === 0 ? (
+                  <p className="flex items-center justify-center mt-60">No Data available</p>
+                ) : (
+                  <div className="grid sm:grid-cols-3 grid-cols-1 flex-nowrap gap-4">
+                    {currentCards.map((dealer, index) => (
+                      <div key={index} className="bg-white flex-shrink-0">
+                        <div className="slider-container cursor-pointer" id="dealerSlide">
+                          <Slider {...settings}>
+                            <div
+                              className="relative group"
+                              onClick={() => router.push(`/store-inventory?state=${dealer.location}&id=${dealer.id}`)}
+                            >
+                              <Image
+                                src={dealer.image}
+                                alt={`Slide 1 for ${dealer.name}`}
+                                className="object-cover w-full h-full"
+                                layout="responsive"
+                              />
+                            </div>
+
+                            <div
+                              className="relative group"
+                              onClick={() => router.push(`/store-inventory?state=${dealer.location}&id=${dealer.id}`)}
+                            >
+                              <Image
+                                src={dealer.image}
+                                alt={`Slide 2 for ${dealer.name}`}
+                                className="object-cover w-full h-full"
+                              />
+                            </div>
+
+                            <div
+                              className="relative group"
+                              onClick={() => router.push(`/store-inventory?state=${dealer.location}&id=${dealer.id}`)}
+                            >
+                              <Image
+                                src={dealer.image}
+                                alt={`Slide 3 for ${dealer.name}`}
+                                className="object-cover w-full h-full"
+                              />
+                            </div>
+                          </Slider>
+                        </div>
+
+                        <div className="px-2 pb-2">
+                          <div>
+                            <p className="font-semibold ellipsis">{dealer.name}</p>
+                            <p className="font-medium py-1 border-b">{dealer.owner}</p>
+                          </div>
+
+                          <div className="text-sm pt-2">
+                            <div className="flex gap-1 w-full">
+                              <div className="w-[7%]">
+                                <Image src={Phn} alt="phn" />
+                              </div>
+                              <div className="w-[93%]">{dealer.phone}</div>
+                            </div>
+
+                            <div className="flex gap-1 w-full">
+                              <div className="w-[7%]">
+                                <Image src={Location} alt="location" />
+                              </div>
+                              <div className="w-[93%] line-clamp-2">{dealer.address}</div>
+                            </div>
+                          </div>
+
+                          <div className="flex gap-1 w-full mt-1">
+                            <div className="w-1/2 text-[14px]">
+                              <a href={`tel:${dealer.phone}`}>
+                                <Btn bgColor={true} text="Talk To Dealer" />
+                              </a>
+                            </div>
+                            <div className="w-1/2 text-[14px]">
+                              <a href={dealer.Google_Location} target="_blank" rel="noopener noreferrer">
+                                <Btn bgColor={true} text="Get Directions" />
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+              </>
+
+              <Pagination
+                data={filteredDealers}
+                TotalPages={totalPages}
+                CurrentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+              />
             </div>
           </div>
         </div>

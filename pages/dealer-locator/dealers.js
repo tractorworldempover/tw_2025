@@ -14,12 +14,18 @@ import Instagram from '@Images/dealer/instagram.svg';
 import Twitter from '@Images/dealer/twitter.svg';
 import Facebook from '@Images/dealer/facebook.svg';
 import bannerImg from '@Images/liveInventory/banner.svg';
-import tractorImg from '@Images/about/tractor.svg';
-
+import tractorImg from '@Images/about/tractor.svg'; 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { useTranslation } from 'next-i18next';
+import { getLocaleProps } from "@helpers";
+
+export async function getServerSideProps(context) {
+  return await getLocaleProps(context);
+}
 
 export default function dealers() {
+  const { t, i18n } = useTranslation('common');
 
     const settings = {
         dots: true,
@@ -119,7 +125,7 @@ export default function dealers() {
 
                 </div>
                 <div className='bg-[#EFECEC] mt-4 lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-4 sm:pb-8 py-2'>
-                    <Heading heading={"Mahindra Tractor - Dealers"} viewButton={true} />
+                    <Heading heading={"Mahindra Tractor - Dealers"} viewButton={true} /> 
                     <div className=''>
                         <div className='grid sm:grid-cols-4 grid-cols-1 flex-nowrap gap-4'>
                             {dealerData.map((dealer, index) => (
@@ -202,11 +208,11 @@ export default function dealers() {
                                 </div>
                             ))}
                         </div>
-                    </div>
-
+                    </div> 
                     <div className="my-4 sm:hidden block">
                         <Btn text={t('Home.View_All')} />
                     </div>
+
                 </div>
             </Layout>
 

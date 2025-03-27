@@ -470,9 +470,9 @@ export default function TractorDetails({ locale, inventoryData }) {
                         <div className='bg-[#F6F6F6] px-3 py-6 mt-3 flex sm:flex-row flex-col gap-4'> 
                             <div className='sm:w-1/2 w-full'> 
                                 <LeftSection state={TractorDetails} dispatch={dispatch} maxPrice={formatPrice(TractorDetails[0].price)} />  
-                                <div className='mt-4'>
+                                {/* <div className='mt-4'>
                                     <Btn bgColor={true} text={'Calculate Loan'} />
-                                </div> 
+                                </div>  */}
                             </div> 
                             <div className='sm:w-1/2 w-full'>  
                                 <RightSection state={TractorDetails} /> 

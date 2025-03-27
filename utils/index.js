@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setAddressData } from "../store/slices/userDataSlice"; 
+import Dealer1 from "@Images/dealer/dealer1.svg";
+
 
 export const HomeHPRanges = [
   { min: 0, max: 20, key: 'oneData' },
@@ -65,7 +67,7 @@ export const HomeHPRanges = [
     const principal = loanAmount - downPayment; // Adjusted loan amount after downpayment
     const monthlyInterestRate = roi / (12 * 100); // Monthly interest rate
     return (
-      Math.round((principal * monthlyInterestRate * Math.pow(1 + monthlyInterestRate, tenure)) / (Math.pow(1 + monthlyInterestRate, tenure) - 1)) || "--"
+      Math.round((principal * monthlyInterestRate * Math.pow(1 + monthlyInterestRate, tenure)) / (Math.pow(1 + monthlyInterestRate, tenure) - 1)) || 0
     );
   };
   
@@ -204,3 +206,174 @@ export async function getValidImageUrl(imageLinks, DefaultTractor) {
   // console.warn("No valid processed image found. Falling back to default image.");
   return typeof DefaultTractor === "string" ? DefaultTractor : DefaultTractor?.src || "";
 }
+
+export const getDealersData = () => {
+  return [
+    {
+     name: "Arihant Motors",
+     id: "1",
+     location: "Tembhurni",
+     owner: "Vikas Baldota",
+     phone: "+91 73500 20155",
+     email: "Narayana970541@gmail.com",
+     address: "Solapur - Pune Highway, Tembhurni, Madha, Maharashtra - 413211",
+     Google_Location: "https://maps.app.goo.gl/gkGGMSaZ9FLyRJiK6",
+     image: Dealer1
+   },
+
+   {
+     name: "Bholenath Motors",
+     id: "2",
+     location: "Ahmednagar",
+     owner: "Jitesh Kantrod",
+     phone: "+91 89834 32552",
+     email: "example@gmail.com",
+     address: "Nevasa Road, Ashok Factory, Near HP Petrol Pump, Shrirampur, Ahmednagar",
+     Google_Location: "https://maps.app.goo.gl/ArMsM2PsjmY8EwUP8",
+     image: Dealer1
+   },
+   {
+     name: "Om Motors",
+     id: "3",
+     location: "Latur",
+     owner: "Nitin Bhise",
+     phone: "+91 99605 73777",
+     email: "example@gmail.com",
+     address: "Ring Road, Babalgaon Naka, in front of gramin police station, Latur - 413512",
+     Google_Location: "https://maps.app.goo.gl/bJ75mNRqQ9oj6mKx7",
+     image: Dealer1
+   },
+   {
+     name: "Jai Kisan Tractors",
+     id: "4",
+     location: "Sangamner",
+     owner: "Samir Tamboli, Ismail Tamboli",
+     phone: "+91 98601 55763, +91 98909 01018",
+     email: "example@gmail.com",
+     address: "Jai Kisan Tractors garage, In front of Siddhivinayak lawns, Sangamner - Nagar Road, Sangamner - 422605",
+     Google_Location: "https://maps.app.goo.gl/t3xTKpSQSZZSjBQs7",
+     image: Dealer1
+   },
+   {
+     name: "Aum Tractors",
+     id: "5",
+     location: "Solapur",
+     owner: "Kiran Ransingh",
+     phone: "+91 95458 68555",
+     email: "example@gmail.com",
+     address: "15/2A, Kegaon, near Dudh Pandhari, Pune Highway, Solapur - 413255",
+     Google_Location: "https://maps.app.goo.gl/cCGnPF1QQFDd3fLVA",
+     image: Dealer1
+   },
+   {
+     name: "Anuraj Tractors",
+     id: "6",
+     location: "Ahmednagar",
+     owner: "Amol Ranshing",
+     phone: "+91 8806667664",
+     email: "example@gmail.com",
+     address: "Arangaon, Ahmednagar - Daund Road, ahead of VRD, Near Pranav Hotel, Ahmednagar - 414006",
+     Google_Location: "https://maps.app.goo.gl/ucq9KM75Sir2Jka4A",
+     image: Dealer1
+   },
+   {
+     name: "Ambrish Tractors",
+     id: "7",
+     location: "Jalna",
+     owner: "Ambrish Ramkishan Lahoti",
+     phone: "+91 94208 24716, +91 94222 16425",
+     email: "example@gmail.com",
+     address: "5031, Saraswati Gining Factory Compound, Old Jalna Road, near Nagar Parishan, Jalna, Maharashtra- 431203",
+     Google_Location: "https://maps.app.goo.gl/5FRWyTLjPbwykA2R6",
+     image: Dealer1
+   },
+   {
+     name: "Sainath Tractors",
+     id: "8",
+     location: "Sehore",
+     owner: "Sanjay Rathore",
+     phone: "+91 97554 19104",
+     email: "example@gmail.com",
+     address: "Sainath tractors, near Mandi Thane, Sehore, Sehore District, Madhya Pradesh - 466001",
+     Google_Location: "",
+     image: Dealer1
+   },
+   {
+     name: "Kartikeya Traders",
+     id: "9",
+     location: "Sagar",
+     owner: "Malti Sachan",
+     phone: "+91 99261 84981",
+     email: "example@gmail.com",
+     address: "Ward No 20, Zone 03,51/41/1, Shastri Ward, N.H 934, Sagar - 470002",
+     Google_Location: "",
+     image: Dealer1
+   },
+   {
+     name: "National Tractors",
+     id: "10",
+     location: "Jabalpur",
+     owner: "Amish Khandelwal",
+     phone: "+91 97134 37232",
+     email: "example@gmail.com",
+     address: "93, Near ISBT, Vijay Nagar, Deendayal Bus stand, Jabalpur, MP - 482001",
+     Google_Location: "https://maps.app.goo.gl/NenPBbJcnxEwUAgK7",
+     image: Dealer1
+   },
+   {
+     name: "Kamala Tractors",
+     id: "11",
+     location: "Sheopur",
+     owner: "Neha Toshniwal",
+     phone: "+91 95848 13756",
+     email: "example@gmail.com",
+     address: "Pali Road, Sheopur, Madhya Pradesh, Pin - 476337",
+     Google_Location: "https://maps.app.goo.gl/UmbHr1922KUM9twa9",
+     image: Dealer1
+   },
+   {
+     name: "Leela Enterprises",
+     id: "12",
+     location: "Sheopur",
+     owner: "Mahendra Dangi",
+     phone: "+91 79998 62922",
+     email: "example@gmail.com",
+     address: "Old AB Road, Near Madhumilan Factory, in front of Sanjivani Hospital, Talavada champapura, Biaora, MP - 465674",
+     Google_Location: "https://maps.app.goo.gl/bp6LPej165MEJtQ46",
+     image: Dealer1
+   },
+   {
+     name: "Rainbow Tractors",
+     id: "13",
+     location: "Nanded",
+     owner: "Abdul Waheed Abdul Wali",
+     phone: "+91 9765692317",
+     email: "example@gmail.com",
+     address: "At Sangavi, Post Taroda Taroda Bk, Hingoli - Kalamnuri - Nanded Rd, opposite Airport, Nanded, Maharashtra 431605",
+     Google_Location: "https://maps.app.goo.gl/ZAQY1yjFb1dsWKzk7",
+     image: Dealer1
+   },
+   {
+     name: "Tractor House",
+     id: "14",
+     location: "Dwarka",
+     owner: "Rahul Lunawat",
+     phone: "+91 7769850099",
+     email: "example@gmail.com",
+     address: "New Mumbai Agra Road, Dwarka, Nashik - 422011",
+     Google_Location: "https://maps.app.goo.gl/zouqmehodeWm5YWK9",
+     image: Dealer1
+   },
+   {
+     name: "VENTILE COMPANY PRIVATE LIMITED",
+     id: "15",
+     location: "Pune",
+     owner: "Tejas Pandit",
+     phone: "+91 9922970720",
+     email: "example@gmail.com",
+     address: "251/1, Pune Solapur Road, Kadamwak Vasti, Loni Kalbhor, Haveli, Pune - 412207",
+     Google_Location: "https://maps.app.goo.gl/YYVKFeBs1SVRphTz6",
+     image: Dealer1
+   }
+  ];
+};
