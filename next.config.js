@@ -20,6 +20,20 @@ const { i18n } = require('./next-i18next.config');
     domains: ['tractorworld.empover.com',
               'usedtractorstorage.blob.core.windows.net',
               'castagingstorage.blob.core.windows.net']
+  },
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: "default-src 'self' https://www.youtube.com https://www.youtube-nocookie.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com; script-src 'self' 'unsafe-inline';"
+          }
+        ]
+      }
+    ];
   }
 };
+
 
