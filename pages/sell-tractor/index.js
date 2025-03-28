@@ -14,14 +14,36 @@ import bannerImg from "@Images/sellTractor/engineering-excellence-banner.svg";
 import mblBannerImg from "@Images/sellTractor/mblBanner.svg"; 
 import { getLocaleProps } from "@helpers";
 import { useTranslation } from "next-i18next";
+import { fetchLocations, getDealersData, getFilteredDistricts } from "../../utils";
 
 export async function getServerSideProps(context) {
   return await getLocaleProps(context);
 }
 export default function SellTractor() {
-  const { t, i18n } = useTranslation('common');
-
+  const { t, i18n } = useTranslation('common'); 
   const [isExpanded, setIsExpanded] = useState(false);
+   const [states, setStates] = useState([]);
+    const [districts, setDistricts] = useState([]);
+    const [selectedState, setSelectedState] = useState("");
+    const [selectedDistrict, setSelectedDistrict] = useState("");
+    const [locations, setLocations] = useState({});
+    const dealerRightData = getDealersData();
+  
+    useEffect(() => {
+      fetchLocations(setLocations, setStates);
+    }, []);
+  
+    const handleStateChange = (event) => {
+      const selected = event.target.value;
+      setSelectedState(selected);
+      const filteredDistricts = getFilteredDistricts(locations, selected);
+      console.log("Filtered Districts:", filteredDistricts);
+      setDistricts(filteredDistricts);
+    };
+  
+    const handleDistrictChange = (event) => {
+      setSelectedDistrict(event.target.value);
+    };
 
   const toggleReadMore = () => {
     setIsExpanded(!isExpanded);
@@ -122,26 +144,40 @@ export default function SellTractor() {
 
                     <div className="sm:w-1/4 w-full">
                       <label className="block mb-2">{t('Dealer.State')}</label>
-                      <select className="bg-white border border-gray-300 text-black rounded-md block w-full p-2.5 dark:bg-gray-700
-                       dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
-                        <option selected>{t('Dealer.Select_State')}</option>
-                        <option value="madhyaPradesh">Madhya Pradesh</option>
-                        <option value="maharashtra">Maharashtra</option>
+                      <select
+                        className="bg-white border 
+                      border-gray-300 text-black rounded-md block w-full 
+                        p-2.5 dark:bg-gray-700 dark:border-gray-600 
+                       dark:placeholder-gray-400 dark:text-white"
+                        onChange={handleStateChange}
+                        value={selectedState}
+                      >
+                        <option value="">{t("Dealer.Select_State")}</option>
+                        {states.map((state, index) => (
+                          <option key={index} value={state}>
+                            {state}
+                          </option>
+                        ))}
                       </select>
                     </div>
 
                     <div className="sm:w-1/4 w-full">
                       <label className="block mb-2">{t('Dealer.District')}</label>
-                      <select className="bg-white border border-gray-300 text-black rounded-md block w-full
-                       p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
-                        <option selected>{t('Dealer.Select_District')}</option>
-                        <option value="bhopal">Bhopal</option>
-                        <option value="alirajpur">Alirajpur</option>
-                        <option value="barwani">Barwani</option>
+                      <select
+                        className="bg-white border 
+                      border-gray-300 text-black rounded-md block w-full 
+                        p-2.5 dark:bg-gray-700 dark:border-gray-600 
+                       dark:placeholder-gray-400 dark:text-white" onChange={handleDistrictChange}>
+                        <option value="">{t("Dealer.Select_District")}</option>
+                        {districts.map((district, index) => (
+                          <option key={index} value={district}>
+                            {district}
+                          </option>
+                        ))}
                       </select>
                     </div>
 
-                    <div className="sm:w-1/4 w-full">
+                    {/* <div className="sm:w-1/4 w-full">
                       <label className="block mb-2">{t('Dealer.Tehsil_or_Taluka')}</label>
                       <select className="bg-white border border-gray-300 text-black rounded-md block w-full p-2.5 dark:bg-gray-700
                        dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
@@ -149,7 +185,7 @@ export default function SellTractor() {
                         <option value="Berasia">Berasia</option>
                         <option value="Huzur">Huzur</option>
                       </select>
-                    </div>
+                    </div> */}
 
                     <div className='sm:w-1/4 w-full'>
                       <div className='bg-secondaryColor px-2 py-3 text-white 

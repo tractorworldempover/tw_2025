@@ -14,18 +14,42 @@ import Axis from "@Images/bank/axis.svg";
 import videoThumbnail from "@Images/loan/videoThumbnail.svg";
 import BannerStrip from "@components/BannerStrip";
 import bannerImg from '@Images/sellTractor/engineering-excellence-banner.svg';
-import { useQuery } from '@apollo/client';  
-import {GET_ALL_STATES} from "@utils/constants";
-import { getLocaleProps } from "@helpers"; 
-import { useTranslation } from "next-i18next";  
+import { useQuery } from '@apollo/client';
+import { GET_ALL_STATES } from "@utils/constants";
+import { getLocaleProps } from "@helpers";
+import { useTranslation } from "next-i18next";
+import { fetchLocations, getDealersData, getFilteredDistricts } from "../../utils";
 
 export async function getServerSideProps(context) {
   return await getLocaleProps(context);
-} 
+}
 
- 
+
 export default function ApplyNewTractorLoan() {
   const { t, i18n } = useTranslation('common');
+  const [states, setStates] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [selectedState, setSelectedState] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [locations, setLocations] = useState({});
+  const dealerRightData = getDealersData();
+
+  useEffect(() => {
+    fetchLocations(setLocations, setStates);
+  }, []);
+
+  const handleStateChange = (event) => {
+    const selected = event.target.value;
+    setSelectedState(selected);
+    const filteredDistricts = getFilteredDistricts(locations, selected);
+    console.log("Filtered Districts:", filteredDistricts);
+    setDistricts(filteredDistricts);
+  };
+
+  const handleDistrictChange = (event) => {
+    setSelectedDistrict(event.target.value);
+  };
+
   const breadcrumbData = [
     { label: t('Home.Home'), link: "/" },
     { label: t('Loan.Loan'), link: "#" },
@@ -108,33 +132,6 @@ export default function ApplyNewTractorLoan() {
     }
   ];
 
-  /// Tractor Loan Interest Rate Comparison
-  const loanInterest = [
-    {
-      "bank": "ICICI Bank",
-      "interestRate": "13% p.a. to 22% p.a.",
-      "finance": "As per terms and conditions",
-      "tenure": "Up to 5 years"
-    },
-    {
-      "bank": "State Bank of India",
-      "interestRate": "9.00% p.a. - 10.25% p.a.",
-      "finance": "Up to 100% finance",
-      "tenure": "Up to 5 years"
-    },
-    {
-      "bank": "HDFC Bank",
-      "interestRate": "12.57% p.a. to 23.26% p.a.*",
-      "finance": "Up to 90% finance",
-      "tenure": "12 months to 84 months"
-    },
-    {
-      "bank": "Poonawalla Fincorp",
-      "interestRate": "16% p.a. to 20% p.a.",
-      "finance": "Up to 90% - 95% finance",
-      "tenure": "According to bank"
-    }
-  ]
 
   const handleApplyNow = (event) => {
     event.preventDefault();
@@ -277,37 +274,49 @@ export default function ApplyNewTractorLoan() {
                     </div>
 
                     <div className="sm:w-1/4 w-full">
-                      <label className="form-label">{t('Dealer.State')}</label>
-                      <select className="block w-full px-2 py-[7px] border 
-                    border-gray-300 rounded-md text-[14px] text-[#B9B9B9] mt-2">
-                        <option selected>{t('Dealer.Select_State')}</option>
-                        <option value="madhyaPradesh">Madhya Pradesh</option>
-                        <option value="maharashtra">Maharashtra</option>
+                      <label htmlFor="state" className="block mb-2" style={{marginBottom:'14px'}}> {t('Dealer.State')}</label>
+                      <select
+                        className="bg-white border 
+                      border-gray-300 text-black rounded-md block w-full 
+                        p-2.5 dark:bg-gray-700 dark:border-gray-600 
+                       dark:placeholder-gray-400 dark:text-white"
+                        onChange={handleStateChange}
+                        value={selectedState}
+                      >
+                        <option value="">{t("Dealer.Select_State")}</option>
+                        {states.map((state, index) => (
+                          <option key={index} value={state}>
+                            {state}
+                          </option>
+                        ))}
                       </select>
                     </div>
 
                     <div className="sm:w-1/4 w-full">
-                      <label className="form-label">{t('Dealer.District')}</label>
-                      <select className="block w-full px-2 py-[7px] 
-                     border border-gray-300 rounded-md  text-[14px] text-[#B9B9B9] mt-2">
-                        <option selected>{t('Dealer.Select_District')}</option>
-                        <option value="bhopal">Bhopal</option>
-                        <option value="alirajpur">Alirajpur</option>
-                        <option value="barwani">Barwani</option>
+                      <label className="block mb-2">{t('Dealer.District')}</label>
+                      <select
+                        className="bg-white border 
+                      border-gray-300 text-black rounded-md block w-full 
+                        p-2.5 dark:bg-gray-700 dark:border-gray-600 
+                       dark:placeholder-gray-400 dark:text-white" onChange={handleDistrictChange}>
+                        <option value="">{t("Dealer.Select_District")}</option>
+                        {districts.map((district, index) => (
+                          <option key={index} value={district}>
+                            {district}
+                          </option>
+                        ))}
                       </select>
                     </div>
 
-                    <div className="sm:w-1/4 w-full">
-                      <label className="form-label">{t('Dealer.Tehsil_or_Taluka')}</label>
+                    {/* <div className="sm:w-1/4 w-full">
+                      <label className="form-label mb-2">{t('Dealer.Tehsil_or_Taluka')}</label>
                       <select className="block w-full px-2 py-[7px] border border-gray-300 
-                    rounded-md text-[14px] text-[#B9B9B9] mt-2">
+                    rounded-md text-[14px] text-[#B9B9B9]">
                         <option value="" selected>{t('Dealer.Select_Taluka')}</option>
                         <option value="Berasia">Berasia</option>
                         <option value="Huzur">Huzur</option>
                       </select>
-                    </div>
-
-
+                    </div> */}
 
                     <div className="sm:w-1/4 w-full">
                       <button type="submit"

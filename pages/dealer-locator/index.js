@@ -24,7 +24,7 @@ import Facebook from '@Images/dealer/facebook.svg';
 import Phn from "@Images/dealer/phn.svg";
 import Mail from "@Images/dealer/mail.svg";
 import Location from "@Images/dealer/location.svg";
-import { getDealersData } from "../../utils";
+import { getDealersData,fetchLocations, getFilteredDistricts  } from "../../utils";
 
 
 export async function getServerSideProps(context) {
@@ -57,38 +57,22 @@ export default function DealerLocator({ locale }) {
     slidesToShow: 1,
     slidesToScroll: 1,
   }; 
-
+ 
   useEffect(() => {
-    fetch("https://used-tractor-backend.azurewebsites.net/user/web/user-location-details/")
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Fetched Data:", data);
-        const locationData = data.data || {}; // Ensure it's an object
-        setLocations(locationData);
-        const uniqueStates = [...new Set(Object.values(locationData).map(item => item.state))];
-        console.log("Extracted States:", uniqueStates);
-        setStates(uniqueStates);
-      })
-      .catch((error) => {
-        console.error("Error fetching states:", error);
-        alert("Error fetching data: " + error.message);
-      });
+    fetchLocations(setLocations, setStates);
   }, []);
 
   const handleStateChange = (event) => {
     const selected = event.target.value;
     setSelectedState(selected);
-    const filteredDistricts = Object.keys(locations).filter(
-      (district) => locations[district].state === selected
-    );
+    const filteredDistricts = getFilteredDistricts(locations, selected);
     console.log("Filtered Districts:", filteredDistricts);
     setDistricts(filteredDistricts);
   };
 
   const handleDistrictChange = (event) => {
-    const selected = event.target.value;
-    setSelectedDistrict(selected);
-  }
+    setSelectedDistrict(event.target.value);
+  };
  
   const [filteredDealers, setFilteredDealers] = useState(dealerRightData);
 
