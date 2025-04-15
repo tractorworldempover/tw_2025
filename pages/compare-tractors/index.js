@@ -1,10 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useMemo } from 'react'
 import Layout from "@components/Layout";
 import Banner from "@components/Banner";
 import Image from "next/image";
 import Heading from "@components/Heading";
 import Tab from '@components/Tab';
 import CompareImage from '@Images/liveInventory/compareImage.svg';
+import CompareImage2 from '@Images/compareTractorImg/mahindra.svg';
 import Btn from '@components/Btn';
 import HP from '@Images/hp.svg';
 import BannerImg from '@Images/compareTractorImg/Compare_tractor_banner.svg';
@@ -13,45 +14,51 @@ import vs from '@Images/compareTractorImg/vs.svg';
 import Search from '@Images/compareTractorImg/search.svg';
 import leftArrow from '@Images/compareTractorImg/leftArrow.svg';
 import Modal from "@components/Modal";
-import { GET_ALL_BRANDS, GET_ALL_MODELS_BY_BRAND } from "@utils/constants";
-import { useQuery } from '@apollo/client';
-import Loader from '@components/Loader';
-import { nanoid } from '@reduxjs/toolkit';
 import { useRouter } from 'next/router';
 import { useTranslation } from "next-i18next";
-//import { getLocaleProps } from "@helpers";
-import LoaderHi from '@Images/loader.gif';
-import LoaderMr from '@Images/loaderMr.gif';
-import LoaderEn from '@Images/loaderEn.gif';
+import { getLocaleProps } from "@helpers";
+import { getTractorDetailsById, getTabLabel, HomeHPRanges, formatPrice, getHomePageTractorsListBasedOnInventory } from '@utils';
+import Link from 'next/link';
 
-// export async function getServerSideProps(context) {
-//     return await getLocaleProps(context);
-// }
+export async function getStaticProps(context) {
+    return await getLocaleProps(context);
+}
 
-export default function CompareTractor({ locale }) {
+export default function CompareTractor({ locale, inventoryData }) { 
+
     const router = useRouter();
-    const language = locale?.toUpperCase(); 
+    const language = locale?.toUpperCase();
+    const { id } = router.query;
 
     const [showBrandsModal, setShowBrandsModal] = useState(false);
     const [showBrandsModelsModal, setShowBrandsModelsModal] = useState(false);
     const [noResults, setNoResults] = useState(false);
+    const [brandsSearchQuery, setBrandsSearchQuery] = useState('');
+    const [modelsSearchQuery, setModelsSearchQuery] = useState('');
+
 
     const brandsModalShow = () => setShowBrandsModal(true);
     const [isMobile, setIsMobile] = useState(false);
-    const [brandsSearchQuery, setBrandsSearchQuery] = useState('');
-    const [modelsSearchQuery, setModelsSearchQuery] = useState('');
     const [brands, setBrands] = useState([]);
+    const [filteredBrands, setFilteredBrands] = useState([]);
+    const [filteredModels, setFilteredModels] = useState([]);
     const [models, setModels] = useState([]);
     const [selectedBrand, setSelectedBrand] = useState('');
+    const [selectedModel, setSelectedModel] = useState('');
+    const [SelectedModelId, setSelectedModelId] = useState('');
+    const [selectedTractorDetails, setSelectedTractorDetails] = useState([]);
     const { t, i18n } = useTranslation('common');
 
     const handleClose = () => {
         setShowBrandsModal(false);
         setShowBrandsModelsModal(false);
-        setModelsSearchQuery('');
+        //setModelsSearchQuery('');
         setBrandsSearchQuery('');
         setSelectedBrand('');
     };
+
+    const Id = Number(id);
+
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -66,99 +73,145 @@ export default function CompareTractor({ locale }) {
         }
     }, []);
 
-    ////get brands api intigration
-    const { data: brandsData, loading: brandsLoading, error: brandsError } = useQuery(GET_ALL_BRANDS);
-
     useEffect(() => {
-        if (brandsData) {
-            const brandOptions = brandsData.brandsmodels.edges.map(({ node }) => {
-                return {
-                    brandName: node.brandmodelFields.brand
-                };
-            });
-            // console.log(JSON.stringify(brandOptions) + "brandOptions");
-            setBrands(brandOptions);
-        }
-    }, [brandsData]);
-    ////end brands api intigration 
+        if (Array.isArray(inventoryData) && inventoryData.length > 0) {
+            console.log("Raw inventory data:", JSON.stringify(inventoryData));
 
-    // Filter brands based on search query
-    useEffect(() => {
-        if (brandsData) {
-            const filteredBrands = brandsData.brandsmodels.edges
-                .filter(({ node }) =>
-                    node.brandmodelFields.brand.toLowerCase().includes(brandsSearchQuery.toLowerCase())
-                )
-                .map(({ node }) => ({
-                    brandName: node.brandmodelFields.brand
-                }));
+            const brandMap = new Map();
+            const modelMap = new Map();
 
-            setBrands(filteredBrands);
-            setNoResults(filteredBrands.length === 0);
+            inventoryData.forEach(item => {
+                // Store unique brands with their first tractor_id
+                if (item.brand && item.tractor_id) {
+                    if (!brandMap.has(item.brand)) {
+                        brandMap.set(item.brand, { brandName: item.brand, id: item.tractor_id });
+                    }
+                }
 
-        }
-    }, [brandsSearchQuery, brandsData]);
-    //edn Filter brands based on search query
-
-
-    ////get models by brands api intigration
-    const { data: modelsBybrandsData, loading: modelsBybrandsLoading, error: modelsBybrandsError } = useQuery(GET_ALL_MODELS_BY_BRAND, {
-        variables: { brand: selectedBrand },
-    });
-
-    useEffect(() => {
-        // debugger;
-        if (modelsBybrandsData) {
-            const modelsOptions = modelsBybrandsData.brandsmodels.edges.map(({ node }) => {
-                const modelSplitName = node.brandmodelFields.models.split(',');
-                return {
-                    modelName: modelSplitName
-                };
+                // Store unique models per brand
+                if (item.brand && item.model && item.tractor_id) {
+                    const key = `${item.brand}-${item.model}`;  // Unique key for brand-model combination
+                    if (!modelMap.has(key)) {
+                        modelMap.set(key, {
+                            modelName: item.model,
+                            id: item.tractor_id,
+                            brandName: item.brand  // Attach brand to filter later
+                        });
+                    }
+                }
             });
 
-            // const data = JSON.parse(modelsOptions);
-            const modelNames = modelsOptions[0].modelName.map(name => ({ modelName: name.trim() }));
-            setModels(modelNames);
-            // console.log(JSON.stringify(models) + "models"); 
+            setBrands(Array.from(brandMap.values()));
+            setFilteredBrands(Array.from(brandMap.values())); // Initially same as brands
+            setModels(Array.from(modelMap.values()));
+            setFilteredModels(Array.from(modelMap.values())); // Initially same as models
         }
-    }, [modelsBybrandsData]);
-    ////end get models by brands api intigration
+    }, [inventoryData]);
 
-    // Filter models based on search query
+
     useEffect(() => {
-        if (modelsBybrandsData) {
-            const filteredModels = modelsBybrandsData.brandsmodels.edges
-                .filter(({ node }) =>
-                    node.brandmodelFields.models.toLowerCase().includes(modelsSearchQuery.toLowerCase())
-                )
-                .map(({ node }, index) => {
-                    const modelNames = node.brandmodelFields.models.split(',')
-                        .map(name => name.trim())
-                        .filter(name => name.toLowerCase().includes(modelsSearchQuery.toLowerCase()));
-                    return modelNames.map(name => ({
-                        key: `${index}-${name}`,
-                        modelName: name
-                    }));
-                })
-                .flat();
-
-            setModels(filteredModels);
-            setNoResults(filteredModels.length === 0);
-            // console.log(filteredModels);
+        if (brandsSearchQuery.trim() === "") {
+            setFilteredBrands(brands); // Reset brands when search is empty
+        } else {
+            const filtered = brands.filter(brand =>
+                brand.brandName.toLowerCase().includes(brandsSearchQuery.toLowerCase())
+            );
+            setFilteredBrands(filtered);
         }
-    }, [modelsSearchQuery, modelsBybrandsData]);
+    }, [brandsSearchQuery, brands]);
+
+    useEffect(() => {
+        if (modelsSearchQuery.trim() === "") {
+            setFilteredModels(models); // Reset models when search is empty
+        } else {
+            const filtered = models.filter(model =>
+                model.modelName.toLowerCase().includes(modelsSearchQuery.toLowerCase())
+            );
+            setFilteredModels(filtered);
+        }
+    }, [modelsSearchQuery, models]);
+
 
     const handleBrandRadioChange = (event) => {
-        setSelectedBrand(event.target.value);
+        const selected = event.target.value;
+        setSelectedBrand(selected);
+
+        // Get all models of the selected brand
+        const modelsForBrand = inventoryData
+            .filter(item => item.brand === selected)
+            .map(item => ({ modelName: item.model, id: item.tractor_id }));
+
+        setModels(modelsForBrand);
+        setFilteredModels(modelsForBrand); // Reset filtered models
+
+
         setShowBrandsModal(false);
         setShowBrandsModelsModal(true);
-        //console.log(selectedBrand + "firstradioBtn");
     };
 
+    useEffect(() => {
+        if (modelsSearchQuery.trim() === "") {
+            setFilteredModels(models); // Reset models when search is empty
+        } else {
+            const filtered = models.filter(model =>
+                model.modelName.toLowerCase().includes(modelsSearchQuery.toLowerCase())
+            );
+            setFilteredModels(filtered);
+        }
+    }, [modelsSearchQuery, models]);
+
+
+    const handleModelRadioChange = (event) => {
+        // debugger;
+        const selectedModelName = event.target.value;
+        const modelObj = models.find(model => model.modelName === selectedModelName);
+
+        setSelectedModel(selectedModelName);
+        setSelectedModelId(modelObj ? modelObj.id : null);
+
+        console.log("Selected Model:", selectedModelName);
+        console.log("Selected Model ID:", modelObj ? modelObj.id : "Not found");
+
+        if (modelObj?.id) {
+            const tractorDetails = getTractorDetailsById(inventoryData, modelObj.id);
+            console.log("Full Tractor Details:", tractorDetails);
+            setShowBrandsModelsModal(false);
+
+            if (tractorDetails) {
+                setSelectedTractorDetails((prevDetails) => {
+                    // If already 3 tractors are selected, replace the oldest one
+                    const updatedDetails = [...prevDetails, tractorDetails].slice(-3);
+                    return updatedDetails;
+                });
+            }
+
+        }
+
+    };
+
+    
+    ///if query id is avilable 
+     useEffect(() => {
+        if (Id) {
+            const tractorDetails = getTractorDetailsById(inventoryData, Id);
+            console.log("Full Tractor Details:", tractorDetails);
+            if (tractorDetails) {
+                setSelectedTractorDetails((prevDetails) => {
+                    // If already 3 tractors are selected, replace the oldest one
+                    const updatedDetails = [...prevDetails, tractorDetails].slice(-1);
+                    return updatedDetails;
+                 });
+           
+
+            }
+
+        }
+    }, [Id, inventoryData]);
+
+
     const handleModelsBack = () => {
-     //   console.log(selectedBrand + "closeradioButon");
         setShowBrandsModelsModal(false);
-        setShowBrandsModal(true);
+        setShowBrandsModal(true); 
     };
 
     const breadcrumbData = [
@@ -178,192 +231,40 @@ export default function CompareTractor({ locale }) {
         },
     };
 
-    const compareTractorData = {
+    const inventoryList = useMemo(() => {
+        // debugger;
+        if (!inventoryData || inventoryData.length === 0) {
+            return [];
+        }
+        return inventoryData.slice(0, 50).map((item) => ({
+            title: `${item.brand} ${item.model}`,
+            price: item.max_price,
+            engineHours: item.engine_hours,
+            driveType: item.drive_type,
+            enginePower: item.engine_power,
+            tractorId: item.tractor_id,
+        }));
+    }, [inventoryData]);
 
-        oneData: [
-
-            {
-                brand1: 'Mahindra 475 DI',
-                brand2: 'Kubota MU401 2WD',
-                brand1hp: '42 HP',
-                brand2hp: '42 HP',
-                brand1price: '₹ 6.45-6.75 Lakh*',
-                brand2price: '₹ 8.30-8.40 Lakh*'
-            },
-            {
-                brand1: 'Mahindra 475 DI',
-                brand2: 'Kubota MU401 2WD',
-                brand1hp: '42 HP',
-                brand2hp: '42 HP',
-                brand1price: '₹ 6.45-6.75 Lakh*',
-                brand2price: '₹ 8.30-8.40 Lakh*'
-            },
-            {
-                brand1: 'Mahindra 475 DI',
-                brand2: 'Kubota MU401 2WD',
-                brand1hp: '42 HP',
-                brand2hp: '42 HP',
-                brand1price: '₹ 6.45-6.75 Lakh*',
-                brand2price: '₹ 8.30-8.40 Lakh*'
-            },
-        ],
-
-        twoData: [
-
-            {
-                brand1: 'Mahindra 475 DI',
-                brand2: 'Kubota MU401 2WD',
-                brand1hp: '42 HP',
-                brand2hp: '42 HP',
-                brand1price: '₹ 6.45-6.75 Lakh*',
-                brand2price: '₹ 8.30-8.40 Lakh*'
-            },
-            {
-                brand1: 'Mahindra 475 DI',
-                brand2: 'Kubota MU401 2WD',
-                brand1hp: '42 HP',
-                brand2hp: '42 HP',
-                brand1price: '₹ 6.45-6.75 Lakh*',
-                brand2price: '₹ 8.30-8.40 Lakh*'
-            },
-            {
-                brand1: 'Mahindra 475 DI',
-                brand2: 'Kubota MU401 2WD',
-                brand1hp: '42 HP',
-                brand2hp: '42 HP',
-                brand1price: '₹ 6.45-6.75 Lakh*',
-                brand2price: '₹ 8.30-8.40 Lakh*'
-            },
-        ],
-
-        ThreeData: [
-
-            {
-                brand1: 'Mahindra 475 DI',
-                brand2: 'Kubota MU401 2WD',
-                brand1hp: '42 HP',
-                brand2hp: '42 HP',
-                brand1price: '₹ 6.45-6.75 Lakh*',
-                brand2price: '₹ 8.30-8.40 Lakh*'
-            },
-            {
-                brand1: 'Mahindra 475 DI',
-                brand2: 'Kubota MU401 2WD',
-                brand1hp: '42 HP',
-                brand2hp: '42 HP',
-                brand1price: '₹ 6.45-6.75 Lakh*',
-                brand2price: '₹ 8.30-8.40 Lakh*'
-            },
-            {
-                brand1: 'Mahindra 475 DI',
-                brand2: 'Kubota MU401 2WD',
-                brand1hp: '42 HP',
-                brand2hp: '42 HP',
-                brand1price: '₹ 6.45-6.75 Lakh*',
-                brand2price: '₹ 8.30-8.40 Lakh*'
-            },
-        ],
-
-        FourData: [
-
-            {
-                brand1: 'Mahindra 475 DI',
-                brand2: 'Kubota MU401 2WD',
-                brand1hp: '42 HP',
-                brand2hp: '42 HP',
-                brand1price: '₹ 6.45-6.75 Lakh*',
-                brand2price: '₹ 8.30-8.40 Lakh*'
-            },
-            {
-                brand1: 'Mahindra 475 DI',
-                brand2: 'Kubota MU401 2WD',
-                brand1hp: '42 HP',
-                brand2hp: '42 HP',
-                brand1price: '₹ 6.45-6.75 Lakh*',
-                brand2price: '₹ 8.30-8.40 Lakh*'
-            },
-            {
-                brand1: 'Mahindra 475 DI',
-                brand2: 'Kubota MU401 2WD',
-                brand1hp: '42 HP',
-                brand2hp: '42 HP',
-                brand1price: '₹ 6.45-6.75 Lakh*',
-                brand2price: '₹ 8.30-8.40 Lakh*'
-            },
-        ],
-
-        FifthData: [
-
-            {
-                brand1: 'Mahindra 475 DI',
-                brand2: 'Kubota MU401 2WD',
-                brand1hp: '42 HP',
-                brand2hp: '42 HP',
-                brand1price: '₹ 6.45-6.75 Lakh*',
-                brand2price: '₹ 8.30-8.40 Lakh*'
-            },
-            {
-                brand1: 'Mahindra 475 DI',
-                brand2: 'Kubota MU401 2WD',
-                brand1hp: '42 HP',
-                brand2hp: '42 HP',
-                brand1price: '₹ 6.45-6.75 Lakh*',
-                brand2price: '₹ 8.30-8.40 Lakh*'
-            },
-            {
-                brand1: 'Mahindra 475 DI',
-                brand2: 'Kubota MU401 2WD',
-                brand1hp: '42 HP',
-                brand2hp: '42 HP',
-                brand1price: '₹ 6.45-6.75 Lakh*',
-                brand2price: '₹ 8.30-8.40 Lakh*'
-            },
-        ],
-
-        SixthData: [
-
-            {
-                brand1: 'Mahindra 475 DI',
-                brand2: 'Kubota MU401 2WD',
-                brand1hp: '42 HP',
-                brand2hp: '42 HP',
-                brand1price: '₹ 6.45-6.75 Lakh*',
-                brand2price: '₹ 8.30-8.40 Lakh*'
-            },
-            {
-                brand1: 'Mahindra 475 DI',
-                brand2: 'Kubota MU401 2WD',
-                brand1hp: '42 HP',
-                brand2hp: '42 HP',
-                brand1price: '₹ 6.45-6.75 Lakh*',
-                brand2price: '₹ 8.30-8.40 Lakh*'
-            },
-            {
-                brand1: 'Mahindra 475 DI',
-                brand2: 'Kubota MU401 2WD',
-                brand1hp: '42 HP',
-                brand2hp: '42 HP',
-                brand1price: '₹ 6.45-6.75 Lakh*',
-                brand2price: '₹ 8.30-8.40 Lakh*'
-            },
-
-        ]
-    };
+    const compareTractorData = useMemo(() =>
+        getHomePageTractorsListBasedOnInventory(inventoryList),
+        [inventoryList]);
 
     const [activeTab, setActiveTab] = useState("oneData");
+
     const handleTabClick = (tabId) => {
         setActiveTab(tabId);
     };
 
-    if (brandsLoading || modelsBybrandsLoading) return (
-        <Loader loaderImage={language == 'HI' ? LoaderHi : language == 'MR' ? LoaderMr : LoaderEn} />
-    );
-
-    if (brandsError || modelsBybrandsError) return <p>Error: {brandsError?.message} || Error: {modelsBybrandsError?.message}</p>;
-
-    const handleCompareTractordetails = () => {
-        router.push('/compare-tractors/compare-tractor-details');
+    const handleNavigation = (path) => {
+        router.push(path);
     };
+
+    const handleCompareAll = () => handleNavigation('/compare-tractors');
+
+
+
+
     return (
         <div>
             <Layout currentPage={"compare"}>
@@ -377,32 +278,54 @@ export default function CompareTractor({ locale }) {
                     <Heading heading={t('Compare.Compare_Tractore')} />
 
                     <div className='flex sm:items-start items-center gap-4 justify-between'>
+                        {Array.from({ length: 2 }).map((_, index) => {
+                            const tractor = selectedTractorDetails[index]; // Check if tractor exists
 
-                        <div className='text-center cursor-pointer' onClick={brandsModalShow}>
-                            <Image src={CompareImg} alt='compareImg' width={250} height={250} />
-                        </div>
+                            return (
+                                <React.Fragment key={index}>
+                                    {/* Tractor Image */}
+                                    <div className='text-center cursor-pointer'>
+                                        <Image
+                                            src={tractor ? CompareImage2 : CompareImg} 
+                                            alt={tractor ? "CompareImage2" : "CompareImg"}
+                                            width={350}
+                                            height={350}
+                                            onClick={brandsModalShow}
+                                        />
+                                        <p>{tractor ? `${tractor.brand} ${tractor.model}` : "No Tractor Selected"}</p>
+                                    </div>
 
-                        <div className='my-auto sm:w-[35px] h-auto w-[50px]'>
-                            <Image src={vs} alt='vs' layout='responsive' />
-                        </div>
-
-                        <div className='text-center cursor-pointer'>
-                            <Image src={CompareImg} alt='compareImg' width={250} height={250} />
-                        </div>
-
-                        <div className='my-auto sm:w-[35px] h-auto w-[50px]'>
-                            <Image src={vs} alt='vs' layout='responsive' />
-                        </div>
-
-                        <div className='text-center cursor-pointer'>
-                            <Image src={CompareImg} alt='compareImg' width={250} height={250} />
-                        </div>
-
+                                    {/* VS Image (skip after the last tractor) */}
+                                    {index < 1 && (
+                                        <div className='my-auto sm:w-[35px] h-auto w-[50px]'>
+                                            <Image src={vs} alt='vs' layout='responsive' />
+                                        </div>
+                                    )}
+                                </React.Fragment>
+                            );
+                        })}
                     </div>
 
+                    {/* Dynamic Compare Button */}
                     <div className='mt-4 w-full flex justify-end'>
                         <div className='sm:w-[15%] w-full'>
-                            <Btn text={t('Home.COMPARE')} bgColor={true} disabled={true} />
+                            <Link
+                                href={{
+                                    pathname: '/compare-tractors/compare-tractor-details',
+                                    query: {
+                                        t1: selectedTractorDetails[0]?.brand || "Unknown",
+                                        t2: selectedTractorDetails[1]?.brand || "Unknown",
+                                        // t3: selectedTractorDetails[2]?.brand || "Unknown",
+                                        id1: selectedTractorDetails[0]?.tractor_id || "0",
+                                        id2: selectedTractorDetails[1]?.tractor_id || "0",
+                                        // id3: selectedTractorDetails[2]?.tractor_id || "0"
+                                    }
+                                }}
+                            >
+                                <a>
+                                    <Btn text={t('Home.COMPARE')} bgColor={true} disabled={!selectedTractorDetails} />
+                                </a>
+                            </Link>
                         </div>
                     </div>
 
@@ -410,52 +333,71 @@ export default function CompareTractor({ locale }) {
 
                 <div className="bg-white mb-3 lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-2 py-3">
                     <Heading heading={t('Home.Buy_The_Right')} />
-
-                    <div className='flex sm:gap-4 gap-2 my-3 font-medium'>
-                        <Tab id="oneData" activeTab={activeTab} onClick={handleTabClick}>
-                            Under 20 HP</Tab>
-                        <Tab id="twoData" activeTab={activeTab} onClick={handleTabClick}>21 - 30 HP</Tab>
-                        <Tab id="ThreeData" activeTab={activeTab} onClick={handleTabClick}>31 - 40 HP</Tab>
-                        <Tab id="FourData" activeTab={activeTab} onClick={handleTabClick}>41 - 45 HP</Tab>
-                        <Tab id="FifthData" activeTab={activeTab} onClick={handleTabClick}>46 - 50 HP</Tab>
-                        <Tab id="SixthData" activeTab={activeTab} onClick={handleTabClick}>Above 50 HP</Tab>
+                    <div className='flex sm:gap-4 gap-2 my-3 font-medium relative z-20'>
+                        {HomeHPRanges.map((range) => (
+                            <Tab
+                                key={range.key}
+                                id={range.key}
+                                activeTab={activeTab}
+                                onClick={handleTabClick}
+                            >
+                                {getTabLabel(range.min, range.max)}
+                            </Tab>
+                        ))}
                     </div>
 
                     <div className="">
-                        <div className='grid sm:grid-cols-3 grid-cols-1 xl:gap-8 gap-4'>
+                        <div className='grid sm:grid-cols-3 md:gap-6 gap-4'>
                             {Object.keys(compareTractorData).map((key) =>
                                 activeTab === key ? (
                                     <>
-                                        {compareTractorData[key].map((item, index) => (
-                                            <div key={index} className=' shadow p-2 overflow-hidden flex-none'>
+                                        {compareTractorData[activeTab]?.slice(0, 3).map((item, index) => (
+                                            <div key={index} className='overflow-hidden flex-none'>
                                                 <Image src={CompareImage} alt='compareImage' layout='responsive' />
                                                 <div className='flex justify-between px-3 mb-3'>
                                                     <div>
                                                         <div>{item.brand1}</div>
                                                         <div className='font-semibold my-1'><Image src={HP} width={15} height={15} /> {item.brand1hp}</div>
-                                                        <div className='font-semibold my-1'>{item.brand1price}</div>
+                                                        <div className='font-semibold my-1'>
+                                                            {formatPrice(item.brand1price)}
+                                                        </div>
 
                                                     </div>
                                                     <div>
                                                         <div>{item.brand2}</div>
                                                         <div className='font-semibold my-1'><Image src={HP} width={15} height={15} /> {item.brand2hp}</div>
-                                                        <div className='font-semibold my-1'>{item.brand2price}</div>
-
+                                                        <div className='font-semibold my-1'> {formatPrice(item.brand2price)}</div>
                                                     </div>
                                                 </div>
-                                                <Btn className="uppercase" text={t('Home.COMPARE')} onClick={handleCompareTractordetails} />
+                                                <Link
+                                                    href={{
+                                                        pathname: '/compare-tractors/compare-tractor-details',
+                                                        query: {
+                                                            t1: item.brand1,
+                                                            t2: item.brand2,
+                                                            id1: item.brand1Id,
+                                                            id2: item.brand2Id
+                                                        }
+                                                    }}
+                                                    passHref
+                                                >
+                                                    <Btn className="uppercase" text={t('Home.COMPARE')} />
+                                                </Link>
                                             </div>
                                         ))}
 
                                     </>
                                 ) : null
                             )}
-                        </div>
 
-                        <div className='flex justify-center my-6'>
-                            <Btn text={t('Home.View_All_Tractor_Comparison')} bgColor={true} onClick={handleCompareTractordetails} />
                         </div>
                     </div>
+
+                    <div className='justify-center flex mt-2'>
+                        <Btn text={t('Home.View_All_Tractor_Comparison')} onClick={handleCompareAll} bgColor={true}
+                        />
+                    </div>
+
 
                 </div>
 
@@ -478,11 +420,11 @@ export default function CompareTractor({ locale }) {
                             </div>
 
 
-                            {noResults ? (
+                            {filteredBrands.length === 0 ? (
                                 <p className='mt-2 text-center text-primaryColor'>{t('Compare.No_Data')}</p>
                             ) : (
                                 <div className="p-2 mt-4 flex flex-col w-full gap-2 h-80 brands-container overflow-y-auto">
-                                    {brands.map((option, index) => (
+                                    {filteredBrands.map((option, index) => (
                                         <div key={option.brandName}>
                                             <input type="radio" name="brands" className='brands' checked={option.brandName == selectedBrand} value={option.brandName}
                                                 onChange={handleBrandRadioChange}
@@ -505,7 +447,7 @@ export default function CompareTractor({ locale }) {
                             </div>
 
                             <div className="relative w-full mt-4">
-                                <input type="text" placeholder="Search Tractor Brand by Name" className="w-full rounded border-[1px] border-[#D0D0D0] py-2 pr-14"
+                                <input type="text" placeholder="Search Tractor Brand Model" className="w-full rounded border-[1px] border-[#D0D0D0] py-2 pr-14"
                                     value={modelsSearchQuery}
                                     onChange={(e) => setModelsSearchQuery(e.target.value)}
                                 />
@@ -514,14 +456,15 @@ export default function CompareTractor({ locale }) {
                                 </div>
                             </div>
 
-                            {noResults ? (
+                            {filteredModels.length === 0 ? (
                                 <p className='mt-2 text-center text-primaryColor'>No search data available</p>
                             ) : (
 
                                 <div className="p-2 mt-4 flex flex-col w-full gap-2 h-80 brands-container overflow-y-auto">
-                                    {models.map((option, index) => (
-                                        <div key={option.modelName}>
+                                    {filteredModels.map((option, index) => (
+                                        <div key={`${option.modelName}-${index}`}>
                                             <input type="radio" name="models" className='models' value={option.modelName}
+                                                onChange={handleModelRadioChange}
                                             />
                                             <label className="ml-2">{option.modelName}</label>
                                         </div>
@@ -535,4 +478,4 @@ export default function CompareTractor({ locale }) {
             </Layout>
         </div>
     );
-}
+} 

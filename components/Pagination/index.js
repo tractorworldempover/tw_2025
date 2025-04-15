@@ -6,7 +6,7 @@ import Rightarrow from '@Images/offers/rightarrow.svg';
 const Pagination = ({ data, TotalPages, CurrentPage, setCurrentPage }) => {
   const totalPages = TotalPages;
   const [currentPage1, setCurrentPage1] = useState(CurrentPage);
-  
+
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber); // Update the parent component's state
     setCurrentPage1(pageNumber); // Update local state if needed
@@ -65,17 +65,21 @@ const Pagination = ({ data, TotalPages, CurrentPage, setCurrentPage }) => {
   };
 
   return (
-    <div className="pagination mt-4 flex justify-center items-center space-x-2">
-      <button onClick={handlePrev} className="border px-4 py-2 cursor-pointer" disabled={currentPage1 === 1}>
-        <Image src={Leftarrow} alt='left' />
-      </button>
-      <ul className="flex space-x-2 sm:overflow-y-visible overflow-y-auto">
-        {renderPageNumbers()}
-      </ul>
-      <button onClick={handleNext} className="border px-4 py-2 cursor-pointer" disabled={currentPage1 === totalPages}>
-        <Image src={Rightarrow} alt='right' />
-      </button>
-    </div>
+    <>
+    {data.length > 0 && (
+      <div className="pagination mt-4 flex justify-center items-center space-x-2">
+        <button onClick={handlePrev} className="border px-4 py-2 cursor-pointer" disabled={currentPage1 === 1}>
+          <Image src={Leftarrow} alt='left' />
+        </button>
+        <ul className="flex space-x-2 sm:overflow-y-visible overflow-y-auto">
+          {renderPageNumbers()}
+        </ul>
+        <button onClick={handleNext} className="border px-4 py-2 cursor-pointer" disabled={currentPage1 === totalPages}>
+          <Image src={Rightarrow} alt='right' />
+        </button>
+      </div>
+    )}
+    </>
   );
 };
 

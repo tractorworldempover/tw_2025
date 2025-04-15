@@ -10,12 +10,12 @@ import Twitter from "@Images/contactus/twitter.svg";
 import Instagram from "@Images/contactus/instagram.svg";
 import bannerImg from "@Images/contactus/contactus-banner.svg";
 import Link from "next/link";
-//import { getLocaleProps } from "@helpers";
+import { getLocaleProps } from "@helpers";
 import { useTranslation } from "next-i18next";
 
-// export async function getServerSideProps(context) {
-//   return await getLocaleProps(context);
-// }
+export async function getServerSideProps(context) {
+  return await getLocaleProps(context);
+}
 
 
 export default function ContactUs() {

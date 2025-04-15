@@ -1,38 +1,28 @@
-import { calculateEmi, calculateInterest } from "@utils"; 
-import { useDispatch,useSelector } from "react-redux";
+import { calculateEmi, calculateInterest } from "@utils";
+import { useDispatch, useSelector } from "react-redux";
 import { setTotalPrincipleAndInt } from "@store/userDataSlice";
 import EmiChart from "./emiChart";
 import ChartFooter from "./chartFooter";
- 
-const RightSection = ({ state = {} }) => {
+import { useEffect } from "react";
 
-  console.log("state"+JSON.stringify(state));
-
-  const dispatch=useDispatch(); 
-  
-  const { 
-    roi = 5,  // Default ROI (change as needed)
-    tenure = 72, 
-    loanAmount = 0, 
-    downPayment = 0 
-  } = state || {}; 
-
-  console.log("EMI CLALCULATOR"+JSON.stringify(state));
-
-  const emi = calculateEmi({ loanAmount, roi, tenure,downPayment });
-
-  const interestPayable = calculateInterest({ emi, tenure, loanAmount, downPayment });
-
-  const principalAmt=loanAmount-downPayment;
-
-  const totalAmtwithIntres=parseInt(principalAmt+interestPayable);
-
-  dispatch(setTotalPrincipleAndInt(totalAmtwithIntres));
- 
+const RightSection = ({ state }) => {
+  const loanAmount = state[0].price;
+  const tenure = useSelector((state) => state.user.tenure);
+  const downPayment = useSelector((state) => state.user.downPayment); 
+  const {
+    roi = 8,  
+   } = {};  
+   
+  const emi = calculateEmi({ loanAmount, roi, tenure, downPayment });
+  const interestPayable = calculateInterest({ emi, tenure, loanAmount, downPayment }); 
+  const loanAmt = Number(loanAmount) || 0;
+  const downPay = Number(downPayment) || 0; 
+  const principalAmt = loanAmt - downPay;
+  const totalAmtwithIntres = parseInt(principalAmt + interestPayable); 
   return (
     <div className="rightsection-wrapper">
-      <EmiChart principal={principalAmt} interestPayable={interestPayable} emi={emi}/> 
-      <ChartFooter       
+      <EmiChart principal={principalAmt} interestPayable={interestPayable} emi={emi} />
+      <ChartFooter
         emi={emi}
         principal={principalAmt}
         interestPayable={interestPayable}

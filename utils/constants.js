@@ -1,5 +1,9 @@
 import { gql } from '@apollo/client';
 
+
+export const LiveInventoryAPIURL="https://used-tractor-backend.azurewebsites.net/inventory/web/v2/tractor/";
+
+ 
 export const customImageLoader = ({ src }) => {
   return src; // Return the original image source directly
 };
@@ -23,10 +27,6 @@ export const PRICE_OPTIONS = [
   { label: "7 Lakh - 10 Lakh", value: "7_10" },
   { label: "Above 10 Lakh", value: ">10" },
 ];
-
-export const LiveInventoryAPIURL="https://used-tractor-backend.azurewebsites.net/inventory/web/v2/tractor/";
-
-
 
 export const HOMEPAGE_QUERIES = gql`
   query GetHomeData($lang: LanguageCodeFilterEnum!) {

@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Modal from "@components/Modal";
 import Crossmark from '@Images/inventory/closeIcon.svg';
-//import { getLocaleProps } from "@helpers";
+import { getLocaleProps } from "@helpers";
 import { useTranslation } from 'next-i18next';
 import Btn from '@components/Btn';
 import languagePopupImg from '@Images/languagePopup.svg';

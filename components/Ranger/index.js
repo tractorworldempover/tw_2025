@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import { setDownPayment } from "../../store/slices/userDataSlice";
+import { formatPrice } from "@utils";
+import { useSelector } from "react-redux";
 
 export default function RangeSlider({
   step,
@@ -13,6 +15,9 @@ export default function RangeSlider({
   value
 }) {
   const [val, setVal] = useState(value);
+
+  const downPayment = useSelector((state) => state.user.downPayment); 
+  const [selecteddownPaymentValue, setSelecteddownPaymentValue] = useState(downPayment); 
 
   const handleSliderChange = (event) => {
     const newValue = Number(event.target.value);
@@ -30,6 +35,9 @@ export default function RangeSlider({
     }
   };
 
+    useEffect(() => {
+    }, [downPayment]); 
+
   return (
     <div className="flex flex-col space-y-2">
       {/* Title */}
@@ -44,14 +52,14 @@ export default function RangeSlider({
           min={min}
           max={max}
           step={step}
-          value={val}
+          value={formatPrice(val)}
           onChange={handleSliderChange}
         />
 
         {/* Input Field */}
         <input
           type="text"
-          value={val}
+          value={formatPrice(val)}
           onChange={handleInputChange}
           className="w-40 p-2 border border-gray-300 rounded-md text-center"
           min={min}

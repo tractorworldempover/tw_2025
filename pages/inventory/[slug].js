@@ -384,11 +384,11 @@ export default function Inventory({ locale,InventoryData }) {
 
         <div className={`${showFilter ? 'sm:hidden block' : 'hidden'} transition-max-height duration-300 
         ease-in-out w-full  sm:w-auto`} id="navbar-default">
-          <div className="sm:w-auto w-[312px] sm:h-auto max-h-max min-h-screen h-screen
+          <div className="sm:w-auto w-[362px] sm:h-auto max-h-max min-h-screen h-screen
          sm:bg-transparent z-[99] sm:relative flex fixed top-0 sm:pb-4 sm:pt-4 Navbar">
 
 
-            <div className="px-4 py-4 min-h-screen max-h-fit h-fit bg-white">
+            <div className="px-4 py-4 min-h-screen max-h-fit h-fit bg-white w-[76%]">
 
               <div className="flex">
                 <div className="w-1/2">
@@ -476,7 +476,7 @@ export default function Inventory({ locale,InventoryData }) {
 
             </div>
 
-            <div className="right-0 top-0 z-50 pt-4 pl-2">
+            <div className="right-0 top-0 z-50 pt-4 pl-2 w-[24%]">
               <Image src={Crossmark} width={35} height={35} onClick={isHideFilter} alt="Crossmark" />
             </div>
           </div>

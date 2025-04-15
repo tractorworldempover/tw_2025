@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from 'react';
+import React, { useEffect, useState,useMemo} from 'react';
 import { useRouter } from 'next/router'  ;
 import Image from 'next/image';
 import languagePopupImg from '@Images/languagePopup.svg';
@@ -48,46 +48,14 @@ import "slick-carousel/slick/slick-theme.css";
 import MultipleItemsSlide from "@components/SingleItemsSlide";
 import Link from 'next/link';
 import { useQuery } from "@apollo/client";
-import { HOMEPAGE_QUERIES,LiveInventoryAPIURL } from "@utils/constants";
+import { HOMEPAGE_QUERIES, LiveInventoryAPIURL } from "@utils/constants";
 import Loader from '@components/Loader';
 import Modal from "@components/Modal";
 import Crossmark from '@Images/inventory/closeIcon.svg';
 import { useTranslation } from 'next-i18next';
-import { HomeHPRanges, getTabLabel, getHomePageTractorsListBasedOnInventory } from '@utils';
-//import { getLocaleProps } from "@helpers"; 
-
-
-export async function getStaticProps() {
-    debugger;
-  const apiUrl = LiveInventoryAPIURL;
- 
-  console.log('Starting getStaticProps in test');
- 
-  let Inventorydata = {};
-  try { 
-    const res = await fetch(apiUrl);
-    console.log('API response status:', res.status);
-    if (!res.ok) throw new Error('Failed to fetch data');
-    Inventorydata = await res.json();
-    alert(Inventorydata+"Inventorydata");
-    console.log('Fetched data:', Inventorydata);
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
- 
-  console.log('Returning data from getStaticProps');
- 
-  return {
-    props: {
-      Inventorydata,
-    },
-    revalidate: 10,
-  };
-}
+import { HomeHPRanges, getTabLabel, getHomePageTractorsListBasedOnInventory,formatPrice } from '@utils';
  
 export default function HomePage({ locale, Inventorydata }) {
-
-    console.log("Inventorydata"+JSON.stringify(Inventorydata, null, 2))
 
     const [isMobile, setIsMobile] = useState(false);
     const [activeTab, setActiveTab] = useState('oneData');
@@ -98,7 +66,7 @@ export default function HomePage({ locale, Inventorydata }) {
     const router = useRouter();
     const language = "EN";
     const { t, i18n } = useTranslation('common');
-     
+
 
     const isShowCallModal = () => {
         setShowModal(true);
@@ -153,19 +121,16 @@ export default function HomePage({ locale, Inventorydata }) {
 
     const { data, loading, error, networkStatus } = useQuery(HOMEPAGE_QUERIES, {
         variables: { lang: language },
-        fetchPolicy: 'cache-first' 
-      });
-      
-
+        fetchPolicy: 'cache-first'
+    }); 
     
-
     // Combined loading and error handling
-    if (loading) return (
-         <Loader loaderImage={language == 'HI' ? LoaderHi : language == 'MR' ? LoaderMr : LoaderEn} />
-    );
+    // if (loading) return (
+    //     <Loader loaderImage={language == 'HI' ? LoaderHi : language == 'MR' ? LoaderMr : LoaderEn} />
+    // );
 
-    if (error) return <p>Error: {error.message}</p>; 
-    
+    if (error) return <p>Error: {error.message}</p>;
+
     const bannersData = data?.homeSliders?.nodes || [];
     const testimonialsData = data?.testimonials?.nodes || [];
     const contentGalleryData = data?.contentgallerys?.nodes || [];
@@ -176,8 +141,8 @@ export default function HomePage({ locale, Inventorydata }) {
         const desktopUrl = node.homesliders.sliderimage.node.mediaItemUrl;
         const mobileUrl = node.homesliders.mobilesliderimage.node.mediaItemUrl;
         return { desktopUrl, mobileUrl };
-    }); 
-    
+    });
+
 
     const testimonialSlides = testimonialsData.map(node => {
         const testimonialMobileUrl = node.tesimonails.mobileimage.node.mediaItemUrl;
@@ -223,39 +188,40 @@ export default function HomePage({ locale, Inventorydata }) {
             contentGalleyTitle,
             contentGalleyURL
         };
-    }); 
+    });
 
     // debugger;
-    const inventoryList = (!Inventorydata || Inventorydata.length === 0) 
-    ? [] 
-    : Inventorydata.slice(0, 50).map((item) => ({
-        title: `${item.brand} ${item.model}`,
-        price: item.max_price,
-        engineHours: item.engine_hours,
-        driveType: item.drive_type,
-        enginePower: item.engine_power,
-        tractorId: item.tractor_id,
-    }));
 
-    const handleCompareAll = () => {
-        router.push('/compare-tractors');
+    const inventoryList = useMemo(() => {
+        if (!Inventorydata || Inventorydata.length === 0) {
+            return [];
+        }
+
+        return Inventorydata.slice(0, 50).map((item) => ({
+            title: `${item.brand} ${item.model}`,
+            price: item.max_price,
+            engineHours: item.engine_hours,
+            driveType: item.drive_type,
+            enginePower: item.engine_power,
+            tractorId: item.tractor_id,
+        }));
+    }, [Inventorydata]);  
+
+    const countJabalpur = Inventorydata.filter((item) => item.district === "Jabalpur").length;
+    console.log(`Number of items in Jabalpur: ${countJabalpur}`);
+
+
+    const handleNavigation = (path) => {
+         router.push(path);
     };
 
-    const handleAllExclusiveOffers = () => {
-        router.push('/exclusive-offers');
-    };
+    // .then(() => setIsShowLoader(false));
 
-    const handleAllLiveInventory = () => {
-        router.push('/inventory');
-    };
-
-    const handleAllContentHub = () => {
-        router.push('/content-hub');
-    };
-
-    const handleContentGallery = () => {
-        router.push('/content-gallery');
-    };
+    const handleCompareAll = () => handleNavigation('/compare-tractors');
+    const handleAllExclusiveOffers = () => handleNavigation('/exclusive-offers');
+    const handleAllLiveInventory = () => handleNavigation('/inventory');
+    const handleAllContentHub = () => handleNavigation('/content-hub');
+    const handleContentGallery = () => handleNavigation('/content-gallery');
 
 
     const handleShareClick = () => {
@@ -308,7 +274,7 @@ export default function HomePage({ locale, Inventorydata }) {
         setActiveTab(tabid); // Dynamically set the active tab based on clicked tab's id
     };
 
- 
+
     const contentGallerysettings = {
         dots: true,
         infinite: true,
@@ -350,10 +316,13 @@ export default function HomePage({ locale, Inventorydata }) {
                 </Link>
             )}
         </div>
-    ))
-     
-   
-    const compareTractorData = getHomePageTractorsListBasedOnInventory(inventoryList);
+    )) 
+
+    // const compareTractorData = getHomePageTractorsListBasedOnInventory(inventoryList);
+
+    const compareTractorData = useMemo(() =>
+        getHomePageTractorsListBasedOnInventory(inventoryList),
+        [inventoryList]);
 
 
     const customStyles = {
@@ -381,13 +350,10 @@ export default function HomePage({ locale, Inventorydata }) {
         },
     };
 
-
-    
-
     return (
         <>
             {/* Home SLider */}
-
+ 
             <div className='relative'>
 
                 <MultipleItemsSlide settings={contentGallerysettings} id={'bannerGallery'} items={bannerGalleryitems} />
@@ -461,15 +427,13 @@ export default function HomePage({ locale, Inventorydata }) {
             </div >
 
             {/* Live Inventory */}
-
-           
-            < div className="lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-4 sm:pb-8 py-2 bg-white " >
+            <div className="lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-4 sm:pb-8 py-2 bg-white " >
                 <Heading heading={t('Home.Live_Inventory')} viewButton={true} onClick={handleAllLiveInventory} className='mt-8' />
                 {!inventoryList ? (
                     <p>Loading inventoryList data...</p>
                 ) : (
-                    <LiveInventoryContainer locale={locale} data={inventoryList} />  
-                )} 
+                    <LiveInventoryContainer locale={locale} data={inventoryList} />
+                )}
             </div >
 
             {/* why choose us */}
@@ -482,7 +446,7 @@ export default function HomePage({ locale, Inventorydata }) {
                             {t('Home.Best_Choice')}</div>
                         <p className='mt-2 text-[.9rem]'>
                             {/* {t('Home.Kiusmod_Tempor')} */}
-                            </p>
+                        </p>
                     </div>
                     <div className='absolute sm:top-[-85px] right-0 bottom-[-80px]'>
                         <Image src={WhyChoose} alt='WhyChoose' width={400} height={400}
@@ -517,8 +481,7 @@ export default function HomePage({ locale, Inventorydata }) {
                 </div>
 
                 <div className='flex sm:gap-4 gap-2 my-3 font-medium relative z-20'>
-                    {/* <Tab id="oneData" activeTab={activeTab} onClick={handleTabClick}> Under 20 HP</Tab>  */}
-                    {HomeHPRanges.map((range) => (
+                     {HomeHPRanges.map((range) => (
                         <Tab
                             key={range.key}
                             id={range.key}
@@ -530,45 +493,48 @@ export default function HomePage({ locale, Inventorydata }) {
                     ))}
                 </div>
 
-                 <div className="">
+                <div className="">
                     <div className='grid sm:grid-cols-3 md:gap-6 gap-4'>
                         {Object.keys(compareTractorData).map((key) =>
                             activeTab === key ? (
                                 <>
-                                    {compareTractorData[key].map((item, index) => (
+                                    {compareTractorData[activeTab]?.slice(0, 3).map((item, index) => (
+                                        //{compareTractorData[key].map((item, index) => (
                                         <div key={index} className='overflow-hidden flex-none'>
                                             <Image src={CompareImage} alt='compareImage' layout='responsive' />
                                             <div className='flex justify-between px-3 mb-3'>
                                                 <div>
                                                     <div>{item.brand1}</div>
                                                     <div className='font-semibold my-1'><Image src={HP} width={15} height={15} /> {item.brand1hp}</div>
-                                                    <div className='font-semibold my-1'>{item.brand1price}</div>
+                                                    <div className='font-semibold my-1'>
+                                                        {formatPrice(item.brand1price)}
+                                                    </div>
 
                                                 </div>
                                                 <div>
                                                     <div>{item.brand2}</div>
                                                     <div className='font-semibold my-1'><Image src={HP} width={15} height={15} /> {item.brand2hp}</div>
-                                                    <div className='font-semibold my-1'>{item.brand2price}</div>
+                                                    <div className='font-semibold my-1'> {formatPrice(item.brand2price)}</div>
 
                                                 </div>
                                             </div>
 
                                             {/* <Btn className="uppercase" text={t('Home.COMPARE')} onClick={handleCompareAll} /> */}
 
-                                    <Link
-                                        href={{
-                                            pathname: '/compare-tractors/compare-tractor-details',
-                                            query: {
-                                            t1: item.brand1,
-                                            t2: item.brand2,
-                                            id1: item.brand1Id,
-                                            id2: item.brand2Id
-                                            }
-                                        }}
-                                        passHref
-                                        >
-                                        <Btn className="uppercase" text={t('Home.COMPARE')} />
-                                        </Link>
+                                            <Link
+                                                href={{
+                                                    pathname: '/compare-tractors/compare-tractor-details',
+                                                    query: {
+                                                        t1: item.brand1,
+                                                        t2: item.brand2,
+                                                        id1: item.brand1Id,
+                                                        id2: item.brand2Id
+                                                    }
+                                                }}
+                                                passHref
+                                            >
+                                                <Btn className="uppercase" text={t('Home.COMPARE')} />
+                                            </Link>
                                         </div>
                                     ))}
 
@@ -577,7 +543,7 @@ export default function HomePage({ locale, Inventorydata }) {
                         )}
 
                     </div>
-                </div> 
+                </div>
 
                 <div className='justify-center flex mt-2'>
                     <Btn text={t('Home.View_All_Tractor_Comparison')} onClick={handleCompareAll} bgColor={true}

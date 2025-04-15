@@ -10,7 +10,7 @@ import MultipleItemsSlide from "../../components/SingleItemsSlide";
 import bannerImg from "@Images/sellTractor/engineering-excellence-banner.svg";
 import Leftarrow from '@Images/offers/leftarrow.svg';
 import Rightarrow from '@Images/offers/rightarrow.svg';
-//import { getLocaleProps } from "@helpers";
+import { getLocaleProps } from "@helpers";
 import { useTranslation } from "next-i18next";
 import Pagination from "@components/Pagination"; 
 
