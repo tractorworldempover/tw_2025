@@ -266,7 +266,7 @@ export default function DealerLocator({ locale }) {
                               </a>
                             </div>
                             <div className="w-1/2 text-[14px]">
-                              <a href={dealer.Google_Location} target="_blank" rel="noopener noreferrer">
+                              <a href={dealer.Google_Location} target="_blank" rel="noreferrer">
                                 <Btn bgColor={true} text="Get Directions" />
                               </a>
                             </div>

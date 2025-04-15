@@ -264,7 +264,7 @@ export default function Inventory({ locale,InventoryData }) {
         )
       );
     }
-  }, [brandsData]); // Trigger this effect when brandsData is available
+  }, []); // Trigger this effect when brandsData is available
 
   // Filter brands whenever the search query changes
   useEffect(() => {
@@ -291,9 +291,7 @@ export default function Inventory({ locale,InventoryData }) {
   }, [searchQuery, brandsData]);
 
   useEffect(() => {
-
-    if (inventoryList) {
-
+ 
       const PopularTractorsList = inventoryList.map(({ item }) => {
         // Parse imageLinks into an array
         const imageLinksArray = JSON.parse(item.imageLinks);
@@ -314,9 +312,8 @@ export default function Inventory({ locale,InventoryData }) {
         };
       });
 
-      setPopularTractorsData(PopularTractorsList);
-    }
-  }, [liveInventoryData])
+      setPopularTractorsData(PopularTractorsList); 
+  }, [InventoryData])
 
   useEffect(() => {
     if (!liveInventoryFilters.length || !PopularTractors.length) {

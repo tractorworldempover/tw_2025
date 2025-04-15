@@ -357,7 +357,7 @@ export default function CompareTractor({ locale, inventoryData }) {
                                                 <div className='flex justify-between px-3 mb-3'>
                                                     <div>
                                                         <div>{item.brand1}</div>
-                                                        <div className='font-semibold my-1'><Image src={HP} width={15} height={15} /> {item.brand1hp}</div>
+                                                        <div className='font-semibold my-1'><Image src={HP} width={15} height={15}  alt='hp'/> {item.brand1hp}</div>
                                                         <div className='font-semibold my-1'>
                                                             {formatPrice(item.brand1price)}
                                                         </div>
@@ -365,7 +365,7 @@ export default function CompareTractor({ locale, inventoryData }) {
                                                     </div>
                                                     <div>
                                                         <div>{item.brand2}</div>
-                                                        <div className='font-semibold my-1'><Image src={HP} width={15} height={15} /> {item.brand2hp}</div>
+                                                        <div className='font-semibold my-1'><Image src={HP} width={15} height={15} alt='hp' /> {item.brand2hp}</div>
                                                         <div className='font-semibold my-1'> {formatPrice(item.brand2price)}</div>
                                                     </div>
                                                 </div>

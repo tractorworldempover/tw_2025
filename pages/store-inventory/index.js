@@ -120,10 +120,10 @@ export default function StoreInventory({ locale, inventoryData }) {
                                 </div>
 
                                 <div className="flex gap-2">
-                                    <a href={user.Google_Location} target="_blank">
+                                    <a href={user.Google_Location} target="_blank" rel="noreferrer">
                                         <Image src={MapIcon} alt="mapIcon" width={27} height={27} className="cursor-pointer" />
                                     </a>
-                                    <a href={user.phone}>
+                                    <a href={user.phone} target="_blank" rel="noreferrer">
                                         <Image src={PhnIcon} alt="phnIcon" width={27} height={27} className="cursor-pointer" />
                                     </a>
                                 </div>
@@ -133,7 +133,7 @@ export default function StoreInventory({ locale, inventoryData }) {
                                 <div className="text-[14px] sm:w-[30%]">
                                     <div className="flex gap-1 items-start">
                                         <div className="w-[8%]">
-                                            <Image src={Location} alt="Location" width={50} height={30} />
+                                            <Image src={Location} alt="Location" width={50} height={30}  />
                                         </div>
                                         <div className="w-[92%]">
                                             {user.address || "Mumbai, Sidpur, Ghazipur Maharashtra - 233301"}
