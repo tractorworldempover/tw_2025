@@ -14,6 +14,7 @@ import { useRouter } from 'next/router';
 import { getLocaleProps } from "@helpers";
 import { useTranslation } from 'next-i18next';
 import { calculateEMI, formatPrice, getHomePageTractorsListBasedOnInventory } from "@utils";
+import Link from 'next/link';
 
 
 export async function getServerSideProps(context) {
@@ -404,7 +405,7 @@ export default function CompareTractorDetails({ locale, inventoryData }) {
                         </div>
 
                         <div className='flex justify-center my-6'>
-                            <a href="/compare-tractors"><Btn text={t('Home.View_All_Tractor_Comparison')} bgColor={true} /></a>
+                            <Link href="/compare-tractors"><Btn text={t('Home.View_All_Tractor_Comparison')} bgColor={true} /></Link>
                         </div>
                     </div>
                 </div>
