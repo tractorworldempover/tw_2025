@@ -67,6 +67,25 @@ export default function HomePage({ locale, Inventorydata }) {
     const language = "EN";
     const { t, i18n } = useTranslation('common');
 
+    const inventoryList = useMemo(() => {
+        if (!Inventorydata || Inventorydata.length === 0) {
+            return [];
+        }
+
+        return Inventorydata.slice(0, 50).map((item) => ({
+            title: `${item.brand} ${item.model}`,
+            price: item.max_price,
+            engineHours: item.engine_hours,
+            driveType: item.drive_type,
+            enginePower: item.engine_power,
+            tractorId: item.tractor_id,
+        }));
+    }, [Inventorydata]);  
+
+    
+    const compareTractorData = useMemo(() =>
+        getHomePageTractorsListBasedOnInventory(inventoryList),
+        [inventoryList]);
 
     const isShowCallModal = () => {
         setShowModal(true);
@@ -192,20 +211,7 @@ export default function HomePage({ locale, Inventorydata }) {
 
     // debugger;
 
-    const inventoryList = useMemo(() => {
-        if (!Inventorydata || Inventorydata.length === 0) {
-            return [];
-        }
-
-        return Inventorydata.slice(0, 50).map((item) => ({
-            title: `${item.brand} ${item.model}`,
-            price: item.max_price,
-            engineHours: item.engine_hours,
-            driveType: item.drive_type,
-            enginePower: item.engine_power,
-            tractorId: item.tractor_id,
-        }));
-    }, [Inventorydata]);  
+    
 
     const countJabalpur = Inventorydata.filter((item) => item.district === "Jabalpur").length;
     console.log(`Number of items in Jabalpur: ${countJabalpur}`);
@@ -320,9 +326,6 @@ export default function HomePage({ locale, Inventorydata }) {
 
     // const compareTractorData = getHomePageTractorsListBasedOnInventory(inventoryList);
 
-    const compareTractorData = useMemo(() =>
-        getHomePageTractorsListBasedOnInventory(inventoryList),
-        [inventoryList]);
 
 
     const customStyles = {

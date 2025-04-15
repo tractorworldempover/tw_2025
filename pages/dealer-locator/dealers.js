@@ -24,7 +24,7 @@ export async function getServerSideProps(context) {
   return await getLocaleProps(context);
 }
 
-export default function dealers() {
+export default function Dealers() {
   const { t, i18n } = useTranslation('common');
 
     const settings = {

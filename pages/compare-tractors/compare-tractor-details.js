@@ -278,7 +278,7 @@ export default function CompareTractorDetails({ locale, inventoryData }) {
                                             <p className="text-[14px]  text-secondaryColor mt-2">{tractor.emiStartsFrom}</p>
                                             <p className="text-[14px] text-[#000000]  mt-2">{tractor.price}</p>
                                             <p className="text-[14px] text-primaryColor  mt-2 inline-block cursor-pointer">
-                                                <a href="/interested">Enquire</a>
+                                            <Link href="/interested">Enquire</Link>
                                             </p>
                                         </div>
                                     </div>
