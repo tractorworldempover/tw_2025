@@ -372,3 +372,32 @@ query GetModelsByBrand($brand: String!) {
 // }
 // `; 
 
+export const SUBMIT_CONTACT = gql`
+  mutation SaveContactRequest(
+  $leadtype: String!
+  $message: String!
+  $name: String!
+  $phone: String!
+  $email: String!
+) {
+  createContactRequest(
+    input: {
+      leadtype: $leadtype
+      message: $message
+      name: $name
+      phone: $phone
+      email: $email
+    }
+  ) {
+    contactRequest {
+      contactForm {
+        leadtype
+        message
+        name
+        phone
+        email
+      }
+    }
+  }
+}
+`;
