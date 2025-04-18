@@ -34,6 +34,78 @@ export default function ApplyNewTractorLoan() {
   const [locations, setLocations] = useState({});
   const dealerRightData = getDealersData();
 
+  // Form state
+    const [form, setForm] = useState({
+      name: "",
+      phone: "",
+      state: "",
+      district: "",
+      leadType: "loan",
+    });
+    const [error, setError] = useState({});
+    const [successMsg, setSuccessMsg] = useState("");
+
+    // Validation function
+  const validate = () => {
+    let errs = {};
+    if (!form.name.trim()) errs.name = "Name is required";
+    if (!form.phone.trim()) {
+      errs.phone = "Phone number is required";
+    } else if (!/^\d{10}$/.test(form.phone)) {
+      errs.phone = "Enter a valid 10-digit phone number";
+    }
+    if (!selectedState) errs.state = "Please select a state";
+    if (!selectedDistrict) errs.district = "Please select a district";
+    return errs;
+  };
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.id]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setError(validationErrors);
+      return;
+    }
+
+    try {
+      debugger;
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_WORDPRESS_BASE_URL}wp-json/custom/v1/contact`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(form),
+        }
+      );
+      const data = await res.json();
+
+      if (data.success) {
+        setSuccessMsg(t("sell_tractor_success"));
+        setForm({
+          name: "",
+          phone: "",
+          state: "",
+          district: "",
+          leadType: "sell",
+        });
+        setError({});
+        setSelectedState("");
+        setSelectedDistrict("");
+      } else {
+        setSuccessMsg(t("submission_error"));
+      }
+    } catch (err) {
+      console.error("Submission error:", err);
+      setSuccessMsg(t("submission_error"));
+    }
+  };
+
   useEffect(() => {
     fetchLocations(setLocations, setStates);
   }, []);
