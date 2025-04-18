@@ -906,7 +906,7 @@ export default function Inventory({ locale, inventoryData }) {
                   <div className="">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
                       {currentCards.length === 0 ? (
-                        <p>No Data available</p>
+                        <p>Loading...</p>
                       ) : (
                         currentCards.slice(0, 3).map((item, idx) => (
                           <div
@@ -992,7 +992,7 @@ export default function Inventory({ locale, inventoryData }) {
                   <div className="">
                     <div className="grid grid-cols-1 gap-4 my-6">
                       {currentCards.length === 0 ? (
-                        <p>No Data available</p>
+                        <p>Loading...</p>
                       ) : (
                         currentCards.slice(0, 3).map((item, idx) => (
                           <Link
@@ -1120,7 +1120,7 @@ export default function Inventory({ locale, inventoryData }) {
               <div className="sm:block hidden">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
                   {currentCards.length === 0 ? (
-                    <p>No Data available</p>
+                    <p>Loading...</p>
                   ) : (
                     currentCards.slice(0, 3).map((item, idx) => (
                       <div
