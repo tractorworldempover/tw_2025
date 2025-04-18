@@ -61,4 +61,4 @@ jobs:
           app-name: 'mazutwmwpfrontend001'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5F5FE2FDE46F469B9EF58DF4D99E726B }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5DB597E0D6FE411ABE85BFFE6514E314 }}
