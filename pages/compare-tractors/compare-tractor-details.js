@@ -220,8 +220,7 @@ export default function CompareTractorDetails({ locale }) {
         }
     }, [id1, id2, inventoryData]); // ✅ Runs only when these values change
 
-
-    // 🏗️ Pass filtered data for comparison
+ 
     const compareTractorData = getHomePageTractorsListBasedOnInventory(SimilarTractorsListData);
 
  
