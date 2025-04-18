@@ -26,6 +26,7 @@ export async function getServerSideProps(context) {
 
 
 export default function ApplyNewTractorLoan() {
+
   const { t, i18n } = useTranslation('common');
   const [states, setStates] = useState([]);
   const [districts, setDistricts] = useState([]);
@@ -38,74 +39,32 @@ export default function ApplyNewTractorLoan() {
     const [form, setForm] = useState({
       name: "",
       phone: "",
-      state: "",
-      district: "",
+      state: selectedState,
+      district: selectedDistrict,
       leadType: "loan",
     });
     const [error, setError] = useState({});
     const [successMsg, setSuccessMsg] = useState("");
 
     // Validation function
-  const validate = () => {
-    let errs = {};
-    if (!form.name.trim()) errs.name = "Name is required";
-    if (!form.phone.trim()) {
-      errs.phone = "Phone number is required";
-    } else if (!/^\d{10}$/.test(form.phone)) {
-      errs.phone = "Enter a valid 10-digit phone number";
-    }
-    if (!selectedState) errs.state = "Please select a state";
-    if (!selectedDistrict) errs.district = "Please select a district";
-    return errs;
-  };
+    const validate = () => {
+      let errs = {};
+      if (!form.name.trim()) errs.name = "Name is required"; 
+      if (!form.phone.trim()) {
+        errs.phone = "Phone number is required";
+      } else if (!/^\d{10}$/.test(form.phone)) {
+        errs.phone = "Enter a valid 10-digit phone number";
+      }
+      if (!form.state.trim()) errs.state = "State is required";
+      if (!form.district.trim()) errs.district = "District is required";
+
+      return errs;
+    };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.id]: e.target.value });
   };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) {
-      setError(validationErrors);
-      return;
-    }
-
-    try {
-      debugger;
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_WORDPRESS_BASE_URL}wp-json/custom/v1/contact`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(form),
-        }
-      );
-      const data = await res.json();
-
-      if (data.success) {
-        setSuccessMsg(t("sell_tractor_success"));
-        setForm({
-          name: "",
-          phone: "",
-          state: "",
-          district: "",
-          leadType: "sell",
-        });
-        setError({});
-        setSelectedState("");
-        setSelectedDistrict("");
-      } else {
-        setSuccessMsg(t("submission_error"));
-      }
-    } catch (err) {
-      console.error("Submission error:", err);
-      setSuccessMsg(t("submission_error"));
-    }
-  };
-
+ 
   useEffect(() => {
     fetchLocations(setLocations, setStates);
   }, []);
@@ -113,13 +72,15 @@ export default function ApplyNewTractorLoan() {
   const handleStateChange = (event) => {
     const selected = event.target.value;
     setSelectedState(selected);
+    setForm({ ...form, state: selected });
+
     const filteredDistricts = getFilteredDistricts(locations, selected);
-    console.log("Filtered Districts:", filteredDistricts);
     setDistricts(filteredDistricts);
   };
-
   const handleDistrictChange = (event) => {
-    setSelectedDistrict(event.target.value);
+    const district = event.target.value;
+    setSelectedDistrict(district);
+    setForm({ ...form, district });
   };
 
   const breadcrumbData = [
@@ -203,32 +164,39 @@ export default function ApplyNewTractorLoan() {
       alt: "axis"
     }
   ];
-
-
-  const handleApplyNow = (event) => {
-    event.preventDefault();
-
-    const formElement = document.getElementById("applyForm");
-    if (formElement instanceof HTMLFormElement) {
-      const inputs = formElement.querySelectorAll("input");
-      let formIsValid = true;
-      inputs.forEach((input) => {
-        if (!input.value.trim()) {
-          formIsValid = false;
-          input.classList.add("error");
-        } else {
-          input.classList.remove("error");
-        }
+  const handleApplyNow = async (e) => {
+    debugger;
+    e.preventDefault();
+  
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setError(validationErrors);
+      return;
+    }
+  
+    try {
+      const res = await fetch('https://mazutwmwpbackend002.azurewebsites.net/wp-json/custom/v1/contact', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
       });
-
-      if (formIsValid) {
-        formElement.reset();
-        alert("Successfully applied for loan!");
+  
+      const data = await res.json();
+  
+      if (data.success) {
+        alert("Successfully applied!");
+        setForm({ name: "", phone: "", state: "", district: "", leadType: "loan" });
+        setSelectedState("");
+        setSelectedDistrict("");
+        setError({});
       } else {
-        alert("Please fill all required fields.");
+        alert("Submission failed.");
       }
-    } else {
-      console.error("Form element not found or invalid type.");
+    } catch (err) {
+      console.error(err);
+      alert("Server error. Try again later.");
     }
   };
 
@@ -327,7 +295,9 @@ export default function ApplyNewTractorLoan() {
                         p-2.5 dark:bg-gray-700 dark:border-gray-600 
                        dark:placeholder-gray-400 dark:text-white"
                         placeholder={t('Loan.Enter_Name')}
+                        onChange={handleChange}
                       />
+                       {error.name && <span className="text-red-500 text-sm">{error.name}</span>}
                     </div>
 
                     <div className="sm:w-1/4 w-full">
@@ -336,13 +306,15 @@ export default function ApplyNewTractorLoan() {
                       </label>
                       <input
                         type="number"
-                        id="name"
+                        id="phone"
                         className="bg-white border 
                       border-gray-300 text-black rounded-md block w-full 
                         p-2.5 dark:bg-gray-700 dark:border-gray-600 
                        dark:placeholder-gray-400 dark:text-white"
                         placeholder={t('Loan.Enter_Mobile_NO')}
+                        onChange={handleChange}
                       />
+                       {error.phone && <span className="text-red-500 text-sm">{error.phone}</span>}
                     </div>
 
                     <div className="sm:w-1/4 w-full">
@@ -352,6 +324,7 @@ export default function ApplyNewTractorLoan() {
                       border-gray-300 text-black rounded-md block w-full 
                         p-2.5 dark:bg-gray-700 dark:border-gray-600 
                        dark:placeholder-gray-400 dark:text-white"
+                         id="state"
                         onChange={handleStateChange}
                         value={selectedState}
                       >
@@ -362,6 +335,7 @@ export default function ApplyNewTractorLoan() {
                           </option>
                         ))}
                       </select>
+                      {error.state && <span className="text-red-500 text-sm">{error.state}</span>}
                     </div>
 
                     <div className="sm:w-1/4 w-full">
@@ -370,7 +344,9 @@ export default function ApplyNewTractorLoan() {
                         className="bg-white border 
                       border-gray-300 text-black rounded-md block w-full 
                         p-2.5 dark:bg-gray-700 dark:border-gray-600 
-                       dark:placeholder-gray-400 dark:text-white" onChange={handleDistrictChange}>
+                       dark:placeholder-gray-400 dark:text-white"
+                       id="district"
+                       onChange={handleDistrictChange}>
                         <option value="">{t("Dealer.Select_District")}</option>
                         {districts.map((district, index) => (
                           <option key={index} value={district}>
@@ -378,6 +354,7 @@ export default function ApplyNewTractorLoan() {
                           </option>
                         ))}
                       </select>
+                      {error.district && <span className="text-red-500 text-sm">{error.district}</span>}
                     </div>
 
                     {/* <div className="sm:w-1/4 w-full">

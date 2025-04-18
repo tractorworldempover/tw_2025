@@ -19,6 +19,7 @@ const { i18n } = require('./next-i18next.config');
   {
     domains: ['tractorworld.empover.com',
               'usedtractorstorage.blob.core.windows.net',
+              'mazutwmwpbackend002.azurewebsites.net',
               'castagingstorage.blob.core.windows.net']
   },
   async headers() {

@@ -315,6 +315,9 @@ export default function SellTractor() {
                     </div>
                   </div>
                 </form>
+                
+                {successMsg && <p className="text-green-600 font-semibold">{successMsg}</p>}
+
               </div>
             </>
           }
