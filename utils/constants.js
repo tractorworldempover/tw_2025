@@ -45,33 +45,8 @@ export const HOMEPAGE_QUERIES = gql`
           }
         }
       }
-    }
-
-  allLiveInventory(
-    where: {orderby: {field: DATE, order: DESC}, language: $lang} 
-  ) {
-    edges {
-      node {
-        title
-        liveInventoryData {
-          engineHours
-          brand
-          driveType
-          enginePower
-          maxPrice
-          imageLinks
-          brand
-          isVerified
-          district
-          state
-        }
-        slug
-        id
-      }
-    }
-  }
-
-   testimonials(where: {orderby: {field: DATE, order: ASC}, language: $lang}) {
+    } 
+  testimonials(where: {orderby: {field: DATE, order: ASC}}) {
     nodes {
       tesimonails {
         description
@@ -90,7 +65,7 @@ export const HOMEPAGE_QUERIES = gql`
     }
   }
 
-contentgallerys(where: {orderby: {field: DATE, order: ASC}, language: $lang}) {
+contentgallerys(where: {orderby: {field: DATE, order: ASC}}) {
     nodes {
       contentGalleryFields {
         badge
@@ -108,7 +83,7 @@ contentgallerys(where: {orderby: {field: DATE, order: ASC}, language: $lang}) {
     }
   }
 
-  latestnews(where: {orderby: {field: TITLE, order: ASC}, language: $lang}) {
+  latestnews(where: {orderby: {field: TITLE, order: ASC}}) {
     edges {
       node {
         contentGalleryFields {
