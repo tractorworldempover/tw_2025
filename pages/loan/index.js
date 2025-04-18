@@ -34,6 +34,7 @@ export default function ApplyNewTractorLoan() {
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [locations, setLocations] = useState({});
   const dealerRightData = getDealersData();
+  const [loading, setLoading] = useState(false);
 
   // Form state
     const [form, setForm] = useState({
@@ -166,6 +167,7 @@ export default function ApplyNewTractorLoan() {
   ];
   const handleApplyNow = async (e) => {
     debugger;
+    setLoading(true);
     e.preventDefault();
   
     const validationErrors = validate();
@@ -186,6 +188,7 @@ export default function ApplyNewTractorLoan() {
       const data = await res.json();
   
       if (data.success) {
+        setLoading(false); 
         alert("Successfully applied!");
         setForm({ name: "", phone: "", state: "", district: "", leadType: "loan" });
         setSelectedState("");
@@ -296,6 +299,7 @@ export default function ApplyNewTractorLoan() {
                        dark:placeholder-gray-400 dark:text-white"
                         placeholder={t('Loan.Enter_Name')}
                         onChange={handleChange}
+                        value={form.name}
                       />
                        {error.name && <span className="text-red-500 text-sm">{error.name}</span>}
                     </div>
@@ -313,6 +317,7 @@ export default function ApplyNewTractorLoan() {
                        dark:placeholder-gray-400 dark:text-white"
                         placeholder={t('Loan.Enter_Mobile_NO')}
                         onChange={handleChange}
+                        value={form.phone}
                       />
                        {error.phone && <span className="text-red-500 text-sm">{error.phone}</span>}
                     </div>
@@ -326,7 +331,7 @@ export default function ApplyNewTractorLoan() {
                        dark:placeholder-gray-400 dark:text-white"
                          id="state"
                         onChange={handleStateChange}
-                        value={selectedState}
+                        value={form.state}
                       >
                         <option value="">{t("Dealer.Select_State")}</option>
                         {states.map((state, index) => (
@@ -346,6 +351,7 @@ export default function ApplyNewTractorLoan() {
                         p-2.5 dark:bg-gray-700 dark:border-gray-600 
                        dark:placeholder-gray-400 dark:text-white"
                        id="district"
+                       value={form.district}
                        onChange={handleDistrictChange}>
                         <option value="">{t("Dealer.Select_District")}</option>
                         {districts.map((district, index) => (
@@ -371,8 +377,9 @@ export default function ApplyNewTractorLoan() {
                       <button type="submit"
                         className="bg-secondaryColor px-2 py-3 text-white 
                         text-center rounded-md w-full font-semibold cursor-pointer"
+                        disabled={loading}
                       >
-                        {t('Loan.Apply_Now')}
+                        {loading ? "Submitting..." : t('Loan.Apply_Now')}
                       </button>
                     </div>
                   </div>

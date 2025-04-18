@@ -73,9 +73,7 @@ export default function SellTractor() {
 
     try {
       debugger;
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_WORDPRESS_BASE_URL}wp-json/custom/v1/contact`,
-        {
+          const res = await fetch('https://mazutwmwpbackend002.azurewebsites.net/wp-json/custom/v1/contact', { 
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -86,7 +84,7 @@ export default function SellTractor() {
       const data = await res.json();
 
       if (data.success) {
-        setSuccessMsg(t("sell_tractor_success"));
+        setSuccessMsg("Thank you! Your message has been sent.");
         setForm({
           name: "",
           phone: "",
@@ -256,7 +254,7 @@ export default function SellTractor() {
                         p-2.5 dark:bg-gray-700 dark:border-gray-600 
                        dark:placeholder-gray-400 dark:text-white"
                         onChange={handleStateChange}
-                        value={selectedState}
+                        value={form.state}
                       >
                         <option value="">{t("Dealer.Select_State")}</option>
                         {states.map((state, index) => (
@@ -279,6 +277,7 @@ export default function SellTractor() {
                       <select
                         className="bg-white border border-gray-300 text-black rounded-md block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                         onChange={handleDistrictChange}
+                        value={form.district}
                       >
                         <option value="">{t("Dealer.Select_District")}</option>
                         {districts.map((district, index) => (
@@ -303,8 +302,9 @@ export default function SellTractor() {
                         <option value="Huzur">Huzur</option>
                       </select>
                     </div> */}
+                    
 
-                    <div className="sm:w-1/4 w-full">
+                    <div className="sm:w-1/4 w-full mt-4">
                       <button
                         type="submit"
                         className="bg-secondaryColor px-2 py-3 text-white 
@@ -315,8 +315,8 @@ export default function SellTractor() {
                     </div>
                   </div>
                 </form>
-                
-                {successMsg && <p className="text-green-600 font-semibold">{successMsg}</p>}
+
+                {successMsg && <p className="text-green-600 font-semibold mt-4 text-center">{successMsg}</p>}
 
               </div>
             </>
