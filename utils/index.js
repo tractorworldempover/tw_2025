@@ -2,7 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setAddressData } from "../store/slices/userDataSlice";
 import Dealer1 from "@Images/dealer/dealer1.svg";
-
+import CryptoJS from 'crypto-js'; 
+const SECRET_KEY = 'Tractorworldbymahindra@2025';  // This can be any secret key you want
 
 export const HomeHPRanges = [
   { min: 0, max: 20, key: 'oneData' },
@@ -12,6 +13,29 @@ export const HomeHPRanges = [
   { min: 46, max: 50, key: 'FifthData' },
   { min: 51, max: Infinity, key: 'SixthData' },
 ];
+
+// Function to encrypt data
+const encryptData = (data) => {
+  return CryptoJS.AES.encrypt(JSON.stringify(data), SECRET_KEY).toString();
+};
+
+// Function to decrypt data
+const decryptData = (encryptedData) => {
+  try {
+    const bytes = CryptoJS.AES.decrypt(encryptedData, SECRET_KEY);
+    const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+
+    if (!decryptedData) {
+      console.error('Decryption failed: No valid UTF-8 data returned');
+      return null;
+    }
+
+    return JSON.parse(decryptedData);
+  } catch (error) {
+    console.error('Decryption error:', error);
+    return null;
+  }
+};
 
 // export const useGeolocation = () => {
 //     const dispatch = useDispatch();
@@ -404,4 +428,88 @@ export const getFilteredDistricts = (locations, selectedState) => {
 };
 
 
+export default function InventoryPage({ inventoryData }) {
+  const [inventory, setInventory] = useState(inventoryData);
 
+  useEffect(() => {
+    // Only run on client
+    if (typeof window !== 'undefined') {
+      const stored = sessionStorage.getItem('inventoryData');
+
+      if (stored) {
+        setInventory(JSON.parse(stored));
+      } else {
+        sessionStorage.setItem('inventoryData', JSON.stringify(inventoryData));
+      }
+    }
+  }, [inventoryData]);
+
+  return (
+    <div>
+      {inventory.map(item => (
+        <div key={item.id}>{item.name}</div>
+      ))}
+    </div>
+  );
+}
+
+
+
+export async function getInventoryData()  {
+ 
+  let inventoryData = [];
+  
+    try {
+      const res = await fetch("https://used-tractor-backend.azurewebsites.net/inventory/web/v2/tractor/");
+      if (!res.ok) throw new Error(`Failed to fetch data: ${res.status}`); 
+      const rawData = await res.json();
+      inventoryData = Array.isArray(rawData?.data)
+        ? rawData.data.filter(item => [1, 2, 3].includes(item.status)) // Filter by status
+        : [];
+  
+    } catch (error) {
+      console.error("❌ Error fetching data in getLocaleProps:", error);
+    } 
+   return inventoryData;
+ 
+}
+ 
+export const useInventory = (initialData = []) => {
+  const [inventory, setInventory] = useState(initialData);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const stored = sessionStorage.getItem('inventoryData');
+  
+    if (stored) {
+      const decrypted = decryptData(stored);
+      if (decrypted && decrypted.length > 0) {
+        // Only update state if data is different
+        if (JSON.stringify(decrypted) !== JSON.stringify(inventory)) {
+          setInventory(decrypted);
+        }
+      }
+      setLoading(false);
+    } else if (initialData.length > 0) {
+      if (JSON.stringify(initialData) !== JSON.stringify(inventory)) {
+        setInventory(initialData);
+      }
+      setLoading(false);
+    } else {
+      getInventoryData().then(data => {
+        if (data && data.length > 0) {
+          if (JSON.stringify(data) !== JSON.stringify(inventory)) {
+            const encrypted = encryptData(data);
+            sessionStorage.setItem('inventoryData', encrypted);
+            setInventory(data);
+          }
+        }
+        setLoading(false);
+      }).catch(() => {
+        setLoading(false);
+      });
+    }
+  }, [initialData]);
+
+  return { inventory, loading };
+};

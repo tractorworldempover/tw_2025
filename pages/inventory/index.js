@@ -38,11 +38,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { GET_ALL_STATES } from "@utils/constants";
 import Link from "next/link";
 import { formatPrice, getValidImageUrl } from "@utils";
+import { useInventory} from "@utils";
 
 // Define the Inventory function
-export default function Inventory({ locale, inventoryData }) {
+export default function Inventory({ locale }) {
   const { locale: activeLocale, locales, asPath } = useRouter();
 
+  const { inventory: inventoryData } = useInventory();
+  
   // 'common' refers to common.json
   const { t, i18n } = useTranslation("common");
 

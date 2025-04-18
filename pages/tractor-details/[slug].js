@@ -35,6 +35,7 @@ import {
   getTabLabel,
 } from "@utils";
 import Link from "next/link";
+import { useInventory} from "@utils";
 
 export async function getServerSideProps(context) {
   return await getLocaleProps(context);
@@ -68,7 +69,10 @@ function SamplePrevArrow(props) {
   );
 }
 
-export default function TractorDetails({ locale, inventoryData }) {
+export default function TractorDetails({ locale }) {
+
+  const { inventory: inventoryData } = useInventory();
+  
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
   const { slug } = router.query;

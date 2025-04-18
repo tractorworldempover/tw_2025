@@ -34,7 +34,11 @@ const { i18n } = require('./next-i18next.config');
         ]
       }
     ];
-  }
+  },
+  swcMinify: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
 };
 
 

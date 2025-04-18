@@ -15,14 +15,16 @@ import { getLocaleProps } from "@helpers";
 import { useTranslation } from 'next-i18next';
 import { calculateEMI, formatPrice, getHomePageTractorsListBasedOnInventory } from "@utils";
 import Link from 'next/link';
+import { useInventory} from "@utils";
 
 
 export async function getServerSideProps(context) {
     return await getLocaleProps(context);
 }
 
-export default function CompareTractorDetails({ locale, inventoryData }) {
+export default function CompareTractorDetails({ locale }) {
 
+    const { inventory: inventoryData } = useInventory();
 
     const router = useRouter();
     const { t1, t2, id1, id2 } = router.query; // Extract query parameters

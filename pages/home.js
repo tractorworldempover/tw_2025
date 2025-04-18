@@ -54,7 +54,8 @@ import Modal from "@components/Modal";
 import Crossmark from '@Images/inventory/closeIcon.svg';
 import { useTranslation } from 'next-i18next';
 import { HomeHPRanges, getTabLabel, getHomePageTractorsListBasedOnInventory,formatPrice } from '@utils';
- 
+import { useInventory} from "@utils";
+
 export default function HomePage({ locale, Inventorydata }) {
 
     const [isMobile, setIsMobile] = useState(false);
@@ -66,13 +67,18 @@ export default function HomePage({ locale, Inventorydata }) {
     const router = useRouter();
     const language = "EN";
     const { t, i18n } = useTranslation('common');
+    const { inventory } = useInventory(Inventorydata); 
+
+    console.log("inventory Data????????????", inventory);
+
+     
 
     const inventoryList = useMemo(() => {
-        if (!Inventorydata || Inventorydata.length === 0) {
+        if (!inventory || inventory.length === 0) {
             return [];
         }
 
-        return Inventorydata.slice(0, 10).map((item) => ({
+        return inventory.slice(0, 10).map((item) => ({
             title: `${item.brand} ${item.model}`,
             price: item.max_price,
             engineHours: item.engine_hours,
@@ -80,7 +86,7 @@ export default function HomePage({ locale, Inventorydata }) {
             enginePower: item.engine_power,
             tractorId: item.tractor_id,
         }));
-    }, [Inventorydata]);  
+    }, [inventory]);  
 
     
     const compareTractorData = useMemo(() =>
