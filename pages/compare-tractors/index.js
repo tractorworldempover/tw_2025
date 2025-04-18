@@ -19,13 +19,16 @@ import { useTranslation } from "next-i18next";
 import { getLocaleProps } from "@helpers";
 import { getTractorDetailsById, getTabLabel, HomeHPRanges, formatPrice, getHomePageTractorsListBasedOnInventory } from '@utils';
 import Link from 'next/link';
+import { useInventory} from "@utils";
 
 export async function getStaticProps(context) {
     return await getLocaleProps(context);
 }
 
-export default function CompareTractor({ locale, inventoryData }) { 
+export default function CompareTractor({ locale }) { 
 
+    const { inventory: inventoryData } = useInventory();
+    
     const router = useRouter();
     const language = locale?.toUpperCase();
     const { id } = router.query;

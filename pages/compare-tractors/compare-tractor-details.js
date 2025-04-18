@@ -15,14 +15,16 @@ import { getLocaleProps } from "@helpers";
 import { useTranslation } from 'next-i18next';
 import { calculateEMI, formatPrice, getHomePageTractorsListBasedOnInventory } from "@utils";
 import Link from 'next/link';
+import { useInventory} from "@utils";
 
 
 export async function getServerSideProps(context) {
     return await getLocaleProps(context);
 }
 
-export default function CompareTractorDetails({ locale, inventoryData }) {
+export default function CompareTractorDetails({ locale }) {
 
+    const { inventory: inventoryData } = useInventory();
 
     const router = useRouter();
     const { t1, t2, id1, id2 } = router.query; // Extract query parameters
@@ -48,10 +50,7 @@ export default function CompareTractorDetails({ locale, inventoryData }) {
         if (id1 && id2 && inventoryData.length > 0) {
             const tractor1 = inventoryData.find(tractor => tractor.tractor_id === Number(id1));
             const tractor2 = inventoryData.find(tractor => tractor.tractor_id === Number(id2));
-
-            console.log("tractor1" + JSON.stringify(tractor1));
-            console.log("tractor2" + JSON.stringify(tractor2));
-
+ 
 
             if (tractor1 && tractor2) {
                 // 🖼️ Format imagesData for UI
@@ -225,8 +224,7 @@ export default function CompareTractorDetails({ locale, inventoryData }) {
     // 🏗️ Pass filtered data for comparison
     const compareTractorData = getHomePageTractorsListBasedOnInventory(SimilarTractorsListData);
 
-    console.log("compareTractorData" + JSON.stringify(compareTractorData));
-
+ 
 
     const [activeTab, setActiveTab] = useState("oneData");
     // Automatically highlight the first available tab from compareTractorData

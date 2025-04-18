@@ -28,13 +28,16 @@ import LoaderHi from '@Images/loader.gif';
 import LoaderMr from '@Images/loaderMr.gif';
 import LoaderEn from '@Images/loaderEn.gif';
 import Pagination from "@components/Pagination";  
+import { useInventory} from "@utils";
 
 export async function getServerSideProps(context) {
   return await getLocaleProps(context);
 } 
 
-export default function Inventory({ locale,InventoryData }) {
+export default function Inventory({ locale }) {
 
+  const { inventory: InventoryData } = useInventory();
+  
    //// apply,reset btns active 
   const { t } = useTranslation();
   const [resetBgColor, setResetBgColor] = useState(false);

@@ -35,6 +35,7 @@ import {
   getTabLabel,
 } from "@utils";
 import Link from "next/link";
+import { useInventory} from "@utils";
 
 export async function getServerSideProps(context) {
   return await getLocaleProps(context);
@@ -68,7 +69,10 @@ function SamplePrevArrow(props) {
   );
 }
 
-export default function TractorDetails({ locale, inventoryData }) {
+export default function TractorDetails({ locale }) {
+
+  const { inventory: inventoryData } = useInventory();
+  
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
   const { slug } = router.query;
@@ -82,10 +86,7 @@ export default function TractorDetails({ locale, inventoryData }) {
 
   const Id = slug?.split("-")[0]; // get the ID// Safely extract the numeric ID from the slug
   const title = slug?.split("-").slice(1).join("-") || "default-title"; // Extract the title or use a default value
-  console.log("Slug path:", `/tractor-details/${slug}`);
-  console.log("Slug received in router.query:", slug);
-  console.log("ID:", Id);
-  console.log("Title:", title);
+ 
  
 
   // const slugQuery = slug.replace('-', ' ');

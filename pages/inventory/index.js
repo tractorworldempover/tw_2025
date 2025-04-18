@@ -38,11 +38,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { GET_ALL_STATES } from "@utils/constants";
 import Link from "next/link";
 import { formatPrice, getValidImageUrl } from "@utils";
+import { useInventory} from "@utils";
 
 // Define the Inventory function
-export default function Inventory({ locale, inventoryData }) {
+export default function Inventory({ locale }) {
   const { locale: activeLocale, locales, asPath } = useRouter();
 
+  const { inventory: inventoryData } = useInventory();
+  
   // 'common' refers to common.json
   const { t, i18n } = useTranslation("common");
 
@@ -256,8 +259,7 @@ export default function Inventory({ locale, inventoryData }) {
 
   // Ensure PopularTractors (which is containing all 1725 data) is populated at the start
   useEffect(() => {
-    console.log("useEffect triggered! inventoryData:", inventoryData);
-
+ 
     if (!Array.isArray(inventoryData) || inventoryData.length === 0) return;
 
     async function fetchTractors() {
@@ -278,8 +280,7 @@ export default function Inventory({ locale, inventoryData }) {
         }))
       );
 
-      console.log("Mapped Tractors Data:", tractors);
-      setPopularTractorsData(tractors);
+       setPopularTractorsData(tractors);
     }
 
     fetchTractors();
@@ -315,8 +316,7 @@ export default function Inventory({ locale, inventoryData }) {
   // Extract brandsData from inventoryData when it changes
   useEffect(() => {
     if (Array.isArray(inventoryData) && inventoryData.length > 0) {
-      console.log("Sample Data:", inventoryData[0]);
-      // Extract all unique brands
+       // Extract all unique brands
       const brandsData = [
         ...new Set(inventoryData.map((item) => item.brandSlug?.trim())),
       ].filter(Boolean);
@@ -383,14 +383,7 @@ export default function Inventory({ locale, inventoryData }) {
 
     const [brandFilter, hpFilter, priceFilter, stateFilter] =
       liveInventoryFilters;
-
-    console.log("Applying Filters:", {
-      brandFilter,
-      hpFilter,
-      priceFilter,
-      stateFilter,
-    });
-    console.log("PopularTractors Sample:", PopularTractors[0]);
+ 
 
     const filtered = PopularTractors.filter((tractor) => {
       // BRAND FILTER
@@ -443,10 +436,7 @@ export default function Inventory({ locale, inventoryData }) {
       return matchesBrand && matchesHP && matchesPrice && matchesState;
     });
     // debugger;
-    console.log(
-      "Tractors After Filtering:",
-      filtered.map((t) => ({ state: t.state, name: t.name }))
-    );
+    
     setFilteredTractors(filtered); // Update filteredTractors with the filtered data
   }, [liveInventoryFilters, PopularTractors]);
 
@@ -916,8 +906,7 @@ export default function Inventory({ locale, inventoryData }) {
                             <div
                               className="relative"
                               onClick={() => {
-                                console.log("Navigating to:", item);
-                                router.push(
+                                 router.push(
                                   `/tractor-details/${
                                     item.tractorId
                                   }-${item.title

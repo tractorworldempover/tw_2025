@@ -146,6 +146,17 @@ export default function Home({ locale, inventoryData}) {
 
   );
 }
+// export async function getStaticProps(context) {
+//   return await getLocaleProps(context);
+// }
+
 export async function getStaticProps(context) {
-  return await getLocaleProps(context);
+  const localeProps = await getLocaleProps(context, ['common', 'inventory']);
+ 
+  return {
+    props: {
+      ...localeProps.props,
+      inventoryData: [], // skip server-side fetching
+    }
+  };
 }
