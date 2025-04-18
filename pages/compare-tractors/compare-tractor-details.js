@@ -50,10 +50,7 @@ export default function CompareTractorDetails({ locale }) {
         if (id1 && id2 && inventoryData.length > 0) {
             const tractor1 = inventoryData.find(tractor => tractor.tractor_id === Number(id1));
             const tractor2 = inventoryData.find(tractor => tractor.tractor_id === Number(id2));
-
-            console.log("tractor1" + JSON.stringify(tractor1));
-            console.log("tractor2" + JSON.stringify(tractor2));
-
+ 
 
             if (tractor1 && tractor2) {
                 // 🖼️ Format imagesData for UI
@@ -227,8 +224,7 @@ export default function CompareTractorDetails({ locale }) {
     // 🏗️ Pass filtered data for comparison
     const compareTractorData = getHomePageTractorsListBasedOnInventory(SimilarTractorsListData);
 
-    console.log("compareTractorData" + JSON.stringify(compareTractorData));
-
+ 
 
     const [activeTab, setActiveTab] = useState("oneData");
     // Automatically highlight the first available tab from compareTractorData

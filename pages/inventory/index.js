@@ -259,8 +259,7 @@ export default function Inventory({ locale }) {
 
   // Ensure PopularTractors (which is containing all 1725 data) is populated at the start
   useEffect(() => {
-    console.log("useEffect triggered! inventoryData:", inventoryData);
-
+ 
     if (!Array.isArray(inventoryData) || inventoryData.length === 0) return;
 
     async function fetchTractors() {
@@ -281,8 +280,7 @@ export default function Inventory({ locale }) {
         }))
       );
 
-      console.log("Mapped Tractors Data:", tractors);
-      setPopularTractorsData(tractors);
+       setPopularTractorsData(tractors);
     }
 
     fetchTractors();
@@ -318,8 +316,7 @@ export default function Inventory({ locale }) {
   // Extract brandsData from inventoryData when it changes
   useEffect(() => {
     if (Array.isArray(inventoryData) && inventoryData.length > 0) {
-      console.log("Sample Data:", inventoryData[0]);
-      // Extract all unique brands
+       // Extract all unique brands
       const brandsData = [
         ...new Set(inventoryData.map((item) => item.brandSlug?.trim())),
       ].filter(Boolean);
@@ -386,14 +383,7 @@ export default function Inventory({ locale }) {
 
     const [brandFilter, hpFilter, priceFilter, stateFilter] =
       liveInventoryFilters;
-
-    console.log("Applying Filters:", {
-      brandFilter,
-      hpFilter,
-      priceFilter,
-      stateFilter,
-    });
-    console.log("PopularTractors Sample:", PopularTractors[0]);
+ 
 
     const filtered = PopularTractors.filter((tractor) => {
       // BRAND FILTER
@@ -446,10 +436,7 @@ export default function Inventory({ locale }) {
       return matchesBrand && matchesHP && matchesPrice && matchesState;
     });
     // debugger;
-    console.log(
-      "Tractors After Filtering:",
-      filtered.map((t) => ({ state: t.state, name: t.name }))
-    );
+    
     setFilteredTractors(filtered); // Update filteredTractors with the filtered data
   }, [liveInventoryFilters, PopularTractors]);
 
@@ -919,8 +906,7 @@ export default function Inventory({ locale }) {
                             <div
                               className="relative"
                               onClick={() => {
-                                console.log("Navigating to:", item);
-                                router.push(
+                                 router.push(
                                   `/tractor-details/${
                                     item.tractorId
                                   }-${item.title

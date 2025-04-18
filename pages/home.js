@@ -68,10 +68,7 @@ export default function HomePage({ locale, Inventorydata }) {
     const language = "EN";
     const { t, i18n } = useTranslation('common');
     const { inventory } = useInventory(Inventorydata); 
-
-    console.log("inventory Data????????????", inventory);
-
-     
+ 
 
     const inventoryList = useMemo(() => {
         if (!inventory || inventory.length === 0) {
@@ -220,8 +217,7 @@ export default function HomePage({ locale, Inventorydata }) {
     
 
     const countJabalpur = Inventorydata.filter((item) => item.district === "Jabalpur").length;
-    console.log(`Number of items in Jabalpur: ${countJabalpur}`);
-
+ 
 
     const handleNavigation = (path) => {
          router.push(path);
