@@ -28,8 +28,7 @@ export const PRICE_OPTIONS = [
 ];
 
 export const HOMEPAGE_QUERIES = gql`
-  query GetHomeData($lang: LanguageCodeFilterEnum!) {
-
+   query GetHomeData($lang: LanguageCodeFilterEnum!) { 
     homeSliders(where: {orderby: {field: DATE, order: ASC}, language: $lang}) {
       nodes {
         homesliders { 
@@ -45,8 +44,8 @@ export const HOMEPAGE_QUERIES = gql`
           }
         }
       }
-    } 
-  testimonials(where: {orderby: {field: DATE, order: ASC}}) {
+  } 
+   testimonials(where: {orderby: {field: DATE, order: ASC}}) {
     nodes {
       tesimonails {
         description
@@ -101,7 +100,7 @@ contentgallerys(where: {orderby: {field: DATE, order: ASC}}) {
       }
     }
   }
-  }  
+}      
 `;
 
 ///dealer list  
