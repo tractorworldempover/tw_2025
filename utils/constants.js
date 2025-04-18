@@ -1,9 +1,8 @@
 import { gql } from '@apollo/client';
 
 
-export const LiveInventoryAPIURL="https://used-tractor-backend.azurewebsites.net/inventory/web/v2/tractor/";
-
- 
+export const LiveInventoryAPIURL=process.env.NEXT_LIVEINVENTORY_URL;
+  
 export const customImageLoader = ({ src }) => {
   return src; // Return the original image source directly
 };

@@ -14,17 +14,18 @@ import Link from "next/link";
 import { getLocaleProps } from "@helpers";
 import { useTranslation } from "next-i18next"; 
 import { getApolloClient } from '@service/apollo-client';
-import { SUBMIT_CONTACT } from "@utils/constants";
+import { ContactURL } from "@utils/constants";
+  
+export async function getServerSideProps(context) {
+  return await getLocaleProps(context);
+} 
   
 
 export default function ContactUs() {
 
   const { t } = useTranslation("common");
-  
-  // Now that the client is set, use the mutation hook
-  const [submitContact, { loading, data }] = useMutation(SUBMIT_CONTACT);
-
-  const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
+   
+  const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" ,leadType: "contactus-lead"});
   const [error, setError] = useState({});
   const [successMsg, setSuccessMsg] = useState("");
 
@@ -59,17 +60,16 @@ export default function ContactUs() {
 
     try {
       debugger;
-      const response = await submitContact({
-        variables: {
-          email: form.email,
-          leadtype: "Sales Inquiry",
-          message: form.message,
-          mobile: form.phone,
-          title: form.name,
+      const res = await fetch(`${process.env.NEXT_PUBLIC_WORDPRESS_BASE_URL}wp-json/custom/v1/contact`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
+        body: JSON.stringify(form),
       });
-
-      if (response.data) {
+       const data = await res.json();
+ 
+      if (data.success) {
         setSuccessMsg("Thank you! Your message has been sent.");
         setForm({ name: "", email: "", phone: "", message: "" });
         setError({});
