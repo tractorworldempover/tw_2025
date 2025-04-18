@@ -72,7 +72,7 @@ export default function HomePage({ locale, Inventorydata }) {
             return [];
         }
 
-        return Inventorydata.slice(0, 50).map((item) => ({
+        return Inventorydata.slice(0, 10).map((item) => ({
             title: `${item.brand} ${item.model}`,
             price: item.max_price,
             engineHours: item.engine_hours,

@@ -2,45 +2,49 @@
 import React, { useState, useEffect } from "react";
 import Layout from "@components/Layout";
 import Banner from "@components/Banner";
-import Btn from '@components/Btn';
+import Btn from "@components/Btn";
 import Image from "next/image";
 import DefaultTractor from "@Images/default_tractor.svg";
 import Heading from "@components/Heading";
-import Loader from '@components/Loader';
+import Loader from "@components/Loader";
 import bannerImg from "@Images/inventory/inventory-banner.svg";
-import filterIcon from '@Images/inventory/filterIcon.svg'
-import sortIcon from '@Images/inventory/sortIcon.svg'
-import Crossmark from '@Images/inventory/closeIcon.svg';
-import mapIcon from '@Images/inventory/mapIcon.svg';
+import filterIcon from "@Images/inventory/filterIcon.svg";
+import sortIcon from "@Images/inventory/sortIcon.svg";
+import Crossmark from "@Images/inventory/closeIcon.svg";
+import mapIcon from "@Images/inventory/mapIcon.svg";
 import Modal from "@components/Modal";
 import Tab from "@components/Tab";
 import listView from "@Images/inventory/listView.svg";
 import listActiveView from "@Images/inventory/listActiveView.svg";
 import gridActiveView from "@Images/inventory/gridActiveView.svg";
 import gridView from "@Images/inventory/gridView.svg";
-import LoaderEn from '@Images/loaderEn.gif';
-import LoaderHi from '@Images/loader.gif';
-import LoaderMr from '@Images/loaderMr.gif';
-import { GET_ALL_BRANDS, customImageLoader, GET_LIVE_INVENTORY, HP_OPTIONS, PRICE_OPTIONS } from "@utils/constants";
-import { useQuery } from '@apollo/client';
+import LoaderEn from "@Images/loaderEn.gif";
+import LoaderHi from "@Images/loader.gif";
+import LoaderMr from "@Images/loaderMr.gif";
+import {
+  GET_ALL_BRANDS,
+  customImageLoader,
+  GET_LIVE_INVENTORY,
+  HP_OPTIONS,
+  PRICE_OPTIONS,
+} from "@utils/constants";
+import { useQuery } from "@apollo/client";
 import { getLocaleProps } from "@helpers";
-import { useTranslation } from 'next-i18next';
-import { useRouter } from 'next/router';
+import { useTranslation } from "next-i18next";
+import { useRouter } from "next/router";
 import Pagination from "@components/Pagination";
 import { GET_ALL_POPULAR_BRANDS } from "@utils/constants";
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from "react-redux";
 import { GET_ALL_STATES } from "@utils/constants";
 import Link from "next/link";
-import { formatPrice,getValidImageUrl } from "@utils";
-
+import { formatPrice, getValidImageUrl } from "@utils";
 
 // Define the Inventory function
 export default function Inventory({ locale, inventoryData }) {
-
   const { locale: activeLocale, locales, asPath } = useRouter();
 
   // 'common' refers to common.json
-  const { t, i18n } = useTranslation('common');
+  const { t, i18n } = useTranslation("common");
 
   // Use Next.js router to redirect to the dynamic page
   const router = useRouter();
@@ -54,14 +58,19 @@ export default function Inventory({ locale, inventoryData }) {
   //get serach value
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [liveInventoryFilters, setLiveInventoryFilters] = useState(["", "", "", ""]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [liveInventoryFilters, setLiveInventoryFilters] = useState([
+    "",
+    "",
+    "",
+    "",
+  ]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [brandsLogos, setBrandLogos] = useState([]);
   const [PopularTractors, setPopularTractorsData] = useState([]);
 
   const state = useSelector((state) => state.user.addressData.state);
   const city = useSelector((state) => state.user.addressData.city);
-  const [locationDetails, setLocationDetails] = useState('');
+  const [locationDetails, setLocationDetails] = useState("");
   const [stateList, setStateList] = useState([]);
   const { loading, error, data } = useQuery(GET_ALL_STATES);
   const [brandsData, setBrandsData] = useState(null);
@@ -72,7 +81,6 @@ export default function Inventory({ locale, inventoryData }) {
 
   const handleStateChange = (event) => {
     const selectedState = event.target.value;
-    
 
     setLiveInventoryFilters((prevFilters) => {
       const newFilters = [...prevFilters];
@@ -81,40 +89,38 @@ export default function Inventory({ locale, inventoryData }) {
     });
   };
 
-
   useEffect(() => {
     if (state && city) {
       setLocationDetails(`${city}, ${state}`);
     }
   }, [state, city]); // Only re-run effect when `state` or `city` changes
 
-
   const [filters, setFilters] = useState([
     {
       title: "Brand",
       showKey: "showBrands",
       options: [], // To be populated with API response
-      selected: ""
+      selected: "",
     },
     {
       title: "HP",
       showKey: "showHps",
       options: HP_OPTIONS,
-      selected: ""
+      selected: "",
     },
     {
       title: "Price",
       showKey: "showPrices",
       options: PRICE_OPTIONS,
-      selected: ""
-    }
+      selected: "",
+    },
   ]);
 
   // for collpase
   const [showStates, setShowStates] = useState({
     showBrands: true,
     showHps: false,
-    showPrices: false
+    showPrices: false,
   });
 
   // breadcrumbs data
@@ -123,18 +129,17 @@ export default function Inventory({ locale, inventoryData }) {
     { label: "Inventory", link: "#" },
   ];
 
-
   const customStyles = {
     content: {
-      top: 'auto',
-      left: 'auto',
-      right: 'auto',
-      bottom: '0',
-      width: '100%',
-      borderTopLeftRadius: '15px',
-      borderTopRightRadius: '15px',
-      backgroundColor: 'rgba(255, 255, 255, 0)',
-      border: 'none',
+      top: "auto",
+      left: "auto",
+      right: "auto",
+      bottom: "0",
+      width: "100%",
+      borderTopLeftRadius: "15px",
+      borderTopRightRadius: "15px",
+      backgroundColor: "rgba(255, 255, 255, 0)",
+      border: "none",
     },
   };
 
@@ -148,22 +153,17 @@ export default function Inventory({ locale, inventoryData }) {
     setShowStates((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-
   const onSelectFilter = (filterType, value) => {
     setFilters((prevFilters) =>
       prevFilters.map((filter) =>
-        filter.showKey === filterType
-          ? { ...filter, selected: value }
-          : filter
+        filter.showKey === filterType ? { ...filter, selected: value } : filter
       )
     );
   };
 
-
-
   useEffect(() => {
     const handleScroll = () => {
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         if (window.scrollY > lastScrollY) {
           // Scrolling down
           setIsVisible(false);
@@ -175,9 +175,9 @@ export default function Inventory({ locale, inventoryData }) {
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, [lastScrollY]);
 
@@ -212,11 +212,11 @@ export default function Inventory({ locale, inventoryData }) {
 
   const isShowSorting = () => {
     setShowModal(true);
-  }
+  };
 
   const handleClose = () => {
     setShowModal(false);
-  }
+  };
 
   ////apply, reset btn click functionality
   const handleResetClick = () => {
@@ -230,7 +230,7 @@ export default function Inventory({ locale, inventoryData }) {
     );
 
     setSelectedState("");
-    setLiveInventoryFilters(['', '', '']);
+    setLiveInventoryFilters(["", "", ""]);
 
     clearSelectedValues();
   };
@@ -249,22 +249,21 @@ export default function Inventory({ locale, inventoryData }) {
     ]);
   };
 
-
   const clearSelectedValues = () => {
     const radios = document.querySelectorAll('input[type="radio"]');
-    radios.forEach((radio) => (radio.checked = false)); // 
+    radios.forEach((radio) => (radio.checked = false)); //
   };
-
 
   // Ensure PopularTractors (which is containing all 1725 data) is populated at the start
   useEffect(() => {
     console.log("useEffect triggered! inventoryData:", inventoryData);
-    
+
     if (!Array.isArray(inventoryData) || inventoryData.length === 0) return;
 
     async function fetchTractors() {
       const tractors = await Promise.all(
         inventoryData.map(async (node) => ({
+          tractorId: node.tractor_id,
           certified: node.is_verified,
           title: `${node.brand} ${node.model}`,
           price: node.max_price,
@@ -274,7 +273,7 @@ export default function Inventory({ locale, inventoryData }) {
             { icon: "/images/time.svg", text: `${node.engine_hours}` },
             { icon: "/images/wheel.svg", text: node.drive_type },
             { icon: "/images/hp.svg", text: `${node.engine_power}` },
-            { icon: "/images/mapIcon.svg", text: node.district }
+            { icon: "/images/mapIcon.svg", text: node.district },
           ],
         }))
       );
@@ -286,18 +285,12 @@ export default function Inventory({ locale, inventoryData }) {
     fetchTractors();
   }, [inventoryData]);
 
-
-
-  // all brands 
+  // all brands
   useEffect(() => {
-
     const brandCounts = {};
 
     inventoryData.forEach((item, index) => {
-      const brand =
-        item.brandSlug ||
-        item.brand ||
-        item.details?.brandSlug; // different possible keys
+      const brand = item.brandSlug || item.brand || item.details?.brandSlug; // different possible keys
 
       if (brand) {
         brandCounts[brand] = (brandCounts[brand] || 0) + 1;
@@ -316,7 +309,6 @@ export default function Inventory({ locale, inventoryData }) {
     );
   }, [inventoryData]);
 
-
   // Maintain a live inventory state
   const [liveInventory, setLiveInventory] = useState(inventoryData || []);
 
@@ -325,17 +317,25 @@ export default function Inventory({ locale, inventoryData }) {
     if (Array.isArray(inventoryData) && inventoryData.length > 0) {
       console.log("Sample Data:", inventoryData[0]);
       // Extract all unique brands
-      const brandsData = [...new Set(inventoryData.map(item => item.brandSlug?.trim()))].filter(Boolean);
+      const brandsData = [
+        ...new Set(inventoryData.map((item) => item.brandSlug?.trim())),
+      ].filter(Boolean);
       setBrandsData(brandsData);
     }
   }, [inventoryData]);
 
-  ///get popular brands 
-  const { data: PopularBrandsData, loading: PopularBrandsLoading, error: PopularBrandsError } = useQuery(GET_ALL_POPULAR_BRANDS);
+  ///get popular brands
+  const {
+    data: PopularBrandsData,
+    loading: PopularBrandsLoading,
+    error: PopularBrandsError,
+  } = useQuery(GET_ALL_POPULAR_BRANDS);
   useEffect(() => {
     if (PopularBrandsData && PopularBrandsData.brandsmodels) {
       // Extract all brand logos into a separate array
-      const logos = PopularBrandsData.brandsmodels.edges.map(({ node }) => node.brandmodelFields.brandLogo);
+      const logos = PopularBrandsData.brandsmodels.edges.map(
+        ({ node }) => node.brandmodelFields.brandLogo
+      );
       setBrandLogos(logos);
     }
   }, [PopularBrandsData]);
@@ -344,15 +344,14 @@ export default function Inventory({ locale, inventoryData }) {
   useEffect(() => {
     if (brandsData && brandsData.edges) {
       const filtered = brandsData.edges
-        .filter(({ node }) =>
-          node.brandmodelFields.brand)
+        .filter(({ node }) => node.brandmodelFields.brand)
         .map(({ node }) => ({
           label: node.brandmodelFields.brand || "Unknown Brand",
-          value: node.slug
+          value: node.slug,
         }));
 
-      setFilters(prevFilters =>
-        prevFilters.map(filter => {
+      setFilters((prevFilters) =>
+        prevFilters.map((filter) => {
           if (filter.title === "Brand") {
             setNoResults(filtered.length === 0);
             return { ...filter, options: filtered };
@@ -370,8 +369,10 @@ export default function Inventory({ locale, inventoryData }) {
 
   const indexOfLastCard = currentPage * CardsPerPage;
   const indexOfFirstCard = indexOfLastCard - CardsPerPage;
-  const currentCards = filteredTractors.slice(indexOfFirstCard, indexOfLastCard);
-
+  const currentCards = filteredTractors.slice(
+    indexOfFirstCard,
+    indexOfLastCard
+  );
 
   //// Applying the filters
   useEffect(() => {
@@ -380,32 +381,40 @@ export default function Inventory({ locale, inventoryData }) {
       return;
     }
 
-    const [brandFilter, hpFilter, priceFilter, stateFilter] = liveInventoryFilters;
+    const [brandFilter, hpFilter, priceFilter, stateFilter] =
+      liveInventoryFilters;
 
-    console.log("Applying Filters:", { brandFilter, hpFilter, priceFilter, stateFilter });
+    console.log("Applying Filters:", {
+      brandFilter,
+      hpFilter,
+      priceFilter,
+      stateFilter,
+    });
     console.log("PopularTractors Sample:", PopularTractors[0]);
 
     const filtered = PopularTractors.filter((tractor) => {
       // BRAND FILTER
-      const matchesBrand = brandFilter ? tractor.title?.includes(brandFilter) : true;
+      const matchesBrand = brandFilter
+        ? tractor.title?.includes(brandFilter)
+        : true;
 
       // HP FILTER
       const matchesHP = hpFilter
         ? (tractor.features || []).some((f) => {
-          if (f.icon.includes("hp")) {
-            const hpValue = parseInt(f.text.match(/\d+/)?.[0], 10);
-            const range = hpFilter.split("_").map(Number);
+            if (f.icon.includes("hp")) {
+              const hpValue = parseInt(f.text.match(/\d+/)?.[0], 10);
+              const range = hpFilter.split("_").map(Number);
 
-            if (range.length === 2) {
-              const [min, max] = range;
-              return hpValue >= min && hpValue <= max;
-            } else if (range.length === 1) {
-              const min = range[0];
-              return hpValue >= min;
+              if (range.length === 2) {
+                const [min, max] = range;
+                return hpValue >= min && hpValue <= max;
+              } else if (range.length === 1) {
+                const min = range[0];
+                return hpValue >= min;
+              }
             }
-          }
-          return false;
-        })
+            return false;
+          })
         : true;
 
       // PRICE FILTER
@@ -417,25 +426,31 @@ export default function Inventory({ locale, inventoryData }) {
         minFilter = 1000000;
         maxFilter = Infinity;
       } else if (priceFilter.includes("_")) {
-        [minFilter, maxFilter] = priceFilter.split("_").map((num) => parseInt(num, 10) * 100000);
+        [minFilter, maxFilter] = priceFilter
+          .split("_")
+          .map((num) => parseInt(num, 10) * 100000);
       }
 
       const matchesPrice = maxPrice >= minFilter && maxPrice <= maxFilter;
 
       // STATE FILTER
       const matchesState = stateFilter
-        ? tractor.state?.trim().toLowerCase() === stateFilter.trim().toLowerCase()
+        ? tractor.state?.trim().toLowerCase() ===
+          stateFilter.trim().toLowerCase()
         : true;
 
       // Combine all filters
       return matchesBrand && matchesHP && matchesPrice && matchesState;
     });
-    // debugger; 
-    console.log("Tractors After Filtering:", filtered.map((t) => ({ state: t.state, name: t.name })));
-    setFilteredTractors(filtered); // Update filteredTractors with the filtered data 
+    // debugger;
+    console.log(
+      "Tractors After Filtering:",
+      filtered.map((t) => ({ state: t.state, name: t.name }))
+    );
+    setFilteredTractors(filtered); // Update filteredTractors with the filtered data
   }, [liveInventoryFilters, PopularTractors]);
 
-  // get states list 
+  // get states list
   useEffect(() => {
     // Fetch data from API when component mounts
     if (data && data.allStateTowns) {
@@ -445,7 +460,6 @@ export default function Inventory({ locale, inventoryData }) {
       }));
       setStateList(fetchedStates); // Update state with fetched data
     }
-
   }, [data]); // Trigger this effect when `data` changes
 
   const [inventoryLoading, setInventoryLoading] = useState(true);
@@ -459,10 +473,13 @@ export default function Inventory({ locale, inventoryData }) {
     }
   }, [inventoryData]);
 
-
   if (inventoryLoading) {
     return (
-      <Loader loaderImage={language === 'HI' ? LoaderHi : language === 'MR' ? LoaderMr : LoaderEn} />
+      <Loader
+        loaderImage={
+          language === "HI" ? LoaderHi : language === "MR" ? LoaderMr : LoaderEn
+        }
+      />
     );
   }
 
@@ -476,10 +493,11 @@ export default function Inventory({ locale, inventoryData }) {
 
   return (
     <div>
-      <div className={`${showFilter ? 'overlay sm:hidden block' : 'hidden'}`}></div>
+      <div
+        className={`${showFilter ? "overlay sm:hidden block" : "hidden"}`}
+      ></div>
 
       <Layout>
-
         <Banner
           breadcrumbs={breadcrumbData}
           heading={"Live Inventory - June 2024"}
@@ -487,16 +505,26 @@ export default function Inventory({ locale, inventoryData }) {
         />
 
         {isVisible && (
-          <div className='sm:hidden block'>
-            <div className='fixed bottom-0 w-full z-40
-           bg-white rounded-tl-3xl rounded-tr-3xl text-secondaryColor'>
-              <div className='flex text-[15px] p-3'>
-                <div className='text-center border-r border-[#F37021] border-opacity-25 w-1/2' onClick={isShowFilter}>
-                  <Image src={filterIcon} alt="filterIcon" width={25} height={25} />
+          <div className="sm:hidden block">
+            <div
+              className="fixed bottom-0 w-full z-40
+           bg-white rounded-tl-3xl rounded-tr-3xl text-secondaryColor"
+            >
+              <div className="flex text-[15px] p-3">
+                <div
+                  className="text-center border-r border-[#F37021] border-opacity-25 w-1/2"
+                  onClick={isShowFilter}
+                >
+                  <Image
+                    src={filterIcon}
+                    alt="filterIcon"
+                    width={25}
+                    height={25}
+                  />
                   <p>Filter</p>
                 </div>
 
-                <div className='text-center w-1/2' onClick={isShowSorting}>
+                <div className="text-center w-1/2" onClick={isShowSorting}>
                   <Image src={sortIcon} alt="sortIcon" width={25} height={25} />
                   <p>Sort</p>
                 </div>
@@ -505,19 +533,34 @@ export default function Inventory({ locale, inventoryData }) {
           </div>
         )}
 
-        <div className={`${showFilter ? 'sm:hidden block' : 'hidden'} transition-max-height duration-300 
-        ease-in-out w-full  sm:w-auto`} id="navbar-default">
-          <div className="sm:w-auto w-[362px] sm:h-auto max-h-max min-h-screen h-screen
-         sm:bg-transparent z-[99] sm:relative flex fixed top-0 sm:pb-4 sm:pt-4 Navbar">
+        <div
+          className={`${
+            showFilter ? "sm:hidden block" : "hidden"
+          } transition-max-height duration-300 
+        ease-in-out w-full  sm:w-auto`}
+          id="navbar-default"
+        >
+          <div
+            className="sm:w-auto w-[362px] sm:h-auto max-h-max min-h-screen h-screen
+         sm:bg-transparent z-[99] sm:relative flex fixed top-0 sm:pb-4 sm:pt-4 Navbar"
+          >
             <div className="px-4 py-4 min-h-screen max-h-fit h-fit bg-white w-[76%]">
-
               <div className="flex">
                 <div className="w-1/2">
-                  <Btn text={'Reset'} bgColor={resetBgColor}
-                    roundednone={true} onClick={handleResetClick} />
+                  <Btn
+                    text={"Reset"}
+                    bgColor={resetBgColor}
+                    roundednone={true}
+                    onClick={handleResetClick}
+                  />
                 </div>
                 <div className="w-1/2">
-                  <Btn text={'Apply Filter'} bgColor={applyBgColor} roundednone={true} onClick={handleApplyClick} />
+                  <Btn
+                    text={"Apply Filter"}
+                    bgColor={applyBgColor}
+                    roundednone={true}
+                    onClick={handleApplyClick}
+                  />
                 </div>
               </div>
 
@@ -540,7 +583,8 @@ export default function Inventory({ locale, inventoryData }) {
                   <div key={filter.title}>
                     <div
                       className="bg-[#EEEEEE] cursor-pointer m-[2px] font-semibold p-2 flex items-center justify-between"
-                      onClick={() => onToggle(filter.showKey)}>
+                      onClick={() => onToggle(filter.showKey)}
+                    >
                       <div>{filter.title}</div>
                       <div>
                         {showStates[filter.showKey] ? (
@@ -576,17 +620,17 @@ export default function Inventory({ locale, inventoryData }) {
                               strokeWidth="2"
                               d="M9 5 5 1 1 5"
                             />
-                          </svg>  
+                          </svg>
                         )}
                       </div>
-
                     </div>
-                    {showStates[filter.showKey] && 
-                     (
+                    {showStates[filter.showKey] && (
                       <>
                         {noResults ? (
-                          <p className='my-2 text-center text-primaryColor'>No search data available</p>
-                         ) : (
+                          <p className="my-2 text-center text-primaryColor">
+                            No search data available
+                          </p>
+                        ) : (
                           <div className="p-2 flex flex-col w-full gap-2">
                             {filter.options.map((option, index) => (
                               <div key={index}>
@@ -594,34 +638,37 @@ export default function Inventory({ locale, inventoryData }) {
                                   type="radio"
                                   name={filter.showKey}
                                   value={option.value}
-                                  checked={filter.selected === option.value} 
-                                  onChange={() => onSelectFilter(filter.showKey, option.value)}
-                                  />
+                                  checked={filter.selected === option.value}
+                                  onChange={() =>
+                                    onSelectFilter(filter.showKey, option.value)
+                                  }
+                                />
                                 <label className="ml-2">{option.label}</label>
                               </div>
                             ))}
                           </div>
                         )}
                       </>
-                     )
-                    }
-
+                    )}
                   </div>
                 ))}
               </div>
-
-
             </div>
 
             <div className="right-0 top-0 z-50 pt-4 pl-2 w-[24%]">
-              <Image src={Crossmark} width={35} height={35} onClick={isHideFilter} alt="Crossmark" />
+              <Image
+                src={Crossmark}
+                width={35}
+                height={35}
+                onClick={isHideFilter}
+                alt="Crossmark"
+              />
             </div>
           </div>
         </div>
 
         <div className="bg-white lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-2 my-3">
           <div className="flex sm:flex-row flex-col gap-2">
-
             <label className="mb-1 sm:hidden block">Your Location</label>
             {/* <div className="relative w-full sm:hidden block">
               <input type="text" placeholder="search..." className="w-full rounded border-[1px] px-8 border-[#D0D0D0] py-3" />
@@ -644,7 +691,9 @@ export default function Inventory({ locale, inventoryData }) {
                 onChange={handleStateChange}
                 value={locationDetails || ""}
               >
-                <option value="" disabled selected>Your Location</option>
+                <option value="" disabled selected>
+                  Your Location
+                </option>
                 {stateList.length > 0 ? (
                   stateList.map((item, index) => (
                     <option key={index} value={item.state}>
@@ -658,14 +707,22 @@ export default function Inventory({ locale, inventoryData }) {
             </div>
 
             <div className="bg-[#F6F6F6] p-4 sm:w-[25%] w-full sm:block hidden">
-
               <div className="flex">
                 <div className="w-1/2">
-                  <Btn text={'Reset'} bgColor={resetBgColor}
-                    roundednone={true} onClick={handleResetClick} />
+                  <Btn
+                    text={"Reset"}
+                    bgColor={resetBgColor}
+                    roundednone={true}
+                    onClick={handleResetClick}
+                  />
                 </div>
                 <div className="w-1/2">
-                  <Btn text={'Apply Filter'} bgColor={applyBgColor} roundednone={true} onClick={handleApplyClick} />
+                  <Btn
+                    text={"Apply Filter"}
+                    bgColor={applyBgColor}
+                    roundednone={true}
+                    onClick={handleApplyClick}
+                  />
                 </div>
               </div>
 
@@ -730,7 +787,9 @@ export default function Inventory({ locale, inventoryData }) {
                     {showStates[filter.showKey] && (
                       <>
                         {noResults ? (
-                          <p className='my-2 text-center text-primaryColor'>No search data available</p>
+                          <p className="my-2 text-center text-primaryColor">
+                            No search data available
+                          </p>
                         ) : (
                           <div className="p-2 flex flex-col w-full gap-2">
                             {filter.options.map((option, index) => (
@@ -740,7 +799,9 @@ export default function Inventory({ locale, inventoryData }) {
                                   name={filter.title.toLowerCase()}
                                   value={option.value}
                                   checked={filter.selected === option.value} // ✅ Controlled by state
-                                  onChange={() => onSelectFilter(filter.showKey, option.value)} // ✅ Updates state
+                                  onChange={() =>
+                                    onSelectFilter(filter.showKey, option.value)
+                                  } // ✅ Updates state
                                 />
                                 <label className="ml-2">{option.label}</label>
                               </div>
@@ -757,27 +818,66 @@ export default function Inventory({ locale, inventoryData }) {
             <div className="sm:w-[75%] w-full">
               <div className="flex justify-between items-center">
                 <div className="w-auto">
-                  <Heading heading={t('Inventory.PopularTractors')} />
+                  <Heading heading={t("Inventory.PopularTractors")} />
                 </div>
                 <div className="sm:hidden flex">
-
-                  <Tab id="listData" image={true} activeTab={activeTab} onClick={handleTabClick}>
-                    {activeTab === "listData" ? <Image src={listActiveView} alt="listActiveView" width={50} height={50} /> : <Image src={listView} alt="listView" width={50} height={50} />}
+                  <Tab
+                    id="listData"
+                    image={true}
+                    activeTab={activeTab}
+                    onClick={handleTabClick}
+                  >
+                    {activeTab === "listData" ? (
+                      <Image
+                        src={listActiveView}
+                        alt="listActiveView"
+                        width={50}
+                        height={50}
+                      />
+                    ) : (
+                      <Image
+                        src={listView}
+                        alt="listView"
+                        width={50}
+                        height={50}
+                      />
+                    )}
                   </Tab>
 
-                  <Tab id="gridData" image={true} activeTab={activeTab} onClick={handleTabClick}>
-                    {activeTab === "gridData" ? <Image src={gridActiveView} alt="gridActiveView" width={50} height={50} /> : <Image src={gridView} alt="gridView" width={50} height={50} />}
-
+                  <Tab
+                    id="gridData"
+                    image={true}
+                    activeTab={activeTab}
+                    onClick={handleTabClick}
+                  >
+                    {activeTab === "gridData" ? (
+                      <Image
+                        src={gridActiveView}
+                        alt="gridActiveView"
+                        width={50}
+                        height={50}
+                      />
+                    ) : (
+                      <Image
+                        src={gridView}
+                        alt="gridView"
+                        width={50}
+                        height={50}
+                      />
+                    )}
                   </Tab>
                 </div>
 
                 <div className="sm:flex hidden items-center gap-3">
                   <div>
-
-
                     <div className="relative w-full">
                       <div className="absolute top-[55%] transform -translate-y-1/2 left-2">
-                        <Image src={mapIcon} alt="search" width={22} height={22} />
+                        <Image
+                          src={mapIcon}
+                          alt="search"
+                          width={22}
+                          height={22}
+                        />
                       </div>
                       <select
                         id="location"
@@ -799,23 +899,33 @@ export default function Inventory({ locale, inventoryData }) {
                     </div>
                   </div>
                 </div>
-
               </div>
 
               <div className="sm:hidden block">
-                {activeTab == 'gridData' && (
+                {activeTab == "gridData" && (
                   <div className="">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
-                    {currentCards.length === 0 ? (
+                      {currentCards.length === 0 ? (
                         <p>No Data available</p>
                       ) : (
-                        currentCards.slice(0, 3).map((item, idx) => ( 
+                        currentCards.slice(0, 3).map((item, idx) => (
                           <div
                             key={idx}
                             className="gap-4 bg-white border-[#D9D9D9] border-[1px] overflow-hidden shadow-lg flex-none cursor-pointer"
                           >
-
-                            <div className="relative" onClick={() => router.push(`/tractor-details/${item.tractorId}`)}>
+                            <div
+                              className="relative"
+                              onClick={() => {
+                                console.log("Navigating to:", item);
+                                router.push(
+                                  `/tractor-details/${
+                                    item.tractorId
+                                  }-${item.title
+                                    .replace(/\s+/g, "-")
+                                    .toLowerCase()}`
+                                );
+                              }}
+                            >
                               <Image
                                 className="w-full"
                                 src={item.imageLink || DefaultTractor}
@@ -841,9 +951,18 @@ export default function Inventory({ locale, inventoryData }) {
                                 {item.features.map((feature, fIdx) => (
                                   <div
                                     key={fIdx}
-                                    className={`flex gap-1 h-[14px] items-center  ${fIdx < item.features.length - 1 ? 'border-r-[1px] border-black' : ''}  ${fIdx > 0 ? 'px-[6px] ' : 'pr-[6px]'}`}
+                                    className={`flex gap-1 h-[14px] items-center  ${
+                                      fIdx < item.features.length - 1
+                                        ? "border-r-[1px] border-black"
+                                        : ""
+                                    }  ${fIdx > 0 ? "px-[6px] " : "pr-[6px]"}`}
                                   >
-                                    <Image src={feature.icon} alt={feature.icon} width={10} height={10} />
+                                    <Image
+                                      src={feature.icon}
+                                      alt={feature.icon}
+                                      width={10}
+                                      height={10}
+                                    />
                                     <span>{feature.text}</span>
                                   </div>
                                 ))}
@@ -852,30 +971,40 @@ export default function Inventory({ locale, inventoryData }) {
                             <div className="border-t-[1px] border-[#D9D9D9] relative bottom-0">
                               <div className="m-[1px] xl:px-6 px-4 pt-4 pb-2 bg-secondaryColor cursor-pointer">
                                 <span className="flex items-center gap-1 font-semibold text-white mr-2 mb-2 text-base justify-center">
-                                  <Image src='/images/phnIcon.svg' width={15} height={15} className="w-4 mr-1" alt="phnIcon" /> Interested{" "}
+                                  <Image
+                                    src="/images/phnIcon.svg"
+                                    width={15}
+                                    height={15}
+                                    className="w-4 mr-1"
+                                    alt="phnIcon"
+                                  />{" "}
+                                  Interested{" "}
                                 </span>
                               </div>
                             </div>
                           </div>
-                       ))
+                        ))
                       )}
                     </div>
                   </div>
-                )} 
-                {activeTab == 'listData' && (
+                )}
+                {activeTab == "listData" && (
                   <div className="">
                     <div className="grid grid-cols-1 gap-4 my-6">
                       {currentCards.length === 0 ? (
                         <p>No Data available</p>
                       ) : (
                         currentCards.slice(0, 3).map((item, idx) => (
-
-
-                          <Link key={idx} className="tractor-details-info cursor-pointer" href={`/tractor-details/${item.slug}`} passHref >
-
+                          <Link
+                            key={idx}
+                            className="tractor-details-info cursor-pointer"
+                            href={`/tractor-details/${item.slug}`}
+                            passHref
+                          >
                             <div
                               key={idx}
-                              className="gap-4 bg-white border-[#D9D9D9] border-[1px] overflow-hidden shadow-lg flex-none  cursor-pointer">
+                              className="gap-4 bg-white border-[#D9D9D9] border-[1px] overflow-hidden shadow-lg flex-none  cursor-pointer"
+                            >
                               <div className="flex">
                                 <div className="w-[40%] relative">
                                   <div className="w-full h-[175px]">
@@ -889,16 +1018,16 @@ export default function Inventory({ locale, inventoryData }) {
                                   </div>
 
                                   {item.certified && (
-                                    <div className="bg-secondaryColor px-2
-                                   text-white text-sm absolute top-2 left-2 uppercase font-medium border-gradient">
+                                    <div
+                                      className="bg-secondaryColor px-2
+                                   text-white text-sm absolute top-2 left-2 uppercase font-medium border-gradient"
+                                    >
                                       CERTIFIED
                                     </div>
                                   )}
                                 </div>
                                 <div className="w-[60%]">
-
                                   <div className="p-2">
-
                                     <div className="ellipsis font-bold xl:text-lg md:text-[16px] sm:text-[14px] text-base tractorTitle">
                                       {item.title}
                                     </div>
@@ -908,32 +1037,20 @@ export default function Inventory({ locale, inventoryData }) {
                                     </div>
 
                                     <div className="flex items-center xl:text-base lg:text-sm sm:text-sm text-[0.7rem] my-3">
-                                      {item.features.slice(0, -1).map((feature, fIdx) => (
-                                        <div
-                                          key={fIdx}
-                                          className={`flex gap-1 items-center ${fIdx < item.features.length - 2 ? 'border-r-[1px] border-black' : ''}  ${fIdx > 0 ? 'px-[6px]' : 'pr-[6px]'}`}
-                                        >
-                                          <div className="w-2 h-2 sm:w-3 sm:h-3">
-                                            <Image
-                                              src={feature.icon}
-                                              alt={feature.icon}
-                                              layout="responsive"
-                                              width={2}
-                                              height={2}
-                                            />
-                                          </div>
-                                          <span>{feature.text}</span>
-                                        </div>
-                                      ))}
-                                    </div>
-
-                                    {item.features.slice(-1).map((feature, fIdx) => (
-                                      <>
-                                        <div className="flex items-center xl:text-base lg:text-sm sm:text-sm text-[0.7rem] my-3">
+                                      {item.features
+                                        .slice(0, -1)
+                                        .map((feature, fIdx) => (
                                           <div
                                             key={fIdx}
-                                            className={`flex gap-1 items-center ${fIdx > 0 ? 'px-[6px]' : 'pr-[6px]'}`}>
-                                            <div className="w-3 h-3 sm:w-3 sm:h-3">
+                                            className={`flex gap-1 items-center ${
+                                              fIdx < item.features.length - 2
+                                                ? "border-r-[1px] border-black"
+                                                : ""
+                                            }  ${
+                                              fIdx > 0 ? "px-[6px]" : "pr-[6px]"
+                                            }`}
+                                          >
+                                            <div className="w-2 h-2 sm:w-3 sm:h-3">
                                               <Image
                                                 src={feature.icon}
                                                 alt={feature.icon}
@@ -944,23 +1061,55 @@ export default function Inventory({ locale, inventoryData }) {
                                             </div>
                                             <span>{feature.text}</span>
                                           </div>
-                                        </div>
-                                        <div className="cursor-pointer w-fit">
-                                          <div className="px-1 py-1 bg-secondaryColor cursor-pointer rounded">
-                                            <span className="flex items-center gap-1 font-semibold text-white mr-2 text-medium justify-center">
-                                              <Image src='/images/phnIcon.svg' width={12} height={12} className="w-4 mr-1" alt="phnIcon" /> Interested{" "}
-                                            </span>
-                                          </div>
-                                        </div>
+                                        ))}
+                                    </div>
 
-                                      </>
-                                    ))}
+                                    {item.features
+                                      .slice(-1)
+                                      .map((feature, fIdx) => (
+                                        <>
+                                          <div className="flex items-center xl:text-base lg:text-sm sm:text-sm text-[0.7rem] my-3">
+                                            <div
+                                              key={fIdx}
+                                              className={`flex gap-1 items-center ${
+                                                fIdx > 0
+                                                  ? "px-[6px]"
+                                                  : "pr-[6px]"
+                                              }`}
+                                            >
+                                              <div className="w-3 h-3 sm:w-3 sm:h-3">
+                                                <Image
+                                                  src={feature.icon}
+                                                  alt={feature.icon}
+                                                  layout="responsive"
+                                                  width={2}
+                                                  height={2}
+                                                />
+                                              </div>
+                                              <span>{feature.text}</span>
+                                            </div>
+                                          </div>
+                                          <div className="cursor-pointer w-fit">
+                                            <div className="px-1 py-1 bg-secondaryColor cursor-pointer rounded">
+                                              <span className="flex items-center gap-1 font-semibold text-white mr-2 text-medium justify-center">
+                                                <Image
+                                                  src="/images/phnIcon.svg"
+                                                  width={12}
+                                                  height={12}
+                                                  className="w-4 mr-1"
+                                                  alt="phnIcon"
+                                                />{" "}
+                                                Interested{" "}
+                                              </span>
+                                            </div>
+                                          </div>
+                                        </>
+                                      ))}
                                   </div>
                                 </div>
                               </div>
                             </div>
                           </Link>
-
                         ))
                       )}
                     </div>
@@ -981,7 +1130,15 @@ export default function Inventory({ locale, inventoryData }) {
                         <div className="wholeCard cursor-pointer">
                           <div className="relative">
                             <Image
-                              onClick={() => router.push(`/tractor-details/${item.tractorId}`)}
+                              onClick={() =>
+                                router.push(
+                                  `/tractor-details/${
+                                    item.tractorId
+                                  }-${item.title
+                                    .replace(/\s+/g, "-")
+                                    .toLowerCase()}`
+                                )
+                              }
                               className="w-full"
                               src={item.imageLink || DefaultTractor}
                               alt="cardImage"
@@ -1006,9 +1163,18 @@ export default function Inventory({ locale, inventoryData }) {
                               {item.features?.map((feature, fIdx) => (
                                 <div
                                   key={fIdx}
-                                  className={`flex gap-1 h-[14px] items-center ${fIdx < item.features.length - 1 ? 'border-r-[1px] border-black' : ''}  ${fIdx > 0 ? 'px-[6px]' : 'pr-[6px]'}`}
+                                  className={`flex gap-1 h-[14px] items-center ${
+                                    fIdx < item.features.length - 1
+                                      ? "border-r-[1px] border-black"
+                                      : ""
+                                  }  ${fIdx > 0 ? "px-[6px]" : "pr-[6px]"}`}
                                 >
-                                  <Image src={feature.icon} alt={feature.icon} width={10} height={10} />
+                                  <Image
+                                    src={feature.icon}
+                                    alt={feature.icon}
+                                    width={10}
+                                    height={10}
+                                  />
                                   <span>{feature.text}</span>
                                 </div>
                               ))}
@@ -1019,20 +1185,29 @@ export default function Inventory({ locale, inventoryData }) {
                         <div className="border-t-[1px] border-[#D9D9D9] relative bottom-0">
                           <div className="m-[1px] xl:px-6 px-4 pt-4 pb-2 bg-secondaryColor cursor-pointer">
                             <span className="flex items-center gap-1 font-semibold text-white mr-2 mb-2 text-base justify-center">
-                              <Image src='/images/phnIcon.svg' width={15} height={15} className="w-4 mr-1" alt="phnIcon" /> Interested{" "}
+                              <Image
+                                src="/images/phnIcon.svg"
+                                width={15}
+                                height={15}
+                                className="w-4 mr-1"
+                                alt="phnIcon"
+                              />{" "}
+                              Interested{" "}
                             </span>
                           </div>
                         </div>
                       </div>
                     ))
                   )}
-
                 </div>
               </div>
-              <Heading heading={'Tractors by Brands '} viewButton={false} />
+              <Heading heading={"Tractors by Brands "} viewButton={false} />
               <div className="grid sm:grid-cols-6 grid-cols-3 sm:gap-6 gap-4">
                 {brandsLogos.slice(0, 12).map((brandlogo, index) => (
-                  <div className="w-full cursor-pointer border shadow p-4" key={index}>
+                  <div
+                    className="w-full cursor-pointer border shadow p-4"
+                    key={index}
+                  >
                     <Image
                       loader={customImageLoader}
                       width={50}
@@ -1052,16 +1227,103 @@ export default function Inventory({ locale, inventoryData }) {
 
               <div className="sm:block hidden">
                 <div className="grid sm:grid-cols-3 grid-cols-1 gap-4 my-6">
+                  {currentCards.slice(3).map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="gap-4 bg-white border-[#D9D9D9] border-[1px] overflow-hidden shadow-lg flex-none w-80 sm:w-auto"
+                    >
+                      <div className="wholeCard cursor-pointer">
+                        <div
+                          className="relative"
+                          onClick={() =>
+                            router.push(
+                              `/tractor-details/${item.tractorId}-${item.title
+                                .replace(/\s+/g, "-")
+                                .toLowerCase()}`
+                            )
+                          }
+                        >
+                          <Image
+                            className="w-full"
+                            src={item.imageLink || DefaultTractor}
+                            alt="cardImage"
+                            layout="responsive"
+                            width={100}
+                            height={70}
+                          />
+                          {item.certified && (
+                            <div className="bg-secondaryColor px-2 text-white text-sm absolute top-4 left-4 uppercase font-medium border-gradient">
+                              CERTIFIED
+                            </div>
+                          )}
+                          <div className="bg-black font-semibold text-white w-auto px-2 py-1 float-right">
+                            {formatPrice(item.price)}
+                          </div>
+                        </div>
+                        <div className="xl:px-4  sm:bg-white bg-[#eeeeee] lg:px-2 sm:px-2 px-2 pt-1 h-24">
+                          <div className="ellipsis font-bold xl:text-lg md:text-[16px] sm:text-[14px] text-base tractorTitle">
+                            {item.title}
+                          </div>
+                          <div className="flex items-center xl:text-base lg:text-sm sm:text-sm text-base my-3">
+                            {item.features.map((feature, fIdx) => (
+                              <div
+                                key={fIdx}
+                                className={`flex gap-1 h-[14px] items-center  ${
+                                  fIdx < item.features.length - 1
+                                    ? "border-r-[1px] border-black"
+                                    : ""
+                                }  ${fIdx > 0 ? "px-[6px]" : "pr-[6px]"}`}
+                              >
+                                <Image
+                                  src={feature.icon}
+                                  alt={feature.icon}
+                                  width={10}
+                                  height={10}
+                                />
+                                <span>{feature.text}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="border-t-[1px] border-[#D9D9D9] relative bottom-0">
+                        <div className="m-[1px] xl:px-6 px-4 pt-4 pb-2 bg-secondaryColor cursor-pointer">
+                          <span className="flex items-center gap-1 font-semibold text-white mr-2 mb-2 text-base justify-center">
+                            <Image
+                              src="/images/phnIcon.svg"
+                              width={15}
+                              height={15}
+                              className="w-4 mr-1"
+                              alt="phnIcon"
+                            />{" "}
+                            Interested{" "}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
-                  {
-                    currentCards.slice(3).map((item, idx) => (
-                      <div
-                        key={idx}
-                        className="gap-4 bg-white border-[#D9D9D9] border-[1px] overflow-hidden shadow-lg flex-none w-80 sm:w-auto"
-                      >
-
-                        <div className="wholeCard cursor-pointer">
-                          <div className="relative" onClick={() => router.push(`/tractor-details/${item.tractorId}`)}>
+              <div className="sm:hidden block">
+                {activeTab == "gridData" && (
+                  <div className="">
+                    <div className="grid grid-cols-1 gap-4 my-6">
+                      {filters.slice(3).map((item, idx) => (
+                        <div
+                          key={idx}
+                          className="gap-4 bg-white border-[#D9D9D9] border-[1px] overflow-hidden shadow-lg flex-none"
+                        >
+                          <div
+                            className="relative"
+                            onClick={() =>
+                              router.push(
+                                `/tractor-details/${item.tractorId}-${item.title
+                                  .replace(/\s+/g, "-")
+                                  .toLowerCase()}`
+                              )
+                            }
+                          >
                             <Image
                               className="w-full"
                               src={item.imageLink || DefaultTractor}
@@ -1079,7 +1341,7 @@ export default function Inventory({ locale, inventoryData }) {
                               {formatPrice(item.price)}
                             </div>
                           </div>
-                          <div className="xl:px-4  sm:bg-white bg-[#eeeeee] lg:px-2 sm:px-2 px-2 pt-1 h-24">
+                          <div className="xl:px-4 lg:px-2 sm:px-2 px-2 pt-1 h-24">
                             <div className="ellipsis font-bold xl:text-lg md:text-[16px] sm:text-[14px] text-base tractorTitle">
                               {item.title}
                             </div>
@@ -1087,130 +1349,104 @@ export default function Inventory({ locale, inventoryData }) {
                               {item.features.map((feature, fIdx) => (
                                 <div
                                   key={fIdx}
-                                  className={`flex gap-1 h-[14px] items-center  ${fIdx < item.features.length - 1 ? 'border-r-[1px] border-black' : ''}  ${fIdx > 0 ? 'px-[6px]' : 'pr-[6px]'}`}
+                                  className={`flex gap-1 h-[14px] items-center  ${
+                                    fIdx < item.features.length - 1
+                                      ? "border-r-[1px] border-black"
+                                      : ""
+                                  } ${fIdx > 0 ? "px-[6px]" : "pr-[6px]"}`}
                                 >
-                                  <Image src={feature.icon} alt={feature.icon} width={10} height={10} />
+                                  <Image
+                                    src={feature.icon}
+                                    alt={feature.icon}
+                                    width={10}
+                                    height={10}
+                                  />
                                   <span>{feature.text}</span>
                                 </div>
                               ))}
                             </div>
                           </div>
-                        </div>
-                        <div className="border-t-[1px] border-[#D9D9D9] relative bottom-0">
-                          <div className="m-[1px] xl:px-6 px-4 pt-4 pb-2 bg-secondaryColor cursor-pointer">
-                            <span className="flex items-center gap-1 font-semibold text-white mr-2 mb-2 text-base justify-center">
-                              <Image src='/images/phnIcon.svg' width={15} height={15} className="w-4 mr-1" alt="phnIcon" /> Interested{" "}
-                            </span>
+                          <div className="border-t-[1px] border-[#D9D9D9] relative bottom-0">
+                            <div className="m-[1px] xl:px-6 px-4 pt-4 pb-2 bg-secondaryColor cursor-pointer">
+                              <span className="flex items-center gap-1 font-semibold text-white mr-2 mb-2 text-base justify-center">
+                                <Image
+                                  src="/images/phnIcon.svg"
+                                  width={15}
+                                  height={15}
+                                  className="w-4 mr-1"
+                                  alt="phnIcon"
+                                />{" "}
+                                Interested{" "}
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))
-                  }
-
-                </div>
-              </div>
-
-              <div className="sm:hidden block">
-                {activeTab == 'gridData' && (
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {activeTab == "listData" && (
                   <div className="">
                     <div className="grid grid-cols-1 gap-4 my-6">
-                      {
-                        filters.slice(3).map((item, idx) => (
-                          <div
-                            key={idx}
-                            className="gap-4 bg-white border-[#D9D9D9] border-[1px] overflow-hidden shadow-lg flex-none"
-                          >
-                            <div className="relative" onClick={() => router.push(`/tractor-details/${item.tractorId}`)}>
+                      {currentCards.slice(3).map((item, idx) => (
+                        <div
+                          key={idx}
+                          className="gap-4 bg-white border-[#D9D9D9] border-[1px] overflow-hidden shadow-lg flex-none"
+                        >
+                          <div className="flex">
+                            <div
+                              className="w-[40%] relative"
+                              onClick={() =>
+                                router.push(
+                                  `/tractor-details/${
+                                    item.tractorId
+                                  }-${item.title
+                                    .replace(/\s+/g, "-")
+                                    .toLowerCase()}`
+                                )
+                              }
+                            >
                               <Image
                                 className="w-full"
                                 src={item.imageLink || DefaultTractor}
                                 alt="cardImage"
                                 layout="responsive"
                                 width={100}
-                                height={70}
+                                height={100}
                               />
+
                               {item.certified && (
-                                <div className="bg-secondaryColor px-2 text-white text-sm absolute top-4 left-4 uppercase font-medium border-gradient">
+                                <div
+                                  className="bg-secondaryColor px-2
+                                   text-white text-sm absolute top-2 left-2 uppercase font-medium border-gradient"
+                                >
                                   CERTIFIED
                                 </div>
                               )}
-                              <div className="bg-black font-semibold text-white w-auto px-2 py-1 float-right">
-                                {formatPrice(item.price)}
-                              </div>
                             </div>
-                            <div className="xl:px-4 lg:px-2 sm:px-2 px-2 pt-1 h-24">
-                              <div className="ellipsis font-bold xl:text-lg md:text-[16px] sm:text-[14px] text-base tractorTitle">
-                                {item.title}
-                              </div>
-                              <div className="flex items-center xl:text-base lg:text-sm sm:text-sm text-base my-3">
-                                {item.features.map((feature, fIdx) => (
-                                  <div
-                                    key={fIdx}
-                                    className={`flex gap-1 h-[14px] items-center  ${fIdx < item.features.length - 1 ? 'border-r-[1px] border-black' : ''} ${fIdx > 0 ? 'px-[6px]' : 'pr-[6px]'}`}
-                                  >
-                                    <Image src={feature.icon} alt={feature.icon} width={10} height={10} />
-                                    <span>{feature.text}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                            <div className="border-t-[1px] border-[#D9D9D9] relative bottom-0">
-                              <div className="m-[1px] xl:px-6 px-4 pt-4 pb-2 bg-secondaryColor cursor-pointer">
-                                <span className="flex items-center gap-1 font-semibold text-white mr-2 mb-2 text-base justify-center">
-                                  <Image src='/images/phnIcon.svg' width={15} height={15} className="w-4 mr-1" alt="phnIcon" /> Interested{" "}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        ))
-                      }
+                            <div className="w-[60%]">
+                              <div className="p-2">
+                                <div className="ellipsis font-bold xl:text-lg md:text-[16px] sm:text-[14px] text-base tractorTitle">
+                                  {item.title}
+                                </div>
 
-                    </div>
-                  </div>
-                )}
-                {activeTab == 'listData' && (
-                  <div className="">
-                    <div className="grid grid-cols-1 gap-4 my-6">
-                      {
-                        currentCards.slice(3).map((item, idx) => (
-                          <div
-                            key={idx}
-                            className="gap-4 bg-white border-[#D9D9D9] border-[1px] overflow-hidden shadow-lg flex-none">
+                                <div className="bg-black font-semibold text-white w-max px-2 py-1 mt-2">
+                                  {formatPrice(item.price)}
+                                </div>
 
-                            <div className="flex">
-                              <div className="w-[40%] relative" onClick={() => router.push(`/tractor-details/${item.tractorId}`)}>
-                                <Image
-                                  className="w-full"
-                                  src={item.imageLink || DefaultTractor}
-                                  alt="cardImage"
-                                  layout="responsive"
-                                  width={100}
-                                  height={100} />
-
-                                {item.certified && (
-                                  <div className="bg-secondaryColor px-2
-                                   text-white text-sm absolute top-2 left-2 uppercase font-medium border-gradient">
-                                    CERTIFIED
-                                  </div>
-                                )}
-                              </div>
-                              <div className="w-[60%]">
-
-                                <div className="p-2">
-
-                                  <div className="ellipsis font-bold xl:text-lg md:text-[16px] sm:text-[14px] text-base tractorTitle">
-                                    {item.title}
-                                  </div>
-
-                                  <div className="bg-black font-semibold text-white w-max px-2 py-1 mt-2">
-                                    {formatPrice(item.price)}
-                                  </div>
-
-                                  <div className="flex items-center xl:text-base lg:text-sm sm:text-sm text-[0.7rem] my-3">
-                                    {item.features.slice(0, -1).map((feature, fIdx) => (
+                                <div className="flex items-center xl:text-base lg:text-sm sm:text-sm text-[0.7rem] my-3">
+                                  {item.features
+                                    .slice(0, -1)
+                                    .map((feature, fIdx) => (
                                       <div
                                         key={fIdx}
-                                        className={`flex gap-1 items-center  ${fIdx < item.features.length - 2 ? 'border-r-[1px] border-black' : ''} ${fIdx > 0 ? 'px-[6px]' : 'pr-[6px]'}`}
+                                        className={`flex gap-1 items-center  ${
+                                          fIdx < item.features.length - 2
+                                            ? "border-r-[1px] border-black"
+                                            : ""
+                                        } ${
+                                          fIdx > 0 ? "px-[6px]" : "pr-[6px]"
+                                        }`}
                                       >
                                         <div className="w-2 h-2 sm:w-3 sm:h-3">
                                           <Image
@@ -1224,14 +1460,19 @@ export default function Inventory({ locale, inventoryData }) {
                                         <span>{feature.text}</span>
                                       </div>
                                     ))}
-                                  </div>
+                                </div>
 
-                                  {item.features.slice(-1).map((feature, fIdx) => (
+                                {item.features
+                                  .slice(-1)
+                                  .map((feature, fIdx) => (
                                     <>
                                       <div className="flex items-center xl:text-base lg:text-sm sm:text-sm text-[0.7rem] my-3">
                                         <div
                                           key={fIdx}
-                                          className={`flex gap-1 items-center ${fIdx > 0 ? 'px-[6px]' : 'pr-[6px]'}`}>
+                                          className={`flex gap-1 items-center ${
+                                            fIdx > 0 ? "px-[6px]" : "pr-[6px]"
+                                          }`}
+                                        >
                                           <div className="w-3 h-3 sm:w-3 sm:h-3">
                                             <Image
                                               src={feature.icon}
@@ -1247,19 +1488,24 @@ export default function Inventory({ locale, inventoryData }) {
                                       <div className="cursor-pointer w-fit">
                                         <div className="px-1 py-1 bg-secondaryColor cursor-pointer rounded">
                                           <span className="flex items-center gap-1 font-semibold text-white mr-2 text-medium justify-center">
-                                            <Image src='/images/phnIcon.svg' width={12} height={12} className="w-4 mr-1" alt="phnIcon" /> Interested{" "}
+                                            <Image
+                                              src="/images/phnIcon.svg"
+                                              width={12}
+                                              height={12}
+                                              className="w-4 mr-1"
+                                              alt="phnIcon"
+                                            />{" "}
+                                            Interested{" "}
                                           </span>
                                         </div>
                                       </div>
-
                                     </>
                                   ))}
-                                </div>
                               </div>
                             </div>
                           </div>
-                        ))
-                      }
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
@@ -1271,11 +1517,9 @@ export default function Inventory({ locale, inventoryData }) {
                 CurrentPage={currentPage}
                 setCurrentPage={setCurrentPage}
               />
-
             </div>
           </div>
         </div>
-
       </Layout>
 
       <Modal
@@ -1285,7 +1529,10 @@ export default function Inventory({ locale, inventoryData }) {
         handleClose={handleClose}
         content={
           <>
-            <div className="block mb-4 text-center mx-auto" onClick={handleClose} >
+            <div
+              className="block mb-4 text-center mx-auto"
+              onClick={handleClose}
+            >
               <Image
                 src={Crossmark}
                 width={35}
@@ -1322,4 +1569,3 @@ export default function Inventory({ locale, inventoryData }) {
 export async function getServerSideProps(context) {
   return await getLocaleProps(context);
 }
-

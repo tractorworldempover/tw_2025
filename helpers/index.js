@@ -21,6 +21,7 @@ export async function getLocaleProps(context) {
     console.error("❌ Error fetching data in getLocaleProps:", error);
   }
 
+
   return {
     props: {
       locale,

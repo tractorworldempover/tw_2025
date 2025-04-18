@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import LeftArrow from '@Images/slickslider/left_arrow.svg';
@@ -187,8 +186,10 @@ const LiveInventoryContainer = ({ locale, data }) => {
           <div className="">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
               {
-                data.map((item, idx) => (
-
+                data.map((item, idx) => {
+                  console.log("Item:", item),
+                  console.log(`/tractor-details/${item.tractorId}-${item.title.replace(/\s+/g, '-').toLowerCase()}`);
+                  return(
                   <div key={idx} className="tractor-details-info cursor-pointer">
 
                     <div
@@ -196,7 +197,7 @@ const LiveInventoryContainer = ({ locale, data }) => {
                       className="gap-4 bg-white border-[#D9D9D9] border-[1px] overflow-hidden shadow-lg flex-none cursor-pointer"
                     >
 
-                      <div className="relative" onClick={() => router.push(`/tractor-details/${item.tractorId}`)}>
+                      <div className="relative" onClick={() => router.push(`/tractor-details/${item.tractorId}-${item.title.replace(/\s+/g, '-').toLowerCase()}`)}>
                         <Image
                           className="w-full"
                           src={DefaultTractor}
@@ -230,7 +231,7 @@ const LiveInventoryContainer = ({ locale, data }) => {
                                   ))} */}
                           {/* <div className="ellipsis font-bold xl:text-lg md:text-[16px] sm:text-[14px] text-base tractorTitle">
                             {item.title}
-                          </div> */}
+                          </div> */}details
                           <div className="flex items-center xl:text-base lg:text-sm sm:text-sm text-base my-3">
                             {item.hours && (<div className='flex gap-1 h-[14px] items-center border-r-[1px] border-black pr-2'>
                               <Image src={Time} alt='Time'></Image> {item.hours} hrs
@@ -256,7 +257,7 @@ const LiveInventoryContainer = ({ locale, data }) => {
                       </div>
                     </div>
                   </div>
-                ))
+                )})
               }
             </div>
           </div>
@@ -266,15 +267,21 @@ const LiveInventoryContainer = ({ locale, data }) => {
           <div className="">
             <div className="grid grid-cols-1 gap-4 my-6">
               {
-                data.map((item, idx) => (
-
-                  <div key={idx} className="tractor-details-info cursor-pointer">
+                data.map((item, idx) => {
+                  console.log("Generating slug for item:", item.id, "Title:", item.title);
+                  console.log("Item:", item),
+                  console.log(`/tractor-details/${item.tractorId}-${item.title.replace(/\s+/g, '-').toLowerCase()}`);
+                  if (!item.title) {
+                    console.warn(`⚠️ Missing title for item ID: ${item.id}`);
+                  }
+                  return(
+                  <div key={idx} className="tractor--info cursor-pointer">
                     <div
                       key={idx}
                       className="gap-4 bg-white border-[#D9D9D9] border-[1px] overflow-hidden shadow-lg flex-none  cursor-pointer">
                       <div className="flex">
                         <div className="w-[40%] relative">
-                          <div className="w-full h-[175px]" onClick={() => router.push(`/tractor-details/${item.tractorId}`)}>
+                          <div className="w-full h-[175px]" onClick={() => router.push(`/tractor-details/${item.tractorId}-${item.title.replace(/\s+/g, '-').toLowerCase()}`)}>
                             <Image
                               className="w-full h-[600px]"
                               src={DefaultTractor}
@@ -339,7 +346,7 @@ const LiveInventoryContainer = ({ locale, data }) => {
                     </div>
                   </div>
 
-                ))
+                )})
               }
             </div>
           </div>

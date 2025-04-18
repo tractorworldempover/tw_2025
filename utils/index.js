@@ -397,9 +397,7 @@ export const fetchLocations = async (setLocations, setStates) => {
   }
 };
 
-export const getFilteredDistricts = (locations, selectedState) => {
-  return Object.keys(locations).filter(
-    (district) => locations[district].state === selectedState
-  );
-};
+
+
+
 
