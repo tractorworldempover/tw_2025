@@ -60,7 +60,7 @@ export default function ContactUs() {
 
     try {
       debugger;
-      const res = await fetch(`${process.env.NEXT_PUBLIC_WORDPRESS_BASE_URL}wp-json/custom/v1/contact`, {
+      const res = await fetch("https://mazutwmwpbackend002.azurewebsites.net/wp-json/custom/v1/contact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
