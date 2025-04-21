@@ -260,6 +260,8 @@ export default function TractorDetails({ locale }) {
     }
   }, []);
 
+  
+
   useEffect(() => {
     // debugger;
 
@@ -278,7 +280,9 @@ export default function TractorDetails({ locale }) {
           district: selectedTractor.district,
           state: selectedTractor.state,
           price: selectedTractor.max_price,
-          imageLink: DefaultTractor,
+          image_links: Array.isArray(selectedTractor.image_links)
+          ? selectedTractor.image_links
+          : Object.values(selectedTractor.image_links || {}),
           id: selectedTractor.tractor_id,
           enginePower: selectedTractor.engine_power,
           battery: selectedTractor.is_battery_branded,
@@ -288,6 +292,8 @@ export default function TractorDetails({ locale }) {
           engineHours: selectedTractor.engine_hours,
         },
       ];
+
+      console.log("TractorDetails[0]", tractorDetails[0]);
 
       // Setting dynamic features based on the selected tractor
       const updatedFeatures = features.map((feature) => {
@@ -403,6 +409,10 @@ export default function TractorDetails({ locale }) {
     totalAmtInt: 0,
   };
 
+  useEffect(() => {
+    console.log("Inventory Data from useInventory:", inventoryData); // Log the inventory data
+  }, [inventoryData]);
+
   return (
     <Layout>
       {TractorDetails && TractorDetails.length > 0 ? (
@@ -425,7 +435,7 @@ export default function TractorDetails({ locale }) {
 
             {/* slide */}
             <div className="sm:w-1/2 w-full border">
-              <InventoryCarousel />
+              <InventoryCarousel images={TractorDetails[0]?.image_links || []} locale={locale} />
             </div>
             <div className="sm:w-1/2 w-full">
               <div className="">

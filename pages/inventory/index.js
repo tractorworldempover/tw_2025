@@ -259,7 +259,7 @@ export default function Inventory({ locale }) {
 
   // Ensure PopularTractors (which is containing all 1725 data) is populated at the start
   useEffect(() => {
- 
+    console.log("Inventory Data:", inventoryData); // Log the inventory data
     if (!Array.isArray(inventoryData) || inventoryData.length === 0) return;
 
     async function fetchTractors() {
