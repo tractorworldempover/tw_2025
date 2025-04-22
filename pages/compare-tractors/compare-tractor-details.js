@@ -16,7 +16,12 @@ import { useTranslation } from 'next-i18next';
 import { calculateEMI, formatPrice, getHomePageTractorsListBasedOnInventory } from "@utils";
 import Link from 'next/link';
 import { useInventory} from "@utils";
-
+import {
+    getTractorDetailsById,
+    getTabLabel,
+    HomeHPRanges,
+  } from "@utils";
+  import HP from "@Images/hp.svg";
 
 export async function getServerSideProps(context) {
     return await getLocaleProps(context);
@@ -371,7 +376,7 @@ export default function CompareTractorDetails({ locale }) {
                         <Tab id="ThreeData" activeTab={activeTab} onClick={handleTabClick}>Upcoming</Tab>
                     </div> */}
 
-                    <div className="">
+                    {/* <div className="">
                         <div className='grid sm:grid-cols-3 grid-cols-1 xl:gap-8 gap-4'>
                             {Object.keys(compareTractorData).map((key) =>
                                 activeTab === key ? (
@@ -394,7 +399,7 @@ export default function CompareTractorDetails({ locale }) {
                                                     </div>
                                                 </div>
                                                 {/* <Btn className="uppercase" text={'COMPARE'} /> */}
-                                            </div>
+                                            {/* </div>
                                         ))}
                                     </>
                                 ) : null
@@ -404,7 +409,97 @@ export default function CompareTractorDetails({ locale }) {
                         <div className='flex justify-center my-6'>
                             <Link href="/compare-tractors"><Btn text={t('Home.View_All_Tractor_Comparison')} bgColor={true} /></Link>
                         </div>
-                    </div>
+                    </div> */}
+                    
+                    
+                    <div className="flex sm:gap-4 gap-2 my-3 font-medium relative z-20">
+                                {HomeHPRanges.map((range) => (
+                                  <Tab
+                                    key={range.key}
+                                    id={range.key}
+                                    activeTab={activeTab}
+                                    onClick={handleTabClick}
+                                  >
+                                    {getTabLabel(range.min, range.max)}
+                                  </Tab>
+                                ))}
+                              </div>
+                    
+                              <div className="">
+                                <div className="grid sm:grid-cols-3 md:gap-6 gap-4">
+                                  {Object.keys(compareTractorData).map((key) =>
+                                    activeTab === key ? (
+                                      <>
+                                        {compareTractorData[activeTab]
+                                          ?.slice(0, 3)
+                                          .map((item, index) => (
+                                            <div key={index} className="overflow-hidden flex-none">
+                                              <Image
+                                                src={CompareImage}
+                                                alt="compareImage"
+                                                layout="responsive"
+                                              />
+                                              <div className="flex justify-between px-3 mb-3">
+                                                <div>
+                                                  <div>{item.brand1}</div>
+                                                  <div className="font-semibold my-1">
+                                                    <Image
+                                                      src={HP}
+                                                      width={15}
+                                                      height={15}
+                                                      alt="hp"
+                                                    />{" "}
+                                                    {item.brand1hp}
+                                                  </div>
+                                                  <div className="font-semibold my-1">
+                                                    {formatPrice(item.brand1price)}
+                                                  </div>
+                                                </div>
+                                                <div>
+                                                  <div>{item.brand2}</div>
+                                                  <div className="font-semibold my-1">
+                                                    <Image
+                                                      src={HP}
+                                                      width={15}
+                                                      height={15}
+                                                      alt="hp"
+                                                    />{" "}
+                                                    {item.brand2hp}
+                                                  </div>
+                                                  <div className="font-semibold my-1">
+                                                    {" "}
+                                                    {formatPrice(item.brand2price)}
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <Link
+                                                href={{
+                                                  pathname:
+                                                    "/compare-tractors/compare-tractor-details",
+                                                  query: {
+                                                    t1: item.brand1,
+                                                    t2: item.brand2,
+                                                    id1: item.brand1Id,
+                                                    id2: item.brand2Id,
+                                                  },
+                                                }}
+                                                passHref
+                                              >
+                                                <Btn
+                                                  className="uppercase"
+                                                  text={t("Home.COMPARE")}
+                                                />
+                                              </Link>
+                                            </div>
+                                          ))}
+                                      </>
+                                    ) : null
+                                  )}
+                                </div>
+                                <div className='flex justify-center my-6'>
+                            <Link href="/compare-tractors"><Btn text={t('Home.View_All_Tractor_Comparison')} bgColor={true} /></Link>
+                        </div>
+                              </div>
                 </div>
             </Layout>
         </div>
