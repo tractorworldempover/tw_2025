@@ -896,7 +896,17 @@ export default function Inventory({ locale }) {
                   <div className="">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
                       {currentCards.length === 0 ? (
-                        <p>Loading...</p>
+                        <div className="col-span-full flex justify-center items-center min-h-[600px]">
+                          <Image
+                            loader={customImageLoader}
+                            src={
+                              language === "HI" ? LoaderHi : language === "MR" ? LoaderMr : LoaderEn
+                            }
+                            alt="Loading..."
+                            width={120}
+                            height={120}
+                          />
+                        </div>
                       ) : (
                         currentCards.slice(0, 3).map((item, idx) => (
                           <div
@@ -981,7 +991,17 @@ export default function Inventory({ locale }) {
                   <div className="">
                     <div className="grid grid-cols-1 gap-4 my-6">
                       {currentCards.length === 0 ? (
-                        <p>Loading...</p>
+                        <div className="col-span-full flex justify-center items-center min-h-[600px]">
+                          <Image
+                            loader={customImageLoader}
+                            src={
+                              language === "HI" ? LoaderHi : language === "MR" ? LoaderMr : LoaderEn
+                            }
+                            alt="Loading..."
+                            width={120}
+                            height={120}
+                          />
+                        </div>
                       ) : (
                         currentCards.slice(0, 3).map((item, idx) => (
                           <Link
@@ -1109,7 +1129,17 @@ export default function Inventory({ locale }) {
               <div className="sm:block hidden">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
                   {currentCards.length === 0 ? (
-                    <p>Loading...</p>
+                    <div className="col-span-full flex justify-center items-center min-h-[600px]">
+                      <Image
+                        loader={customImageLoader}
+                        src={
+                          language === "HI" ? LoaderHi : language === "MR" ? LoaderMr : LoaderEn
+                        }
+                        alt="Loading..."
+                        width={150}
+                        height={150}
+                      />
+                    </div>
                   ) : (
                     currentCards.slice(0, 3).map((item, idx) => (
                       <div
