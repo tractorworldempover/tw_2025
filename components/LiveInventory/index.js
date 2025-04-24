@@ -268,9 +268,9 @@ const LiveInventoryContainer = ({ locale, data }) => {
             <div className="grid grid-cols-1 gap-4 my-6">
               {
                 data.map((item, idx) => {
-                  console.log("Generating slug for item:", item.id, "Title:", item.title);
-                  console.log("Item:", item),
-                  console.log(`/tractor-details/${item.tractorId}-${item.title.replace(/\s+/g, '-').toLowerCase()}`);
+                  // console.log("Generating slug for item:", item.id, "Title:", item.title);
+                  // console.log("Item:", item),
+                  // console.log(`/tractor-details/${item.tractorId}-${item.title.replace(/\s+/g, '-').toLowerCase()}`);
                   if (!item.title) {
                     console.warn(`⚠️ Missing title for item ID: ${item.id}`);
                   }

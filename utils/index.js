@@ -204,32 +204,39 @@ export const getTractorDetailsById = (inventoryData, tractorId) => {
  * @returns {string} - The first valid processed image URL, or the default image if no valid processed image is found.
  */
 export async function getValidImageUrl(imageLinks, DefaultTractor) {
-  // console.log("imageLinks:", imageLinks); // Log input data
+  const authKey = "?sv=2021-12-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-04-01T14:30:38Z&st=2023-03-29T06:30:38Z&spr=https&sig=mk0i2ZPyaotRM5smvwnf9y9%2BcZljr9BrtLIK2%2FnnJ6k%3D";
 
-  const imageArray = Array.isArray(imageLinks) ? imageLinks : Object.values(imageLinks);
+  const imageArray = Array.isArray(imageLinks) ? imageLinks : Object.values(imageLinks || {});
 
-  if (Array.isArray(imageArray) && imageArray.length > 0) {
+  if (imageArray.length > 0) {
     for (let i = 0; i < imageArray.length; i++) {
-      const imageUrl = imageArray[2]?.processed_image;
-      if (imageUrl) {
+      const baseImageUrl = imageArray[i]?.processed_image;
+      if (baseImageUrl) {
+        const needsAuth = baseImageUrl.includes("blob.core.windows.net");
+        const imageUrl = needsAuth ? `${baseImageUrl}${authKey}` : baseImageUrl;
+
         try {
-          const response = await fetch(imageUrl, { method: "HEAD" }); // Lightweight check
+          const response = await fetch(imageUrl, { method: "HEAD" });
           if (response.ok) {
-            // console.log(`Valid image found at index ${2}:`, imageUrl);
             return imageUrl;
-          } else {
-            // console.warn(`Image at index ${2} is broken:`, imageUrl);
           }
         } catch (error) {
-          // console.error(`Error fetching image at index ${2}:`, error);
+          // skip
         }
       }
     }
   }
 
-  // console.warn("No valid processed image found. Falling back to default image.");
-  return typeof DefaultTractor === "string" ? DefaultTractor : DefaultTractor?.src || "";
+  // Default fallback logic (no authKey if not needed)
+  if (typeof DefaultTractor === "string") {
+    return DefaultTractor;
+  } else if (DefaultTractor?.src) {
+    return DefaultTractor.src;
+  }
+
+  return ""; // Final fallback
 }
+
 
 export const getDealersData = () => {
   return [

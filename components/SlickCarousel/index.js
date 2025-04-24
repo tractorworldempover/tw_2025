@@ -21,7 +21,7 @@ const SlickCarousel = ({ items, settings }) => {
     router.push('/interested');
 };
 
-
+ 
   const { t } = useTranslation();
   const CheckTractorDetails = "Interested";
   return (
@@ -31,7 +31,7 @@ const SlickCarousel = ({ items, settings }) => {
           <div key={index} className="gap-4 bg-white border-[#D9D9D9] border-[1px]
            overflow-hidden shadow-lg cursor-pointer">
             <div className="relative" onClick={() => router.push(`/tractor-details/${item.tractorId}-${item.title.replace(/\s+/g, '-').toLowerCase()}`)}>
-              <Image className="w-full" src={DefaultTractor} alt="cardImage" layout="responsive" width={100} height={70} /> 
+              <Image className="w-full" src={item.imageLink} alt="cardImage" layout="responsive" width={100} height={70} /> 
               <div className="bg-secondaryColor px-2  text-white text-sm absolute top-4 left-4
                uppercase font-medium border-gradient">
                CERTIFIED

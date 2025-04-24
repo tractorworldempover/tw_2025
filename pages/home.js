@@ -53,11 +53,14 @@ import Loader from "@components/Loader";
 import Modal from "@components/Modal";
 import Crossmark from "@Images/inventory/closeIcon.svg";
 import { useTranslation } from "next-i18next";
+import DefaultTractor from "@Images/default_tractor.svg";
+
 import {
   HomeHPRanges,
   getTabLabel,
   getHomePageTractorsListBasedOnInventory,
   formatPrice,
+  getValidImageUrl
 } from "@utils";
 import { useInventory } from "@utils";
 import { customImageLoader } from "@utils/constants";
@@ -73,22 +76,39 @@ export default function HomePage({ locale, Inventorydata }) {
   const language = "EN";
   const { t, i18n } = useTranslation("common");
   const { inventory, loading} = useInventory(Inventorydata);
+  const [inventoryList, setInventoryList] = useState([]);
 
-  const inventoryList = useMemo(() => {
-    if (!inventory || inventory.length === 0) {
-      return [];
-    }
+   
 
-    return inventory.slice(0, 10).map((item) => ({
-      title: `${item.brand} ${item.model}`,
-      price: item.max_price,
-      engineHours: item.engine_hours,
-      driveType: item.drive_type,
-      enginePower: item.engine_power,
-      tractorId: item.tractor_id,
-    }));
+  useEffect(() => {
+    const processInventory = async () => {
+      if (!inventory || inventory.length === 0) {
+        setInventoryList([]);
+        return;
+      }
+  
+      const result = await Promise.all(
+        inventory.slice(0, 10).map(async (item) => {
+          const imageUrl = await getValidImageUrl(item.image_links, DefaultTractor);
+          return {
+            title: `${item.brand} ${item.model}`,
+            price: item.max_price,
+            engineHours: item.engine_hours,
+            driveType: item.drive_type,
+            enginePower: item.engine_power,
+            tractorId: item.tractor_id,
+            imageLink: imageUrl,
+          };
+        })
+      );
+  
+      setInventoryList(result);
+    };
+  
+    processInventory();
   }, [inventory]);
 
+ 
   const compareTractorData = useMemo(
     () => getHomePageTractorsListBasedOnInventory(inventoryList),
     [inventoryList]
