@@ -35,7 +35,8 @@ import {
   getTabLabel,
 } from "@utils";
 import Link from "next/link";
-import { useInventory} from "@utils";
+import { useInventory } from "@utils";
+import { getValidImageUrl } from "../../utils";
 
 export async function getServerSideProps(context) {
   return await getLocaleProps(context);
@@ -70,9 +71,8 @@ function SamplePrevArrow(props) {
 }
 
 export default function TractorDetails({ locale }) {
-
   const { inventory: inventoryData } = useInventory();
-  
+
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
   const { slug } = router.query;
@@ -86,8 +86,6 @@ export default function TractorDetails({ locale }) {
 
   const Id = slug?.split("-")[0]; // get the ID// Safely extract the numeric ID from the slug
   const title = slug?.split("-").slice(1).join("-") || "default-title"; // Extract the title or use a default value
- 
- 
 
   // const slugQuery = slug.replace('-', ' ');
 
@@ -260,89 +258,48 @@ export default function TractorDetails({ locale }) {
     }
   }, []);
 
-  
-
   useEffect(() => {
-    // debugger;
-
     const tractorId = Number(slug?.split("-")[0]);
+  
+    // Find the tractor by its ID from inventory data
     const selectedTractor = inventoryData.find(
       (tractor) => tractor.tractor_id === tractorId
     );
-
-    if (selectedTractor) {
-      // debugger;
-      // Extract tractor details
-      const tractorDetails = [
-        {
-          certified: selectedTractor.is_verified,
-          title: `${selectedTractor.brand} ${selectedTractor.model}`,
-          district: selectedTractor.district,
-          state: selectedTractor.state,
-          price: selectedTractor.max_price,
-          image_links: Array.isArray(selectedTractor.image_links)
+  
+    const fetchImages = async () => {
+      if (selectedTractor) {
+        console.log("Image Links:", selectedTractor.image_links);
+  
+        // Ensure image_links is an array or convert it to one
+        const imageLinks = Array.isArray(selectedTractor.image_links)
           ? selectedTractor.image_links
-          : Object.values(selectedTractor.image_links || {}),
-          id: selectedTractor.tractor_id,
-          enginePower: selectedTractor.engine_power,
-          battery: selectedTractor.is_battery_branded,
-          tyreState: selectedTractor.is_tyre_brand_mrf,
-          buyingYear: selectedTractor.buying_year,
-          finance: selectedTractor.finance,
-          engineHours: selectedTractor.engine_hours,
-        },
-      ];
-
-      console.log("TractorDetails[0]", tractorDetails[0]);
-
-      // Setting dynamic features based on the selected tractor
-      const updatedFeatures = features.map((feature) => {
-        switch (feature.title) {
-          case "Battery":
-            return {
-              ...feature,
-              description: tractorDetails[0].battery
-                ? "Available"
-                : "Not Available",
-            };
-          case "Year":
-            return {
-              ...feature,
-              description: tractorDetails[0].buyingYear || "N/A",
-            };
-          case "Engine Hours":
-            return {
-              ...feature,
-              description: tractorDetails[0].engineHours || "N/A",
-            };
-          case "Engine HP":
-            return {
-              ...feature,
-              description: tractorDetails[0].enginePower || "N/A",
-            };
-          case "Tyre Condition":
-            return {
-              ...feature,
-              description: tractorDetails[0].tyreState || "N/A",
-            };
-          case "Finance":
-            return {
-              ...feature,
-              description: tractorDetails[0].finance
-                ? "Available"
-                : "Not Available",
-            };
-          default:
-            return feature;
-        }
-      });
-
-      setTractorDetails(tractorDetails);
-      setFeatures(updatedFeatures);
-    }
-  }, [slug, inventoryData]); // ✅ Only runs when `slug` or `inventoryData` changes
-
-  // console.log("TractorDetails" + JSON.stringify(TractorDetails));
+          : Object.values(selectedTractor.image_links || []);
+ 
+  
+        // Update state with tractor details
+        setTractorDetails([
+          {
+            certified: selectedTractor.is_verified,
+            title: `${selectedTractor.brand} ${selectedTractor.model}`,
+            district: selectedTractor.district,
+            state: selectedTractor.state,
+            price: selectedTractor.max_price,
+            imageUrl: imageLinks, // Pass the fetched valid image URLs here
+            id: selectedTractor.tractor_id,
+            enginePower: selectedTractor.engine_power,
+            battery: selectedTractor.is_battery_branded,
+            tyreState: selectedTractor.is_tyre_brand_mrf,
+            buyingYear: selectedTractor.buying_year,
+            finance: selectedTractor.finance,
+            engineHours: selectedTractor.engine_hours,
+          },
+        ]);
+      }
+    };
+  
+    fetchImages();
+  }, [slug, inventoryData]);
+   console.log("TractorDetails" + JSON.stringify(TractorDetails));
 
   //similarTractors
 
@@ -435,7 +392,10 @@ export default function TractorDetails({ locale }) {
 
             {/* slide */}
             <div className="sm:w-1/2 w-full border">
-              <InventoryCarousel images={TractorDetails[0]?.image_links || []} locale={locale} />
+              <InventoryCarousel
+                images={TractorDetails[0]?.imageUrl || []}
+                locale={locale}
+              />
             </div>
             <div className="sm:w-1/2 w-full">
               <div className="">

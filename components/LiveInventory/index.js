@@ -187,8 +187,8 @@ const LiveInventoryContainer = ({ locale, data }) => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
               {
                 data.map((item, idx) => {
-                  console.log("Item:", item),
-                  console.log(`/tractor-details/${item.tractorId}-${item.title.replace(/\s+/g, '-').toLowerCase()}`);
+                  // console.log("Item:", item),
+                  // console.log(`/tractor-details/${item.tractorId}-${item.title.replace(/\s+/g, '-').toLowerCase()}`);
                   return(
                   <div key={idx} className="tractor-details-info cursor-pointer">
 
