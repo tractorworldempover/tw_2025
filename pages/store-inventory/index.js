@@ -12,13 +12,14 @@ import Location from '@Images/dealer/location.svg';
 import LiveInventoryContainer from '@components/LiveInventory';
 import { getLocaleProps } from "@helpers";
 import { useRouter } from "next/router";
-import { getDealersData } from "../../utils";
+import { getDealersData,useInventory,getValidImageUrl } from "@utils";
+import DefaultTractor from "@Images/default_tractor.svg";
 
 export async function getServerSideProps(context) {
     return await getLocaleProps(context);
 }
 
-export default function StoreInventory({ locale, inventoryData }) {
+export default function StoreInventory({ locale, Inventorydata }) {
     const breadcrumbData = [
         { label: 'Home', link: '/' },
         { label: 'Dealers Details ', link: '#' },
@@ -27,6 +28,10 @@ export default function StoreInventory({ locale, inventoryData }) {
     const [stateParam, setStateParam] = useState('');
     const [dealerID, setdealerID] = useState('');
     const dealersData = getDealersData(); 
+    const { inventory, loading} = useInventory(Inventorydata);
+    const { inventory: inventoryData } = useInventory();
+    const [inventoryList, setInventoryList] = useState([]);
+
 
     useEffect(() => {
         if (router.isReady) {
@@ -39,23 +44,39 @@ export default function StoreInventory({ locale, inventoryData }) {
 
     const [isMobile, setIsMobile] = useState(false);
     ///niharika 
-
-    const inventoryList = useMemo(() => {
-        if (!inventoryData || inventoryData.length === 0) {
-            return [];
-        }
-        return inventoryData
+ 
+    useEffect(() => {
+        const processInventoryList = async () => {
+          if (!inventoryData || inventoryData.length === 0) {
+            setInventoryList([]);
+            return;
+          }
+      
+          const filtered = inventoryData
             .filter((item) => !stateParam || item.user_location === stateParam)
-            .slice(0, 50)
-            .map((item) => ({
+            .slice(0, 50);
+      
+          const result = await Promise.all(
+            filtered.map(async (item) => {
+              const imageUrl = await getValidImageUrl(item.image_links, DefaultTractor);
+              return {
                 title: `${item.brand} ${item.model}`,
                 price: item.max_price,
                 engineHours: item.engine_hours,
                 driveType: item.drive_type,
                 enginePower: item.engine_power,
                 tractorId: item.tractor_id,
-            }));
-    }, [inventoryData, stateParam]);
+                user_location: item.user_location,
+                imageLink: imageUrl,
+              };
+            })
+          );
+      
+          setInventoryList(result);
+        };
+      
+        processInventoryList();
+      }, [inventoryData, stateParam]);
 
 
     const UserDetailsData = useMemo(() => {

@@ -20,8 +20,10 @@ import {
     getTractorDetailsById,
     getTabLabel,
     HomeHPRanges,
+    getValidImageUrl
   } from "@utils";
   import HP from "@Images/hp.svg";
+  import DefaultTractor from "@Images/default_tractor.svg";
 
 export async function getServerSideProps(context) {
     return await getLocaleProps(context);
@@ -52,6 +54,7 @@ export default function CompareTractorDetails({ locale }) {
     const [SimilarTractorsListData, setSimilarTractorsListData] = useState([]);
 
     useEffect(() => {
+        const loadTractorImages = async () => {
         if (id1 && id2 && inventoryData.length > 0) {
             const tractor1 = inventoryData.find(tractor => tractor.tractor_id === Number(id1));
             const tractor2 = inventoryData.find(tractor => tractor.tractor_id === Number(id2));
@@ -59,21 +62,28 @@ export default function CompareTractorDetails({ locale }) {
 
             if (tractor1 && tractor2) {
                 // 🖼️ Format imagesData for UI
+
+                // ✅ Get image URLs asynchronously
+                const [imageUrl1, imageUrl2] = await Promise.all([
+                    getValidImageUrl(tractor1.image_links, DefaultTractor),
+                    getValidImageUrl(tractor2.image_links, DefaultTractor),
+                ]);
+
                 const imagesData = [
                     {
                         name: `${tractor1.brand} ${tractor1.model}`,
                         emiStartsFrom: calculateEMI(tractor1.max_price),
                         price: formatPrice(tractor1.max_price),
                         checkPrice: "Check Tractor Price",
-                        image: "/images/compareTractorImg/mahindra.svg", // Replace with actual image
-                        tractorId: tractor1.tractor_id
+                        image: imageUrl1, 
+                         tractorId: tractor1.tractor_id
                     },
                     {
                         name: `${tractor2.brand} ${tractor2.model}`,
                         emiStartsFrom: calculateEMI(tractor2.max_price),
                         price: formatPrice(tractor2.max_price),
                         checkPrice: "Check Tractor Price",
-                        image: "/images/compareTractorImg/massey.svg", // Replace with actual image
+                        image: imageUrl2, 
                         tractorId: tractor1.tractor_id
                     }
                 ];
@@ -176,6 +186,9 @@ export default function CompareTractorDetails({ locale }) {
 
             }
         }
+
+    };
+    loadTractorImages();
     }, [id1, id2, inventoryData]);
 
     const accordionData = [

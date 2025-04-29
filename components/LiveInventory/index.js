@@ -40,6 +40,9 @@ function SamplePrevArrow(props) {
 const LiveInventoryContainer = ({ locale, data }) => {
 
    // debugger;
+ 
+
+   console.log("data"+JSON.stringify(data));
 
   const [activeTab, setActiveTab] = useState("gridData");
   const handleTabClick = (tabId) => {
@@ -200,7 +203,7 @@ const LiveInventoryContainer = ({ locale, data }) => {
                       <div className="relative" onClick={() => router.push(`/tractor-details/${item.tractorId}-${item.title.replace(/\s+/g, '-').toLowerCase()}`)}>
                         <Image
                           className="w-full"
-                          src={DefaultTractor}
+                          src={item.imageUrl || DefaultTractor}
                           alt="cardImage"
                           layout="responsive"
                           width={100}
@@ -245,6 +248,12 @@ const LiveInventoryContainer = ({ locale, data }) => {
                               <Image src={HP} alt='HP'></Image> {item.enginePower}
                             </div>
                             )}
+                             {item.user_location && (<div className='pl-2 flex gap-1 h-[14px] items-center pr-2'>
+                               {item.user_location}
+                            </div>
+                            )}
+
+
                           </div>
                         </div>
                       </div>
@@ -326,6 +335,10 @@ const LiveInventoryContainer = ({ locale, data }) => {
                                   <Image src={HP} alt='HP'></Image> {item.enginePower}
                                 </div>
                                 )}
+                                 {item.user_location && (<div className='pl-2 flex gap-1 h-[14px] items-center pr-2'>
+                               {item.user_location}
+                            </div>
+                            )}
                               </div>
                             </div>
                             <>

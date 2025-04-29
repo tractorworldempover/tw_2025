@@ -73,13 +73,14 @@ function SamplePrevArrow(props) {
 export default function TractorDetails({ locale }) {
   const { inventory: inventoryData } = useInventory();
 
+ 
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
   const { slug } = router.query;
   const currentLanguage = locale;
   const language = locale?.toUpperCase();
   const [TractorDetails, setTractorDetails] = useState([]);
-  const [similarTractorsList, setsimilarTractorsData] = useState([]);
+  const [similarTractorsList, setSimilarTractorsList] = useState([]);
   const [compareTractorsData, setcompareTractorsData] = useState([]);
   const [state, dispatch] = useReducer(userDataSlice, initialState);
   const { t, i18n } = useTranslation("common");
@@ -300,33 +301,46 @@ export default function TractorDetails({ locale }) {
     fetchImages();
   }, [slug, inventoryData]);
    console.log("TractorDetails" + JSON.stringify(TractorDetails));
+ 
 
-  //similarTractors
+useEffect(() => {
+  const processSimilarTractors = async () => {
+    if (!TractorDetails || TractorDetails.length === 0 || !inventoryData) {
+      setSimilarTractorsList([]);
+      return;
+    }
 
-  let similarTractorsListData = [];
+    const selectedTractor = TractorDetails[0];
 
-  if (TractorDetails && TractorDetails.length > 0 && inventoryData) {
-    // debugger;
-    const selectedTractor = TractorDetails[0]; // ✅ Extract first object
+    const filtered = inventoryData.filter(
+      (item) =>
+        item.engine_power === selectedTractor.enginePower &&
+        item.tractor_id !== selectedTractor.id
+    ).slice(0, 10);
 
-    similarTractorsListData = inventoryData
-      .filter(
-        (item) =>
-          item.engine_power === selectedTractor.enginePower &&
-          item.tractor_id !== selectedTractor.id
-      )
-      .slice(0, 10) // 🚀 Limit results to 10 similar tractors
-      .map((item) => ({
-        title: `${item.brand} ${item.model}`,
-        price: item.max_price,
-        engineHours: item.engine_hours,
-        driveType: item.drive_type,
-        enginePower: item.engine_power,
-        tractorId: item.tractor_id,
-      }));
-  }
+    const result = await Promise.all(
+      filtered.map(async (item) => {
+        const imageUrl = await getValidImageUrl(item.image_links, DefaultTractor);
+        return {
+          title: `${item.brand} ${item.model}`,
+          price: item.max_price,
+          engineHours: item.engine_hours,
+          driveType: item.drive_type,
+          enginePower: item.engine_power,
+          tractorId: item.tractor_id,
+          imageLink: imageUrl,
+        };
+      })
+    );
 
-  // console.log("Similar Tractors:", JSON.stringify(similarTractorsListData));
+    setSimilarTractorsList(result);
+  };
+
+  processSimilarTractors();
+}, [TractorDetails, inventoryData]);
+
+
+console.log("silimlar tratcor data"+JSON.stringify(similarTractorsList));
 
   const inventoryList = useMemo(() => {
     // debugger;
@@ -607,7 +621,7 @@ export default function TractorDetails({ locale }) {
             <div className="SimilarTractors relative" id="similarTractorsSlide">
               <LiveInventoryContainer
                 locale={locale}
-                data={similarTractorsListData}
+                data={similarTractorsList}
               />
               <Btn text={t("Home.View_All")} viewAll={true} />
             </div>

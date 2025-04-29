@@ -23,9 +23,11 @@ import {
   HomeHPRanges,
   formatPrice,
   getHomePageTractorsListBasedOnInventory,
+  getValidImageUrl
 } from "@utils";
 import Link from "next/link";
 import { useInventory } from "@utils";
+import DefaultTractor from "@Images/default_tractor.svg";
 
 export async function getStaticProps(context) {
   return await getLocaleProps(context);
@@ -166,7 +168,7 @@ export default function CompareTractor({ locale }) {
     }
   }, [modelsSearchQuery, models]);
 
-  const handleModelRadioChange = (event) => {
+  const handleModelRadioChange = async (event) => {
     // debugger;
     const selectedModelName = event.target.value;
     const modelObj = models.find(
@@ -181,32 +183,48 @@ export default function CompareTractor({ locale }) {
 
     if (modelObj?.id) {
       const tractorDetails = getTractorDetailsById(inventoryData, modelObj.id);
-      console.log("Full Tractor Details:", tractorDetails);
+      console.log("Full Tractor Details123:", tractorDetails);
       setShowBrandsModelsModal(false);
 
       if (tractorDetails) {
+
+        const imageUrl = await getValidImageUrl(tractorDetails.image_links, DefaultTractor);
+        const tractorWithImage = {
+          ...tractorDetails,
+          imageUrl,
+        };
         setSelectedTractorDetails((prevDetails) => {
-          // If already 3 tractors are selected, replace the oldest one
-          const updatedDetails = [...prevDetails, tractorDetails].slice(-3);
+          const updatedDetails = [...prevDetails, tractorWithImage].slice(-3);
           return updatedDetails;
         });
       }
     }
   };
 
-  ///if query id is avilable
+  // If query id is available
   useEffect(() => {
-    if (Id) {
-      const tractorDetails = getTractorDetailsById(inventoryData, Id);
-      console.log("Full Tractor Details:", tractorDetails);
-      if (tractorDetails) {
-        setSelectedTractorDetails((prevDetails) => {
-          // If already 3 tractors are selected, replace the oldest one
-          const updatedDetails = [...prevDetails, tractorDetails].slice(-1);
-          return updatedDetails;
-        });
+    const fetchTractorDetails = async () => {
+      if (Id) {
+        const tractorDetails = getTractorDetailsById(inventoryData, Id);
+        console.log("Full Tractor Details456:", tractorDetails);
+
+        if (tractorDetails) {
+          const imageUrl = await getValidImageUrl(tractorDetails.image_links, DefaultTractor);
+          const tractorWithImage = {
+            ...tractorDetails,
+            imageUrl,
+          };
+
+          setSelectedTractorDetails((prevDetails) => {
+            // If already 3 tractors are selected, replace the oldest one
+            const updatedDetails = [...prevDetails, tractorWithImage].slice(-3);
+            return updatedDetails;
+          });
+        }
       }
-    }
+    };
+
+    fetchTractorDetails();
   }, [Id, inventoryData]);
 
   const handleModelsBack = () => {
@@ -263,6 +281,9 @@ export default function CompareTractor({ locale }) {
 
   const handleCompareAll = () => handleNavigation("/compare-tractors");
 
+
+  console.log("selectedTractorDetails"+JSON.stringify(selectedTractorDetails))
+
   return (
     <div>
       <Layout currentPage={"compare"}>
@@ -284,7 +305,7 @@ export default function CompareTractor({ locale }) {
                   {/* Tractor Image */}
                   <div className="text-center cursor-pointer">
                     <Image
-                      src={tractor ? CompareImage2 : CompareImg}
+                      src={tractor ? tractor.imageUrl : CompareImg}
                       alt={tractor ? "CompareImage2" : "CompareImg"}
                       width={350}
                       height={350}

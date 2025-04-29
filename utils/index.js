@@ -205,15 +205,9 @@ export const getTractorDetailsById = (inventoryData, tractorId) => {
  */
 export async function getValidImageUrl(imageLinks, DefaultTractor) {
   const authKey = "?sv=2021-12-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-04-01T14:30:38Z&st=2023-03-29T06:30:38Z&spr=https&sig=mk0i2ZPyaotRM5smvwnf9y9%2BcZljr9BrtLIK2%2FnnJ6k%3D";
-
-  console.log("imge link in utilll>>>>>>"+JSON.stringify(imageLinks));
   
-
   const imageArray = Array.isArray(imageLinks) ? imageLinks : Object.values(imageLinks || {});
-
-  console.log("imge link in utilllimageArray>"+JSON.stringify(imageArray));
-
-
+  
   if (imageArray.length > 0) {
     for (let i = 0; i < imageArray.length; i++) {
       const baseImageUrl = imageArray[i]?.processed_image;
