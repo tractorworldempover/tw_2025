@@ -203,7 +203,7 @@ const LiveInventoryContainer = ({ locale, data }) => {
                       <div className="relative" onClick={() => router.push(`/tractor-details/${item.tractorId}-${item.title.replace(/\s+/g, '-').toLowerCase()}`)}>
                         <Image
                           className="w-full"
-                          src={item.imageUrl || DefaultTractor}
+                          src={item.imageLink || DefaultTractor}
                           alt="cardImage"
                           layout="responsive"
                           width={100}
@@ -293,10 +293,10 @@ const LiveInventoryContainer = ({ locale, data }) => {
                           <div className="w-full h-[175px]" onClick={() => router.push(`/tractor-details/${item.tractorId}-${item.title.replace(/\s+/g, '-').toLowerCase()}`)}>
                             <Image
                               className="w-full h-[600px]"
-                              src={DefaultTractor}
+                              src={item.imageLink || DefaultTractor}
                               height={600}
                               alt="cardImage"
-                              layout="responsive"
+                              layout="fill"
                             />
                           </div>
 
