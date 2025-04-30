@@ -446,15 +446,18 @@ export default function Inventory({ locale }) {
 
   // get states list
   useEffect(() => {
-    // Fetch data from API when component mounts
-    if (data && data.allStateTowns) {
-      const fetchedStates = data.allStateTowns.edges.map(({ node }) => ({
-        state: node.stateTownList.state,
-        id: node.id,
+    if (inventoryData && Array.isArray(inventoryData)) {
+      // Extract unique states from inventoryData
+      const uniqueStates = [
+        ...new Set(inventoryData.map((item) => item.state).filter(Boolean)),
+      ].map((state, index) => ({
+        id: index, // Generate a unique ID for each state
+        state,
       }));
-      setStateList(fetchedStates); // Update state with fetched data
+  
+      setStateList(uniqueStates); // Update the stateList
     }
-  }, [data]); // Trigger this effect when `data` changes
+  }, [inventoryData]);
 
   const [inventoryLoading, setInventoryLoading] = useState(true);
   const [inventoryError, setInventoryError] = useState(null);
@@ -874,22 +877,30 @@ export default function Inventory({ locale }) {
                         />
                       </div>
                       <select
-                        id="location"
-                        className="bg-white border border-gray-300
-                                      text-black rounded-md  block w-full 
-                                        p-2.5 dark:bg-gray-700 dark:border-gray-600 
-                                     dark:placeholder-gray-400 dark:text-white  px-8"
-                        onChange={handleStateChange}
-                      >
-                        <option value="">Select State</option>
-                        {stateList.map((item, index) => {
-                          return (
-                            <option key={index} value={item.state}>
-                              {item.state}
-                            </option>
-                          );
-                        })}
-                      </select>
+  id="location"
+  className="bg-white border border-gray-300 text-black rounded-md block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white px-8"
+  onChange={(event) => {
+    const selectedValue = event.target.value;
+    setSelectedState(selectedValue); // Update the selectedState
+    setLiveInventoryFilters((prevFilters) => {
+      const newFilters = [...prevFilters];
+      newFilters[3] = selectedValue === "all" ? "" : selectedValue; // Clear filter if "All" is selected
+      return newFilters;
+    });
+  }}
+  value={selectedState || "all"} // Default to "All"
+>
+  <option value="all">All</option> {/* Default option to show all inventory */}
+  {stateList.length > 0 ? (
+    stateList.map((item) => (
+      <option key={item.id} value={item.state}>
+        {item.state}
+      </option>
+    ))
+  ) : (
+    <option disabled>Loading states...</option>
+  )}
+</select>
                     </div>
                   </div>
                 </div>
