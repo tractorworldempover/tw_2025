@@ -1224,7 +1224,7 @@ export default function Inventory({ locale }) {
                   )}
                 </div>
               </div>
-              <Heading heading={"Tractors by Brands "} viewButton={false} />
+              {/* <Heading heading={"Tractors by Brands "} viewButton={false} />
               <div className="grid sm:grid-cols-6 grid-cols-3 sm:gap-6 gap-4">
                 {brandsLogos.slice(0, 12).map((brandlogo, index) => (
                   <div
@@ -1242,7 +1242,26 @@ export default function Inventory({ locale }) {
                     />
                   </div>
                 ))}
-              </div>
+              </div> */}
+
+              {/*Tractors Dealers by Brands sec*/}
+                    <div className="bg-white mt-4 lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-4 sm:pb-8 py-2">
+                      <Heading heading={t('About.Tractors_By_Brands')} viewButton={false} />
+                      <div className="grid sm:grid-cols-6 grid-cols-3 sm:gap-6 gap-4 mt-6">
+                                <Image width={259} height={252} src="/images/about/brands/mahindra.svg" alt="mahindra" className="w-full" />
+                                <Image width={259} height={252} src="/images/about/brands/swaraj.svg" alt="swaraj" className="w-full" />
+                                <Image width={259} height={252} src="/images/about/brands/elcher.svg" alt="Elcher" className="w-full" />
+                                <Image width={259} height={252} src="/images/about/brands/masseyFerguson.svg" alt="masseyFerguson" className="w-full" />
+                                <Image width={259} height={252} src="/images/about/brands/tillersTractors.svg" alt="tillersTractors" className="w-full" />
+                                <Image width={259} height={252} src="/images/about/brands/escorts.svg" alt="escorts" className="w-full" />
+                                <Image width={259} height={252} src="/images/about/brands/kartar.svg" alt="kartar" className="w-full" />
+                                <Image width={259} height={252} src="/images/about/brands/captain.svg" alt="captain" className="w-full" />
+                                <Image width={259} height={252} src="/images/about/brands/preet.svg" alt="preet" className="w-full" />
+                                <Image width={259} height={252} src="/images/about/brands/forceMotors.svg" alt="forceMotors" className="w-full" />
+                                <Image width={259} height={252} src="/images/about/brands/aceTractors.svg" alt="aceTractors" className="w-full" />
+                                <Image width={259} height={252} src="/images/about/brands/autonxt.svg" alt="autonxt" className="w-full" />
+                              </div>
+                            </div>
 
               {/* <div className="my-4 sm:hidden block">
                 <Btn text={'view all'} />
