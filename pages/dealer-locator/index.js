@@ -60,6 +60,8 @@ export default function DealerLocator({ locale }) {
  
   useEffect(() => {
     fetchLocations(setLocations, setStates);
+    console.log("Locations:", locations);
+    console.log("States:", states);
   }, []);
 
   const handleStateChange = (event) => {
@@ -77,13 +79,20 @@ export default function DealerLocator({ locale }) {
   const [filteredDealers, setFilteredDealers] = useState(dealerRightData);
 
   const handleDealersShow = () => {
+    console.log("Selected State:", selectedState);
+    console.log("Selected District:", selectedDistrict);
+    console.log("Dealer Data:", dealerRightData);
+
     const filtered = dealerRightData.filter((dealer) => {
-      return (
-        (!selectedState || dealer.address.includes(selectedState)) &&
-        (!selectedDistrict || dealer.address.includes(selectedDistrict))
-      );
-    });
+      const dealerLocation = dealer.location?.toLowerCase().trim() || ""; // Correctly reference dealer.location
+      const district = selectedDistrict.toLowerCase().trim();
+
+      return !selectedDistrict || dealerLocation === district; // Compare dealerLocation with district
+  });
+
+    console.log("Filtered Dealers:", filtered);
     setFilteredDealers(filtered);
+    setCurrentPage(1); // Reset to page 1 when filters change
   };
 
   //pagination

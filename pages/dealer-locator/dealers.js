@@ -122,8 +122,8 @@ export default function Dealers() {
                         heading={'Tractor World'}
                         infoText={'Tractor world is a fully vertically integrated company, with expertise in design, development and manufacture of the full spectrum of automotive components, aggregates and vehicles.'}
                     />
-
                 </div>
+                
                 <div className='bg-[#EFECEC] mt-4 lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-4 sm:pb-8 py-2'>
                     <Heading heading={"Mahindra Tractor - Dealers"} viewButton={true} /> 
                     <div className=''>
