@@ -33,13 +33,38 @@ import {
   formatPrice,
   HomeHPRanges,
   getTabLabel,
+  metaDetailsById
 } from "@utils";
 import Link from "next/link";
 import { useInventory } from "@utils";
-import { getValidImageUrl } from "../../utils";
+import { generateMetaTags, getValidImageUrl } from "../../utils";
+import Head from "next/head";
 
 export async function getServerSideProps(context) {
-  return await getLocaleProps(context);
+  const { slug } = context.params;
+  const tractorId = Number(slug?.split("-")[0]);
+
+  let inventoryData = null;
+  let meta = null;
+
+  try {
+    const res = await fetch(`https://used-tractor-backend.azurewebsites.net/inventory/web/v2/tractor/limit-one/${tractorId}/`);
+    const data = await res.json();
+    inventoryData = data?.data || null;
+    meta = inventoryData ? metaDetailsById(inventoryData) : null;
+  } catch (error) {
+    console.error("❌ Error fetching tractor data:", error);
+  }
+
+  // Get i18n locale props
+  const localeResult = await getLocaleProps(context, ['common']);
+
+  return {
+    props: {
+      ...localeResult.props,  // 👈 Spread the actual props
+      meta,
+    },
+  };
 }
 
 function SampleNextArrow(props) {
@@ -70,10 +95,8 @@ function SamplePrevArrow(props) {
   );
 }
 
-export default function TractorDetails({ locale }) {
+export default function TractorDetails({ locale, meta }) {
   const { inventory: inventoryData } = useInventory();
-
- 
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
   const { slug } = router.query;
@@ -261,22 +284,22 @@ export default function TractorDetails({ locale }) {
 
   useEffect(() => {
     const tractorId = Number(slug?.split("-")[0]);
-  
+
     // Find the tractor by its ID from inventory data
     const selectedTractor = inventoryData.find(
       (tractor) => tractor.tractor_id === tractorId
     );
-  
+
     const fetchImages = async () => {
       if (selectedTractor) {
         console.log("Image Links:", selectedTractor.image_links);
-  
+
         // Ensure image_links is an array or convert it to one
         const imageLinks = Array.isArray(selectedTractor.image_links)
           ? selectedTractor.image_links
           : Object.values(selectedTractor.image_links || []);
- 
-  
+
+
         // Update state with tractor details
         setTractorDetails([
           {
@@ -297,50 +320,51 @@ export default function TractorDetails({ locale }) {
         ]);
       }
     };
-  
+
     fetchImages();
   }, [slug, inventoryData]);
-   console.log("TractorDetails" + JSON.stringify(TractorDetails));
- 
+  console.log("TractorDetails" + JSON.stringify(TractorDetails));
 
-useEffect(() => {
-  const processSimilarTractors = async () => {
-    if (!TractorDetails || TractorDetails.length === 0 || !inventoryData) {
-      setSimilarTractorsList([]);
-      return;
-    }
+  const tractorId = Number(slug?.split("-")[0]);
 
-    const selectedTractor = TractorDetails[0];
+  useEffect(() => {
+    const processSimilarTractors = async () => {
+      if (!TractorDetails || TractorDetails.length === 0 || !inventoryData) {
+        setSimilarTractorsList([]);
+        return;
+      }
 
-    const filtered = inventoryData.filter(
-      (item) =>
-        item.engine_power === selectedTractor.enginePower &&
-        item.tractor_id !== selectedTractor.id
-    ).slice(0, 10);
+      const selectedTractor = TractorDetails[0];
 
-    const result = await Promise.all(
-      filtered.map(async (item) => {
-        const imageUrl = await getValidImageUrl(item.image_links, DefaultTractor);
-        return {
-          title: `${item.brand} ${item.model}`,
-          price: item.max_price,
-          engineHours: item.engine_hours,
-          driveType: item.drive_type,
-          enginePower: item.engine_power,
-          tractorId: item.tractor_id,
-          imageLink: imageUrl,
-        };
-      })
-    );
+      const filtered = inventoryData.filter(
+        (item) =>
+          item.engine_power === selectedTractor.enginePower &&
+          item.tractor_id !== selectedTractor.id
+      ).slice(0, 10);
 
-    setSimilarTractorsList(result);
-  };
+      const result = await Promise.all(
+        filtered.map(async (item) => {
+          const imageUrl = await getValidImageUrl(item.image_links, DefaultTractor);
+          return {
+            title: `${item.brand} ${item.model}`,
+            price: item.max_price,
+            engineHours: item.engine_hours,
+            driveType: item.drive_type,
+            enginePower: item.engine_power,
+            tractorId: item.tractor_id,
+            imageLink: imageUrl,
+          };
+        })
+      );
 
-  processSimilarTractors();
-}, [TractorDetails, inventoryData]);
+      setSimilarTractorsList(result);
+    };
+
+    processSimilarTractors();
+  }, [TractorDetails, inventoryData]);
 
 
-console.log("silimlar tratcor data"+JSON.stringify(similarTractorsList));
+  console.log("silimlar tratcor data" + JSON.stringify(similarTractorsList));
 
   const inventoryList = useMemo(() => {
     // debugger;
@@ -386,342 +410,370 @@ console.log("silimlar tratcor data"+JSON.stringify(similarTractorsList));
 
   return (
     <Layout>
+
       {TractorDetails && TractorDetails.length > 0 ? (
-        <div className="main-details">
-          {/* banner sec */}
-          <Banner
-            breadcrumbs={breadcrumbData}
-            bannerImg={bannerImg}
-            heading={"Tractor Details"}
-          />
+        <>
+          <Head>
+            <title>Tractor World | Latest Inventory {TractorDetails[0].title} Price, Specifications,
+              {TractorDetails[0].district}, {TractorDetails[0].state} , Emi Details</title>
 
-          {/* slide sec */}
-          <div
-            className="lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-4 sm:pb-8 py-2
+            {meta?.description && (
+              <meta name="description" content={meta.description} />
+            )}
+
+            <meta
+              property="og:title"
+              content={`Tractor World | Latest Inventory ${TractorDetails[0]?.title || ''}`}
+            />
+
+            {meta?.description && (
+              <meta property="og:description" content={meta.description} />
+            )}
+
+            {meta?.keywords && (
+              <meta name="keywords" content={meta.keywords} />
+            )}
+
+          </Head>
+
+          <div className="main-details">
+            {/* banner sec */}
+            <Banner
+              breadcrumbs={breadcrumbData}
+              bannerImg={bannerImg}
+              heading={"Tractor Details"}
+            />
+
+            {/* slide sec */}
+            <div
+              className="lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-4 sm:pb-8 py-2
              bg-white w-full flex sm:flex-row flex-col gap-4"
-          >
-            <div className="sm:hidden block">
-              <Heading heading={"Tractor Details"} />
-            </div>
+            >
+              <div className="sm:hidden block">
+                <Heading heading={"Tractor Details"} />
+              </div>
 
-            {/* slide */}
-            <div className="sm:w-1/2 w-full border">
-              <InventoryCarousel
-                images={TractorDetails[0]?.imageUrl || []}
-                locale={locale}
-              />
-            </div>
-            <div className="sm:w-1/2 w-full">
-              <div className="">
-                <div className="pl-2">
-                  <div className="mb-2">UID - TJN185041 | Report Problem</div>
-                  {TractorDetails[0].certified && (
-                    <div className="font-bold uppercase sm:text-xl text-lg mb-1">
-                      {" "}
-                      {TractorDetails[0].title}
-                      <span
-                        className="bg-secondaryColor px-2 ml-3 py-1 text-white text-sm uppercase
+              {/* slide */}
+              <div className="sm:w-1/2 w-full border">
+                <InventoryCarousel
+                  images={TractorDetails[0]?.imageUrl || []}
+                  locale={locale}
+                />
+              </div>
+              <div className="sm:w-1/2 w-full">
+                <div className="">
+                  <div className="pl-2">
+                    <div className="mb-2 text-2xl font-semibold" >{TractorDetails[0].title}</div>
+                    {TractorDetails[0].certified && (
+                      <div className="font-bold uppercase sm:text-xl text-lg mb-1">
+                        {" "}
+                        {TractorDetails[0].title}
+                        <span
+                          className="bg-secondaryColor px-2 ml-3 py-1 text-white text-sm uppercase
                                  font-semibold border-gradient"
-                      >
-                        {TractorDetails[0].certified ? "Certified" : ""}
+                        >
+                          {TractorDetails[0].certified ? "Certified" : ""}
+                        </span>
+                      </div>
+                    )}
+
+                    <span
+                      className="bg-primaryColor my-4 inline-block px-2 py-1 text-white w-auto
+                                 font-semibold rounded-sm"
+                    >
+                      Dealer Location
+                    </span>
+
+                    <div
+                      className="mb-3 cursor-pointer flex gap-2 text-secondaryColor
+                                 rounded-sm w-full"
+                    >
+                      <Image
+                        src="/images/tractordetails/editIcon.svg"
+                        width={10}
+                        height={10}
+                        className="w-3"
+                        alt="editIcon"
+                      />
+                      Change Tractor
+                    </div>
+
+                    <div className="mb-3 cursor-pointer flex gap-2 w-full">
+                      <Image
+                        src="/images/tractordetails/primaymapIcon.svg"
+                        width={10}
+                        height={10}
+                        className="w-3"
+                        alt="primaymapIcon"
+                      />
+                      {TractorDetails[0].district}, {TractorDetails[0].state}
+                    </div>
+
+                    <div className="font-bold text-xl mb-1">
+                      {formatPrice(TractorDetails[0].price)}
+                      <span className="line-through text-sm opacity-[30%]">
+                        {" "}
+                        ₹ 10,84,000{" "}
                       </span>
                     </div>
-                  )}
 
-                  <span
-                    className="bg-primaryColor my-4 inline-block px-2 py-1 text-white w-auto
-                                 font-semibold rounded-sm"
-                  >
-                    Dealer Location
-                  </span>
-
-                  <div
-                    className="mb-3 cursor-pointer flex gap-2 text-secondaryColor
-                                 rounded-sm w-full"
-                  >
-                    <Image
-                      src="/images/tractordetails/editIcon.svg"
-                      width={10}
-                      height={10}
-                      className="w-3"
-                      alt="editIcon"
-                    />
-                    Change Tractor
-                  </div>
-
-                  <div className="mb-3 cursor-pointer flex gap-2 w-full">
-                    <Image
-                      src="/images/tractordetails/primaymapIcon.svg"
-                      width={10}
-                      height={10}
-                      className="w-3"
-                      alt="primaymapIcon"
-                    />
-                    {TractorDetails[0].district}, {TractorDetails[0].state}
-                  </div>
-
-                  <div className="font-bold text-xl mb-1">
-                    {formatPrice(TractorDetails[0].price)}
-                    <span className="line-through text-sm opacity-[30%]">
-                      {" "}
-                      ₹ 10,84,000{" "}
-                    </span>
-                  </div>
-
-                  <div className="">
-                    EMI starts at{" "}
-                    <span className="text-secondaryColor"> ₹ 3,657/month</span>{" "}
-                  </div>
-
-                  <div className="sm:flex gap-4">
-                    <div className="sm:w-1/2 w-full my-4">
-                      <Btn
-                        text={"Enquiry"}
-                        bgColor={true}
-                        onClick={handleEnquiry}
-                      />
+                    <div className="">
+                      EMI starts at{" "}
+                      <span className="text-secondaryColor"> ₹ 3,657/month</span>{" "}
                     </div>
-                    <div className="sm:w-1/2 w-full my-4">
-                      <div className="block bg-primaryColor text-white rounded-[4px] opacity-1 cursor-pointer px-4 py-2 text-center border-primaryColor font-semibold border-[1px] ">
-                        <Link
-                          href={{
-                            pathname: "/compare-tractors",
-                            query: {
-                              id: Id,
-                            },
-                          }}
-                          passHref
-                        >
-                          <a>Compare Tractors</a>
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          {/* Features sec */}
-          <div className="bg-[#F3F3F4]">
-            <div className="lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-4 sm:pb-8 py-2">
-              <Heading heading={TractorDetails[0].title} />
-              <div
-                className="py-3 sm:mt-5 mt-1 grid md:grid-cols-6 sm:grid-cols-3 
-                    grid-cols-2 sm:gap-4 gap-8"
-              >
-                {features.map((feature, index) => (
-                  <div
-                    key={index}
-                    className="features-shadow text-sm bg-white pb-1 pt-6 px-2 rounded-md text-center relative"
-                  >
-                    <div className="absolute top-[-30px] left-1/2 transform -translate-x-1/2">
-                      <Image
-                        src={feature.src}
-                        alt={feature.alt}
-                        width={60}
-                        height={60}
-                        className="tractorsFeatures"
-                      />
-                    </div>
-                    <p className="font-bold uppercase mt-5">{feature.title}</p>
-                    <span>{feature.description}</span>
-                  </div>
-                ))}
-              </div>
-              {/* <div className='sm:w-1/4 w-full m-auto mt-2'>
-                        <Btn text={'View Latest Offers'} bgColor={true} />
-                    </div> */}
-            </div>
-          </div>
-
-          {/* emi sec */}
-
-          <div className="bg-white lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-4 sm:pb-8 py-2">
-            <Heading heading={"Calculate " + TractorDetails[0].title} />
-            <div className="bg-[#F6F6F6] px-3 py-6 mt-3 flex sm:flex-row flex-col gap-4">
-              <div className="sm:w-1/2 w-full">
-                <LeftSection
-                  state={TractorDetails}
-                  dispatch={dispatch}
-                  maxPrice={formatPrice(TractorDetails[0].price)}
-                />
-                {/* <div className='mt-4'>
-                                    <Btn bgColor={true} text={'Calculate Loan'} />
-                                </div>  */}
-              </div>
-              <div className="sm:w-1/2 w-full">
-                <RightSection state={TractorDetails} />
-              </div>
-            </div>
-          </div>
-          {/* why choose us */}
-          <div className="lg:px-14 md:px-6 sm:px-3 px-2 sm:py-4 py-2 relative bg-white mt-3">
-            <Heading heading={t("Home.Why_Choose_Us")} viewButton={false} />
-            <div className="flex md:flex-row flex-col justify-between md:gap-16 gap-4 mt-4">
-              <div className="md:w-[40%]">
-                <div className="font-bold text-lg">
-                  {t("Home.Over_Deals")}
-                  <br />
-                  {t("Home.Best_Choice")}
-                </div>
-                <p className="mt-2 text-[.9rem]">
-                  {/* {t('Home.Kiusmod_Tempor')} */}
-                </p>
-              </div>
-              <div className="absolute sm:top-[-85px] right-0 bottom-[-80px]">
-                <Image
-                  src={WhyChoose}
-                  alt="WhyChoose"
-                  width={400}
-                  height={400}
-                  className="whychooseImg"
-                />
-              </div>
-            </div>
-            <div className="sm:mt-10 mt-2">
-              <div
-                className="grid md:grid-cols-4 grid-cols-2 md:gap-6 gap-2 w-full relative
-                     z-10 sm:pb-0 pb-16"
-              >
-                {WhyChooseItems.map((item, index) => (
-                  <div key={index}>
-                    <div
-                      className="bg-white overflow-hidden flex justify-center 
-                                shadow-custom-medium px-4 sm:pb-9 py-2 flex-col items-center"
-                    >
-                      <div>
-                        <Image
-                          src={item.src}
-                          alt={item.alt}
-                          className="chooseImg"
+                    <div className="sm:flex gap-4">
+                      <div className="sm:w-1/2 w-full my-4">
+                        <Btn
+                          text={"Enquiry"}
+                          bgColor={true}
+                          onClick={handleEnquiry}
                         />
                       </div>
-                      <p
-                        className="text-center font-bold xl:text-xl lg:text-lg 
-                                    md:text-base sm:text-base text-[0.85rem]"
-                      >
-                        {item.label}
-                      </p>
+                      <div className="sm:w-1/2 w-full my-4">
+                        <div className="block bg-primaryColor text-white rounded-[4px] opacity-1 cursor-pointer px-4 py-2 text-center border-primaryColor font-semibold border-[1px] ">
+                          <Link
+                            href={{
+                              pathname: "/compare-tractors",
+                              query: {
+                                id: Id,
+                              },
+                            }}
+                            passHref
+                          >
+                            <a>Compare Tractors</a>
+                          </Link>
+                        </div>
+                      </div>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Features sec */}
+            <div className="bg-[#F3F3F4]">
+              <div className="lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-4 sm:pb-8 py-2">
+                <Heading heading={TractorDetails[0].title} />
+                <div
+                  className="py-3 sm:mt-5 mt-1 grid md:grid-cols-6 sm:grid-cols-3 
+                    grid-cols-2 sm:gap-4 gap-8"
+                >
+                  {features.map((feature, index) => (
+                    <div
+                      key={index}
+                      className="features-shadow text-sm bg-white pb-1 pt-6 px-2 rounded-md text-center relative"
+                    >
+                      <div className="absolute top-[-30px] left-1/2 transform -translate-x-1/2">
+                        <Image
+                          src={feature.src}
+                          alt={feature.alt}
+                          width={60}
+                          height={60}
+                          className="tractorsFeatures"
+                        />
+                      </div>
+                      <p className="font-bold uppercase mt-5">{feature.title}</p>
+                      <span>{feature.description}</span>
+                    </div>
+                  ))}
+                </div>
+                {/* <div className='sm:w-1/4 w-full m-auto mt-2'>
+                        <Btn text={'View Latest Offers'} bgColor={true} />
+                    </div> */}
+              </div>
+            </div>
+
+            {/* emi sec */}
+
+            <div className="bg-white lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-4 sm:pb-8 py-2">
+              <Heading heading={"Calculate " + TractorDetails[0].title} />
+              <div className="bg-[#F6F6F6] px-3 py-6 mt-3 flex sm:flex-row flex-col gap-4">
+                <div className="sm:w-1/2 w-full">
+                  <LeftSection
+                    state={TractorDetails}
+                    dispatch={dispatch}
+                    maxPrice={formatPrice(TractorDetails[0].price)}
+                  />
+                  {/* <div className='mt-4'>
+                                    <Btn bgColor={true} text={'Calculate Loan'} />
+                                </div>  */}
+                </div>
+                <div className="sm:w-1/2 w-full">
+                  <RightSection state={TractorDetails} />
+                </div>
+              </div>
+            </div>
+            {/* why choose us */}
+            <div className="lg:px-14 md:px-6 sm:px-3 px-2 sm:py-4 py-2 relative bg-white mt-3">
+              <Heading heading={t("Home.Why_Choose_Us")} viewButton={false} />
+              <div className="flex md:flex-row flex-col justify-between md:gap-16 gap-4 mt-4">
+                <div className="md:w-[40%]">
+                  <div className="font-bold text-lg">
+                    {t("Home.Over_Deals")}
+                    <br />
+                    {t("Home.Best_Choice")}
+                  </div>
+                  <p className="mt-2 text-[.9rem]">
+                    {/* {t('Home.Kiusmod_Tempor')} */}
+                  </p>
+                </div>
+                <div className="absolute sm:top-[-85px] right-0 bottom-[-80px]">
+                  <Image
+                    src={WhyChoose}
+                    alt="WhyChoose"
+                    width={400}
+                    height={400}
+                    className="whychooseImg"
+                  />
+                </div>
+              </div>
+              <div className="sm:mt-10 mt-2">
+                <div
+                  className="grid md:grid-cols-4 grid-cols-2 md:gap-6 gap-2 w-full relative
+                     z-10 sm:pb-0 pb-16"
+                >
+                  {WhyChooseItems.map((item, index) => (
+                    <div key={index}>
+                      <div
+                        className="bg-white overflow-hidden flex justify-center 
+                                shadow-custom-medium px-4 sm:pb-9 py-2 flex-col items-center"
+                      >
+                        <div>
+                          <Image
+                            src={item.src}
+                            alt={item.alt}
+                            className="chooseImg"
+                          />
+                        </div>
+                        <p
+                          className="text-center font-bold xl:text-xl lg:text-lg 
+                                    md:text-base sm:text-base text-[0.85rem]"
+                        >
+                          {item.label}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Similar Tractors */}
+            <div className="lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-4 sm:pb-8 py-2 bg-white ">
+              <Heading
+                heading={"Similar Tractors"}
+                viewButton={true}
+                className="mt-8"
+              />
+
+              <div className="SimilarTractors relative" id="similarTractorsSlide">
+                <LiveInventoryContainer
+                  locale={locale}
+                  data={similarTractorsList}
+                />
+                <Btn text={t("Home.View_All")} viewAll={true} />
+              </div>
+            </div>
+
+            {/* Compare To Buy The Right Tractor sec */}
+            <div className="lg:px-14 md:px-6 sm:px-3 px-2 sm:py-4 py-2 bg-white mt-3">
+              <div className="font-bold xl:text-xl lg:text-lg md:text-base text-xl">
+                <p className="mb-[-5px]">Compare To Buy The Right Tractor</p>
+              </div>
+
+              <div className="flex sm:gap-4 gap-2 my-3 font-medium relative z-20">
+                {HomeHPRanges.map((range) => (
+                  <Tab
+                    key={range.key}
+                    id={range.key}
+                    activeTab={activeTab}
+                    onClick={handleTabClick}
+                  >
+                    {getTabLabel(range.min, range.max)}
+                  </Tab>
                 ))}
               </div>
-            </div>
-          </div>
 
-          {/* Similar Tractors */}
-          <div className="lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-4 sm:pb-8 py-2 bg-white ">
-            <Heading
-              heading={"Similar Tractors"}
-              viewButton={true}
-              className="mt-8"
-            />
-
-            <div className="SimilarTractors relative" id="similarTractorsSlide">
-              <LiveInventoryContainer
-                locale={locale}
-                data={similarTractorsList}
-              />
-              <Btn text={t("Home.View_All")} viewAll={true} />
-            </div>
-          </div>
-
-          {/* Compare To Buy The Right Tractor sec */}
-          <div className="lg:px-14 md:px-6 sm:px-3 px-2 sm:py-4 py-2 bg-white mt-3">
-            <div className="font-bold xl:text-xl lg:text-lg md:text-base text-xl">
-              <p className="mb-[-5px]">Compare To Buy The Right Tractor</p>
-            </div>
-
-            <div className="flex sm:gap-4 gap-2 my-3 font-medium relative z-20">
-              {HomeHPRanges.map((range) => (
-                <Tab
-                  key={range.key}
-                  id={range.key}
-                  activeTab={activeTab}
-                  onClick={handleTabClick}
-                >
-                  {getTabLabel(range.min, range.max)}
-                </Tab>
-              ))}
-            </div>
-
-            <div className="">
-              <div className="grid sm:grid-cols-3 md:gap-6 gap-4">
-                {Object.keys(compareTractorData).map((key) =>
-                  activeTab === key ? (
-                    <>
-                      {compareTractorData[activeTab]
-                        ?.slice(0, 3)
-                        .map((item, index) => (
-                          <div
-                            key={index}
-                            className="overflow-hidden flex-none"
-                          >
-                            <Image
-                              src={CompareImage}
-                              alt="compareImage"
-                              layout="responsive"
-                            />
-                            <div className="flex justify-between px-3 mb-3">
-                              <div>
-                                <div>{item.brand1}</div>
-                                <div className="font-semibold my-1">
-                                  <Image src={HP} width={15} height={15} />{" "}
-                                  {item.brand1hp}
-                                </div>
-                                <div className="font-semibold my-1">
-                                  {formatPrice(item.brand1price)}
-                                </div>
-                              </div>
-                              <div>
-                                <div>{item.brand2}</div>
-                                <div className="font-semibold my-1">
-                                  <Image src={HP} width={15} height={15} />{" "}
-                                  {item.brand2hp}
-                                </div>
-                                <div className="font-semibold my-1">
-                                  {" "}
-                                  {formatPrice(item.brand2price)}
-                                </div>
-                              </div>
-                            </div>
-                            <Link
-                              href={{
-                                pathname:
-                                  "/compare-tractors/compare-tractor-details",
-                                query: {
-                                  t1: item.brand1,
-                                  t2: item.brand2,
-                                  id1: item.brand1Id,
-                                  id2: item.brand2Id,
-                                },
-                              }}
-                              passHref
+              <div className="">
+                <div className="grid sm:grid-cols-3 md:gap-6 gap-4">
+                  {Object.keys(compareTractorData).map((key) =>
+                    activeTab === key ? (
+                      <>
+                        {compareTractorData[activeTab]
+                          ?.slice(0, 3)
+                          .map((item, index) => (
+                            <div
+                              key={index}
+                              className="overflow-hidden flex-none"
                             >
-                              <Btn
-                                className="uppercase"
-                                text={t("Home.COMPARE")}
+                              <Image
+                                src={CompareImage}
+                                alt="compareImage"
+                                layout="responsive"
                               />
-                            </Link>
-                          </div>
-                        ))}
-                    </>
-                  ) : null
-                )}
+                              <div className="flex justify-between px-3 mb-3">
+                                <div>
+                                  <div>{item.brand1}</div>
+                                  <div className="font-semibold my-1">
+                                    <Image src={HP} width={15} height={15} />{" "}
+                                    {item.brand1hp}
+                                  </div>
+                                  <div className="font-semibold my-1">
+                                    {formatPrice(item.brand1price)}
+                                  </div>
+                                </div>
+                                <div>
+                                  <div>{item.brand2}</div>
+                                  <div className="font-semibold my-1">
+                                    <Image src={HP} width={15} height={15} />{" "}
+                                    {item.brand2hp}
+                                  </div>
+                                  <div className="font-semibold my-1">
+                                    {" "}
+                                    {formatPrice(item.brand2price)}
+                                  </div>
+                                </div>
+                              </div>
+                              <Link
+                                href={{
+                                  pathname:
+                                    "/compare-tractors/compare-tractor-details",
+                                  query: {
+                                    t1: item.brand1,
+                                    t2: item.brand2,
+                                    id1: item.brand1Id,
+                                    id2: item.brand2Id,
+                                  },
+                                }}
+                                passHref
+                              >
+                                <Btn
+                                  className="uppercase"
+                                  text={t("Home.COMPARE")}
+                                />
+                              </Link>
+                            </div>
+                          ))}
+                      </>
+                    ) : null
+                  )}
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="justify-center flex my-4">
-            <Btn
-              text={t("Home.View_All_Tractor_Comparison")}
-              onClick={handleCompareDetailsAll}
-              bgColor={true}
-            />
+            <div className="justify-center flex my-4">
+              <Btn
+                text={t("Home.View_All_Tractor_Comparison")}
+                onClick={handleCompareDetailsAll}
+                bgColor={true}
+              />
+            </div>
           </div>
-        </div>
+        </>
       ) : null}
+
+
     </Layout>
   );
 }
