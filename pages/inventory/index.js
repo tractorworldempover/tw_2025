@@ -38,14 +38,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { GET_ALL_STATES } from "@utils/constants";
 import Link from "next/link";
 import { formatPrice, getValidImageUrl } from "@utils";
-import { useInventory} from "@utils";
+import { useInventory } from "@utils";
 
 // Define the Inventory function
 export default function Inventory({ locale }) {
   const { locale: activeLocale, locales, asPath } = useRouter();
 
   const { inventory: inventoryData } = useInventory();
-  
+
   // 'common' refers to common.json
   const { t, i18n } = useTranslation("common");
 
@@ -259,7 +259,7 @@ export default function Inventory({ locale }) {
 
   // Ensure PopularTractors (which is containing all 1725 data) is populated at the start
   useEffect(() => {
-   // console.log("Inventory Data:", inventoryData); // Log the inventory data
+    // console.log("Inventory Data:", inventoryData); // Log the inventory data
     if (!Array.isArray(inventoryData) || inventoryData.length === 0) return;
 
     async function fetchTractors() {
@@ -280,15 +280,13 @@ export default function Inventory({ locale }) {
         }))
       );
 
-       setPopularTractorsData(tractors);
+      setPopularTractorsData(tractors);
     }
 
     fetchTractors();
   }, [inventoryData]);
 
-
-  console.log("processedItems2==PopularTractors"+JSON.stringify(PopularTractors));
-
+  // console.log("processedItems2==PopularTractors"+JSON.stringify(PopularTractors));
 
   // all brands
   useEffect(() => {
@@ -320,7 +318,7 @@ export default function Inventory({ locale }) {
   // Extract brandsData from inventoryData when it changes
   useEffect(() => {
     if (Array.isArray(inventoryData) && inventoryData.length > 0) {
-       // Extract all unique brands
+      // Extract all unique brands
       const brandsData = [
         ...new Set(inventoryData.map((item) => item.brandSlug?.trim())),
       ].filter(Boolean);
@@ -382,12 +380,15 @@ export default function Inventory({ locale }) {
   useEffect(() => {
     if (!PopularTractors || PopularTractors.length === 0) {
       console.log("No PopularTractors available for filtering.");
+      setFilteredTractors([]);
+      setInventoryLoading(false);
       return;
     }
 
+    setInventoryLoading(true);
+
     const [brandFilter, hpFilter, priceFilter, stateFilter] =
       liveInventoryFilters;
- 
 
     const filtered = PopularTractors.filter((tractor) => {
       // BRAND FILTER
@@ -440,8 +441,9 @@ export default function Inventory({ locale }) {
       return matchesBrand && matchesHP && matchesPrice && matchesState;
     });
     // debugger;
-    
+
     setFilteredTractors(filtered); // Update filteredTractors with the filtered data
+    setInventoryLoading(false);
   }, [liveInventoryFilters, PopularTractors]);
 
   // get states list
@@ -454,39 +456,40 @@ export default function Inventory({ locale }) {
         id: index, // Generate a unique ID for each state
         state,
       }));
-  
+
       setStateList(uniqueStates); // Update the stateList
     }
   }, [inventoryData]);
 
+  // const [inventoryLoading, setInventoryLoading] = useState(true);
+  // const [inventoryError, setInventoryError] = useState(null);
+
+  // useEffect(() => {
+  //   if (inventoryData) {
+  //     setInventoryLoading(false);
+  //   } else {
+  //     setInventoryLoading(true);
+  //   }
+  // }, [inventoryData]);
+
   const [inventoryLoading, setInventoryLoading] = useState(true);
   const [inventoryError, setInventoryError] = useState(null);
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
   useEffect(() => {
-    if (inventoryData) {
+    if (inventoryData && inventoryData.length > 0) {
       setInventoryLoading(false);
-    } else {
+      setHasLoadedOnce(true);
+    } else if (!hasLoadedOnce) {
       setInventoryLoading(true);
     }
   }, [inventoryData]);
 
-  if (inventoryLoading) {
-    return (
-      <Loader
-        loaderImage={
-          language === "HI" ? LoaderHi : language === "MR" ? LoaderMr : LoaderEn
-        }
-      />
-    );
-  }
-
-  if (!inventoryData || inventoryData.length === 0) {
-    return <p>No data available. Try refreshing or checking filters.</p>;
-  }
-
-  if (inventoryError) {
-    return <p>Error: {inventoryError.message}</p>;
-  }
+  useEffect(() => {
+    if (!inventoryLoading && !hasLoadedOnce) {
+      setHasLoadedOnce(true);
+    }
+  }, [inventoryLoading]);
 
   return (
     <div>
@@ -877,30 +880,32 @@ export default function Inventory({ locale }) {
                         />
                       </div>
                       <select
-  id="location"
-  className="bg-white border border-gray-300 text-black rounded-md block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white px-8"
-  onChange={(event) => {
-    const selectedValue = event.target.value;
-    setSelectedState(selectedValue); // Update the selectedState
-    setLiveInventoryFilters((prevFilters) => {
-      const newFilters = [...prevFilters];
-      newFilters[3] = selectedValue === "all" ? "" : selectedValue; // Clear filter if "All" is selected
-      return newFilters;
-    });
-  }}
-  value={selectedState || "all"} // Default to "All"
->
-  <option value="all">All</option> {/* Default option to show all inventory */}
-  {stateList.length > 0 ? (
-    stateList.map((item) => (
-      <option key={item.id} value={item.state}>
-        {item.state}
-      </option>
-    ))
-  ) : (
-    <option disabled>Loading states...</option>
-  )}
-</select>
+                        id="location"
+                        className="bg-white border border-gray-300 text-black rounded-md block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white px-8"
+                        onChange={(event) => {
+                          const selectedValue = event.target.value;
+                          setSelectedState(selectedValue); // Update the selectedState
+                          setLiveInventoryFilters((prevFilters) => {
+                            const newFilters = [...prevFilters];
+                            newFilters[3] =
+                              selectedValue === "all" ? "" : selectedValue; // Clear filter if "All" is selected
+                            return newFilters;
+                          });
+                        }}
+                        value={selectedState || "all"} // Default to "All"
+                      >
+                        <option value="all">All</option>{" "}
+                        {/* Default option to show all inventory */}
+                        {stateList.length > 0 ? (
+                          stateList.map((item) => (
+                            <option key={item.id} value={item.state}>
+                              {item.state}
+                            </option>
+                          ))
+                        ) : (
+                          <option disabled>Loading states...</option>
+                        )}
+                      </select>
                     </div>
                   </div>
                 </div>
@@ -909,21 +914,33 @@ export default function Inventory({ locale }) {
               <div className="sm:hidden block">
                 {activeTab == "gridData" && (
                   <div className="">
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
-                      {currentCards.length === 0 ? (
-                        <div className="col-span-full flex justify-center items-center min-h-[600px]">
-                          <Image
-                            loader={customImageLoader}
-                            src={
-                              language === "HI" ? LoaderHi : language === "MR" ? LoaderMr : LoaderEn
-                            }
-                            alt="Loading..."
-                            width={120}
-                            height={120}
-                          />
-                        </div>
-                      ) : (
-                        currentCards.slice(0, 3).map((item, idx) => (
+                    {inventoryLoading && !hasLoadedOnce ? (
+                      <div className="flex justify-center items-center min-h-[600px]">
+                        <Loader
+                          loaderImage={
+                            language === "HI"
+                              ? LoaderHi
+                              : language === "MR"
+                              ? LoaderMr
+                              : LoaderEn
+                          }
+                        />
+                      </div>
+                    ) : inventoryError ? (
+                      <div className="flex justify-center items-center min-h-[600px]">
+                        <p className="text-center text-red-500">
+                          Error loading inventory. Please try again later.
+                        </p>
+                      </div>
+                    ) : !filteredTractors || filteredTractors.length === 0 ? (
+                      <div className="col-span-full flex justify-center items-center min-h-[600px]">
+                        <p className="text-center text-gray-500">
+                          No data available. Try refreshing or checking filters.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+                        {currentCards.map((item, idx) => (
                           <div
                             key={idx}
                             className="gap-4 bg-white border-[#D9D9D9] border-[1px] overflow-hidden shadow-lg flex-none cursor-pointer"
@@ -931,7 +948,7 @@ export default function Inventory({ locale }) {
                             <div
                               className="relative"
                               onClick={() => {
-                                 router.push(
+                                router.push(
                                   `/tractor-details/${
                                     item.tractorId
                                   }-${item.title
@@ -948,6 +965,7 @@ export default function Inventory({ locale }) {
                                 width={100}
                                 height={70}
                               />
+
                               {item.isVerified && (
                                 <div className="bg-secondaryColor px-2 text-white text-sm absolute top-4 left-4 uppercase font-medium border-gradient">
                                   {formatPrice(item.price)}
@@ -965,7 +983,7 @@ export default function Inventory({ locale }) {
                                 {item.features.map((feature, fIdx) => (
                                   <div
                                     key={fIdx}
-                                    className={`flex gap-1 h-[14px] items-center  ${
+                                    className={`flex gap-1 h-[14px] items-center ${
                                       fIdx < item.features.length - 1
                                         ? "border-r-[1px] border-black"
                                         : ""
@@ -992,14 +1010,14 @@ export default function Inventory({ locale }) {
                                     className="w-4 mr-1"
                                     alt="phnIcon"
                                   />{" "}
-                                  Interested{" "}
+                                  Interested
                                 </span>
                               </div>
                             </div>
                           </div>
-                        ))
-                      )}
-                    </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
                 {activeTab == "listData" && (
@@ -1010,7 +1028,11 @@ export default function Inventory({ locale }) {
                           <Image
                             loader={customImageLoader}
                             src={
-                              language === "HI" ? LoaderHi : language === "MR" ? LoaderMr : LoaderEn
+                              language === "HI"
+                                ? LoaderHi
+                                : language === "MR"
+                                ? LoaderMr
+                                : LoaderEn
                             }
                             alt="Loading..."
                             width={120}
@@ -1148,7 +1170,11 @@ export default function Inventory({ locale }) {
                       <Image
                         loader={customImageLoader}
                         src={
-                          language === "HI" ? LoaderHi : language === "MR" ? LoaderMr : LoaderEn
+                          language === "HI"
+                            ? LoaderHi
+                            : language === "MR"
+                            ? LoaderMr
+                            : LoaderEn
                         }
                         alt="Loading..."
                         width={150}
@@ -1256,23 +1282,98 @@ export default function Inventory({ locale }) {
               </div> */}
 
               {/*Tractors Dealers by Brands sec*/}
-                    <div className="bg-white mt-4 lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-4 sm:pb-8 py-2">
-                      <Heading heading={t('About.Tractors_By_Brands')} viewButton={false} />
-                      <div className="grid sm:grid-cols-6 grid-cols-3 sm:gap-6 gap-4 mt-6">
-                                <Image width={259} height={252} src="/images/about/brands/mahindra.svg" alt="mahindra" className="w-full" />
-                                <Image width={259} height={252} src="/images/about/brands/swaraj.svg" alt="swaraj" className="w-full" />
-                                <Image width={259} height={252} src="/images/about/brands/elcher.svg" alt="Elcher" className="w-full" />
-                                <Image width={259} height={252} src="/images/about/brands/masseyFerguson.svg" alt="masseyFerguson" className="w-full" />
-                                <Image width={259} height={252} src="/images/about/brands/tillersTractors.svg" alt="tillersTractors" className="w-full" />
-                                <Image width={259} height={252} src="/images/about/brands/escorts.svg" alt="escorts" className="w-full" />
-                                <Image width={259} height={252} src="/images/about/brands/kartar.svg" alt="kartar" className="w-full" />
-                                <Image width={259} height={252} src="/images/about/brands/captain.svg" alt="captain" className="w-full" />
-                                <Image width={259} height={252} src="/images/about/brands/preet.svg" alt="preet" className="w-full" />
-                                <Image width={259} height={252} src="/images/about/brands/forceMotors.svg" alt="forceMotors" className="w-full" />
-                                <Image width={259} height={252} src="/images/about/brands/aceTractors.svg" alt="aceTractors" className="w-full" />
-                                <Image width={259} height={252} src="/images/about/brands/autonxt.svg" alt="autonxt" className="w-full" />
-                              </div>
-                            </div>
+              <div className="bg-white mt-4 lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-4 sm:pb-8 py-2">
+                <Heading
+                  heading={t("About.Tractors_By_Brands")}
+                  viewButton={false}
+                />
+                <div className="grid sm:grid-cols-6 grid-cols-3 sm:gap-6 gap-4 mt-6">
+                  <Image
+                    width={259}
+                    height={252}
+                    src="/images/about/brands/mahindra.svg"
+                    alt="mahindra"
+                    className="w-full"
+                  />
+                  <Image
+                    width={259}
+                    height={252}
+                    src="/images/about/brands/swaraj.svg"
+                    alt="swaraj"
+                    className="w-full"
+                  />
+                  <Image
+                    width={259}
+                    height={252}
+                    src="/images/about/brands/elcher.svg"
+                    alt="Elcher"
+                    className="w-full"
+                  />
+                  <Image
+                    width={259}
+                    height={252}
+                    src="/images/about/brands/masseyFerguson.svg"
+                    alt="masseyFerguson"
+                    className="w-full"
+                  />
+                  <Image
+                    width={259}
+                    height={252}
+                    src="/images/about/brands/tillersTractors.svg"
+                    alt="tillersTractors"
+                    className="w-full"
+                  />
+                  <Image
+                    width={259}
+                    height={252}
+                    src="/images/about/brands/escorts.svg"
+                    alt="escorts"
+                    className="w-full"
+                  />
+                  <Image
+                    width={259}
+                    height={252}
+                    src="/images/about/brands/kartar.svg"
+                    alt="kartar"
+                    className="w-full"
+                  />
+                  <Image
+                    width={259}
+                    height={252}
+                    src="/images/about/brands/captain.svg"
+                    alt="captain"
+                    className="w-full"
+                  />
+                  <Image
+                    width={259}
+                    height={252}
+                    src="/images/about/brands/preet.svg"
+                    alt="preet"
+                    className="w-full"
+                  />
+                  <Image
+                    width={259}
+                    height={252}
+                    src="/images/about/brands/forceMotors.svg"
+                    alt="forceMotors"
+                    className="w-full"
+                  />
+                  <Image
+                    width={259}
+                    height={252}
+                    src="/images/about/brands/aceTractors.svg"
+                    alt="aceTractors"
+                    className="w-full"
+                  />
+                  <Image
+                    width={259}
+                    height={252}
+                    src="/images/about/brands/autonxt.svg"
+                    alt="autonxt"
+                    className="w-full"
+                  />
+                </div>
+              </div>
 
               {/* <div className="my-4 sm:hidden block">
                 <Btn text={'view all'} />
