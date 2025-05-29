@@ -188,7 +188,7 @@ export default function Navbar({ currentPage, onClick, onClickForLanguage }) {
                   </a>
                 </Link>
 
-                <Link href="/content-gallery" >
+                <Link href="/content-hub" >
                   <a className={`${currentPage == "contentGallery" ? 'text-secondaryColor font-bold' : ''} hover:md:text-secondaryColor block py-3 md:px-3 md:p-0`}>
                     <div className="flex items-center">
                       <span className="sm:hidden block w-[11%]"><Image src={ContentGallery} alt="ContentGallery" /></span>

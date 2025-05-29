@@ -60,7 +60,7 @@ import {
   getTabLabel,
   getHomePageTractorsListBasedOnInventory,
   formatPrice,
-  getValidImageUrl
+  getValidImageUrl,
 } from "@utils";
 import { useInventory } from "@utils";
 import { customImageLoader } from "@utils/constants";
@@ -75,10 +75,8 @@ export default function HomePage({ locale, Inventorydata }) {
   const router = useRouter();
   const language = "EN";
   const { t, i18n } = useTranslation("common");
-  const { inventory, loading} = useInventory(Inventorydata);
+  const { inventory, loading } = useInventory(Inventorydata);
   const [inventoryList, setInventoryList] = useState([]);
-
-   
 
   useEffect(() => {
     const processInventory = async () => {
@@ -86,10 +84,13 @@ export default function HomePage({ locale, Inventorydata }) {
         setInventoryList([]);
         return;
       }
-  
+
       const result = await Promise.all(
         inventory.slice(0, 10).map(async (item) => {
-          const imageUrl = await getValidImageUrl(item.image_links, DefaultTractor);
+          const imageUrl = await getValidImageUrl(
+            item.image_links,
+            DefaultTractor
+          );
           return {
             title: `${item.brand} ${item.model}`,
             price: item.max_price,
@@ -101,14 +102,13 @@ export default function HomePage({ locale, Inventorydata }) {
           };
         })
       );
-  
+
       setInventoryList(result);
     };
-  
+
     processInventory();
   }, [inventory]);
 
- 
   const compareTractorData = useMemo(
     () => getHomePageTractorsListBasedOnInventory(inventoryList),
     [inventoryList]
@@ -531,23 +531,25 @@ export default function HomePage({ locale, Inventorydata }) {
           className="mt-8"
         />
 
-{loading ? (
-  <div className="flex justify-center items-center py-8">
-    <Image
-      loader={customImageLoader}
-      src={
-        language === "HI" ? LoaderHi : language === "MR" ? LoaderMr : LoaderEn
-      }
-      alt="Loading..."
-      width={60}
-      height={60}
-    />
-  </div>
-) : (
-  <LiveInventoryContainer data={inventoryList} />
-)}
-
-
+        {loading ? (
+          <div className="flex justify-center items-center py-8">
+            <Image
+              loader={customImageLoader}
+              src={
+                language === "HI"
+                  ? LoaderHi
+                  : language === "MR"
+                  ? LoaderMr
+                  : LoaderEn
+              }
+              alt="Loading..."
+              width={60}
+              height={60}
+            />
+          </div>
+        ) : (
+          <LiveInventoryContainer data={inventoryList} />
+        )}
       </div>
 
       {/* why choose us */}
@@ -757,9 +759,15 @@ export default function HomePage({ locale, Inventorydata }) {
                   </div>
                   <p>{card.contentGalleyDate}</p>
                 </div>
-                <ReadMore
-                  onClick={() => window.open(card.contentGalleyURL, "_blank")}
-                />
+                <Link
+                  href={`/content-hub/${encodeURIComponent(
+                    card.contentGalleyURL.replace(/\//g, "")
+                  )}`}
+                >
+                  <a>
+                    <ReadMore />
+                  </a>
+                </Link>
               </div>
             ))}
           </div>
