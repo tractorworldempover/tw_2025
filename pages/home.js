@@ -54,6 +54,7 @@ import Modal from "@components/Modal";
 import Crossmark from "@Images/inventory/closeIcon.svg";
 import { useTranslation } from "next-i18next";
 import DefaultTractor from "@Images/default_tractor.svg";
+import clsx from "clsx";
 
 import {
   HomeHPRanges,
@@ -609,91 +610,107 @@ export default function HomePage({ locale, Inventorydata }) {
 
       {/* Compare To Buy The Right Tractor sec */}
       <div className="lg:px-14 md:px-6 sm:px-3 px-2 sm:py-4 py-2 bg-white mt-3">
+        {/* Section Title */}
         <div className="font-bold xl:text-xl lg:text-lg md:text-base text-xl">
           <p className="mb-[-5px]">{t("Home.Buy_The_Right")}</p>
         </div>
 
+        {/* HP Range Tabs */}
         <div className="flex sm:gap-4 gap-2 my-3 font-medium relative z-20">
           {HomeHPRanges.map((range) => (
             <Tab
               key={range.key}
               id={range.key}
               activeTab={activeTab}
-              onClick={handleTabClick}
+              onClick={() => {
+                console.log("Selected Tab:", range.key);
+                setActiveTab(range.key);
+              }}
+              className={clsx(
+                "text-sm sm:text-base font-medium",
+                activeTab === range.key
+                  ? "text-primary border-b-2 border-primary"
+                  : "text-gray-500"
+              )}
             >
-              {getTabLabel(range.min, range.max)}
+              {range.label}
             </Tab>
           ))}
         </div>
 
-        <div className="">
-          <div className="grid sm:grid-cols-3 md:gap-6 gap-4">
-            {Object.keys(compareTractorData).map((key) =>
-              activeTab === key ? (
-                <>
-                  {compareTractorData[activeTab]
-                    ?.slice(0, 3)
-                    .map((item, index) => (
-                      //{compareTractorData[key].map((item, index) => (
-                      <div key={index} className="overflow-hidden flex-none">
-                        <Image
-                          src={CompareImage}
-                          alt="compareImage"
-                          layout="responsive"
-                        />
-                        <div className="flex justify-between px-3 mb-3">
-                          <div>
-                            <div>{item.brand1}</div>
-                            <div className="font-semibold my-1">
-                              <Image src={HP} width={15} height={15} alt="hp" />{" "}
-                              {item.brand1hp}
-                            </div>
-                            <div className="font-semibold my-1">
-                              {formatPrice(item.brand1price)}
-                            </div>
-                          </div>
-                          <div>
-                            <div>{item.brand2}</div>
-                            <div className="font-semibold my-1">
-                              <Image src={HP} width={15} height={15} alt="hp" />{" "}
-                              {item.brand2hp}
-                            </div>
-                            <div className="font-semibold my-1">
-                              {" "}
-                              {formatPrice(item.brand2price)}
-                            </div>
-                          </div>
-                        </div>
+        {/* Comparison Cards */}
+        <div className="grid sm:grid-cols-3 md:gap-6 gap-4">
+          {compareTractorData[activeTab]?.length > 0 ? (
+            compareTractorData[activeTab].slice(0, 3).map((item, index) => {
+              console.log(`Rendering card for pair ${index + 1}`, item);
+              return (
+                <div key={index} className="overflow-hidden flex-none">
+                  {/* Image */}
+                  <Image
+                    src={CompareImage}
+                    alt="compareImage"
+                    layout="responsive"
+                  />
 
-                        {/* <Btn className="uppercase" text={t('Home.COMPARE')} onClick={handleCompareAll} /> */}
-
-                        <Link
-                          href={{
-                            pathname:
-                              "/compare-tractors/compare-tractor-details",
-                            query: {
-                              t1: item.brand1,
-                              t2: item.brand2,
-                              id1: item.brand1Id,
-                              id2: item.brand2Id,
-                            },
-                          }}
-                          passHref
-                        >
-                          <Btn className="uppercase" text={t("Home.COMPARE")} />
-                        </Link>
+                  {/* Tractor Details */}
+                  <div className="flex justify-between px-3 mb-3">
+                    {/* Brand 1 */}
+                    <div>
+                      <div>{item.brand1}</div>
+                      <div className="font-semibold my-1 flex items-center gap-1">
+                        <Image src={HP} width={15} height={15} alt="hp" />
+                        {item.brand1hp}
                       </div>
-                    ))}
-                </>
-              ) : null
-            )}
-          </div>
+                      <div className="font-semibold my-1">
+                        {formatPrice(item.brand1price)}
+                      </div>
+                    </div>
+
+                    {/* Brand 2 */}
+                    <div>
+                      <div>{item.brand2}</div>
+                      <div className="font-semibold my-1 flex items-center gap-1">
+                        <Image src={HP} width={15} height={15} alt="hp" />
+                        {item.brand2hp}
+                      </div>
+                      <div className="font-semibold my-1">
+                        {formatPrice(item.brand2price)}
+                      </div>
+                    </div>
+                  </div>
+
+                  <Link
+                    href={{
+                      pathname: "/compare-tractors/compare-tractor-details",
+                      query: {
+                        t1: item.brand1,
+                        t2: item.brand2,
+                        id1: item.brand1Id,
+                        id2: item.brand2Id,
+                      },
+                    }}
+                    passHref
+                  >
+                    <Btn className="uppercase" text={t("Home.COMPARE")} />
+                  </Link>
+                </div>
+              );
+            })
+          ) : (
+            <div className="col-span-full text-center text-gray-500 font-medium mt-5 mb-5">
+              {console.log("No data found for:", activeTab)}
+              {t("No Result Available") || "No Result Available"}
+            </div>
+          )}
         </div>
 
         <div className="justify-center flex mt-2">
           <Btn
             text={t("Home.View_All_Tractor_Comparison")}
-            onClick={handleCompareAll}
+            onClick={() => {
+              console.log("Clicked: View All Tractor Comparison");
+              handleCompareAll();
+            }}
             bgColor={true}
           />
         </div>

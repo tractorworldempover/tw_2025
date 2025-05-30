@@ -5,14 +5,16 @@ import Dealer1 from "@Images/dealer/dealer1.svg";
 import CryptoJS from 'crypto-js'; 
 const SECRET_KEY = 'Tractorworldbymahindra@2025';  // This can be any secret key you want
 
+
 export const HomeHPRanges = [
-  { min: 0, max: 20, key: 'oneData' },
-  { min: 21, max: 30, key: 'twoData' },
-  { min: 31, max: 40, key: 'ThreeData' },
-  { min: 41, max: 45, key: 'FourData' },
-  { min: 46, max: 50, key: 'FifthData' },
-  { min: 51, max: Infinity, key: 'SixthData' },
+  { min: 0, max: 20, key: 'oneData', label: '0 - 20 HP' },
+  { min: 21, max: 30, key: 'twoData', label: '21 - 30 HP' },
+  { min: 31, max: 40, key: 'ThreeData', label: '31 - 40 HP' },
+  { min: 41, max: 45, key: 'FourData', label: '41 - 45 HP' },
+  { min: 46, max: 50, key: 'FifthData', label: '46 - 50 HP' },
+  { min: 51, max: Infinity, key: 'SixthData', label: 'Above 51 HP' },
 ];
+
 
 // Function to encrypt data
 const encryptData = (data) => {
