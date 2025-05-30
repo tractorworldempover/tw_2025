@@ -68,7 +68,7 @@ import { customImageLoader } from "@utils/constants";
 
 export default function HomePage({ locale, Inventorydata }) {
   const [isMobile, setIsMobile] = useState(false);
-  const [activeTab, setActiveTab] = useState("oneData");
+  const [activeTab, setActiveTab] = useState("twoData");
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [showModal, setShowModal] = useState(false);
