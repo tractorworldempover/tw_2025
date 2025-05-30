@@ -40,29 +40,29 @@ const Layout = ({ children, currentPage, locale }) => {
   };
 
   // Filter suggestions from inventory based on search term
-    useEffect(() => {
-      // console.log("Search term:", searchTerm);
-      // console.log("Inventory sample:", inventory[0]); // Inspecting the structure
-      if (!searchTerm) {
-        setBrands([]);
-      } else if (inventory && inventory.length > 0) {
-        const filtered = inventory
-          .filter(item =>
-            `${item.brand} ${item.model}`.toLowerCase().includes(searchTerm.toLowerCase())
-          )
-          .slice(0, 10)
-          .map(item => {
-            const title = `${item.brand} ${item.model}`;
-            return {
-              title,
-              slug: `/tractor-details/${item.tractor_id}-${title.replace(/\s+/g, "-").toLowerCase()}`
-            };
-          });
-    
-        setBrands(filtered);
-      }
-    }, [searchTerm, inventory]);
-    
+  useEffect(() => {
+    // console.log("Search term:", searchTerm);
+    // console.log("Inventory sample:", inventory[0]); // Inspecting the structure
+    if (!searchTerm) {
+      setBrands([]);
+    } else if (inventory && inventory.length > 0) {
+      const filtered = inventory
+        .filter(item =>
+          `${item.brand} ${item.model}`.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .slice(0, 10)
+        .map(item => {
+          const title = `${item.brand} ${item.model}`;
+          return {
+            title,
+            slug: `/tractor-details/${item.tractor_id}-${title.replace(/\s+/g, "-").toLowerCase()}`
+          };
+        });
+
+      setBrands(filtered);
+    }
+  }, [searchTerm, inventory]);
+
 
   const customStyles = {
     content: {
@@ -95,10 +95,16 @@ const Layout = ({ children, currentPage, locale }) => {
 
   return (
     <>
+
       <Head>
         <title>{t("Navbar.title")}</title>
-        <meta name="description" content="This is a description of my page" />
+        <meta name="author" content="Corteva" />
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <meta http-equiv="Pragma" content="no-cache" />
+        <meta http-equiv="Expires" content="0" />
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
       </Head>
+
       <div className="header">
         <NavBar
           currentPage={currentPage}

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setAddressData } from "../store/slices/userDataSlice";
 import Dealer1 from "@Images/dealer/dealer1.svg";
-import CryptoJS from 'crypto-js'; 
+import CryptoJS from 'crypto-js';
 const SECRET_KEY = 'Tractorworldbymahindra@2025';  // This can be any secret key you want
 
 
@@ -199,6 +199,62 @@ export const getTractorDetailsById = (inventoryData, tractorId) => {
   return tractorDetails;
 };
 
+
+export const metaDetailsById = (inventoryData) => {
+  const metaDetails = inventoryData;
+  if (!metaDetails) {
+    console.warn(`No tractor found for ID: ${tractorId}`);
+    return null;
+  }
+  // console.log(JSON.stringify(metaDetails) + "metaDetails"); 
+  const {
+    brand,
+    model,
+    year,
+    engine_power,
+    user_location,
+    state,
+    district,
+    tyre_state,
+    engine_hours,
+    drive_type,
+    is_insured,
+    finance,
+    engine_condition,
+    tyre_condition,
+  } = metaDetails;
+
+  const insuredText = is_insured ? 'insured' : 'not insured';
+  const financeText = finance ? `finance available up to ${finance}` : 'no finance available';
+
+  // Generate Meta Description
+  const description = `Buy ${year} ${brand} ${model} (${engine_power}) in ${user_location}, ${district}, ${state}. ${engine_hours} hours run, ${drive_type} drive, ${tyre_state} tyres, engine in ${engine_condition} condition. This tractor is ${insuredText} and ${financeText}.`;
+
+  // Generate Meta Keywords
+  const keywords = [
+    `${brand} ${model}`,
+    `${brand} tractor`,
+    `${model} tractor`,
+    `${brand} ${model} ${year}`,
+    `used ${brand} tractor`,
+    `${brand} tractor ${state}`,
+    `tractors in ${user_location}`,
+    `buy ${brand} tractor`,
+    `${engine_power} tractor`,
+    `second hand tractors`,
+    `used tractors for sale`,
+    `tractor with ${drive_type}`,
+    `${tyre_condition} tyres`,
+    `${engine_condition} engine`,
+  ].join(', ');
+
+  return { description, keywords };
+
+
+};
+
+
+
 /**
  * Gets the first valid processed image URL from image_links.
  * @param {Array|Object} imageLinks - The array or object of image objects.
@@ -207,9 +263,9 @@ export const getTractorDetailsById = (inventoryData, tractorId) => {
  */
 export async function getValidImageUrl(imageLinks, DefaultTractor) {
   const authKey = "?sv=2021-12-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-04-01T14:30:38Z&st=2023-03-29T06:30:38Z&spr=https&sig=mk0i2ZPyaotRM5smvwnf9y9%2BcZljr9BrtLIK2%2FnnJ6k%3D";
-  
+
   const imageArray = Array.isArray(imageLinks) ? imageLinks : Object.values(imageLinks || {});
-  
+
   if (imageArray.length > 0) {
     for (let i = 0; i < imageArray.length; i++) {
       const baseImageUrl = imageArray[i]?.processed_image;
@@ -243,7 +299,7 @@ export async function getValidImageUrl(imageLinks, DefaultTractor) {
 
 export async function getValidImageArrayUrls(imageLinks, DefaultTractor) {
   const authKey = "?sv=2021-12-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-04-01T14:30:38Z&st=2023-03-29T06:30:38Z&spr=https&sig=mk0i2ZPyaotRM5smvwnf9y9%2BcZljr9BrtLIK2%2FnnJ6k%3D";
-  
+
   const imageArray = Array.isArray(imageLinks)
     ? imageLinks
     : Object.values(imageLinks || {});
@@ -506,32 +562,32 @@ export default function InventoryPage({ inventoryData }) {
 
 
 
-export async function getInventoryData()  {
- 
+export async function getInventoryData() {
+
   let inventoryData = [];
-  
-    try {
-      const res = await fetch("https://used-tractor-backend.azurewebsites.net/inventory/web/v2/tractor/");
-      if (!res.ok) throw new Error(`Failed to fetch data: ${res.status}`); 
-      const rawData = await res.json();
-      inventoryData = Array.isArray(rawData?.data)
-        ? rawData.data.filter(item => [1, 2, 3].includes(item.status)) // Filter by status
-        : [];
-  
-    } catch (error) {
-      console.error("❌ Error fetching data in getLocaleProps:", error);
-    } 
-   return inventoryData;
- 
+
+  try {
+    const res = await fetch("https://used-tractor-backend.azurewebsites.net/inventory/web/v2/tractor/");
+    if (!res.ok) throw new Error(`Failed to fetch data: ${res.status}`);
+    const rawData = await res.json();
+    inventoryData = Array.isArray(rawData?.data)
+      ? rawData.data.filter(item => [1, 2, 3].includes(item.status)) // Filter by status
+      : [];
+
+  } catch (error) {
+    console.error("❌ Error fetching data in getLocaleProps:", error);
+  }
+  return inventoryData;
+
 }
- 
+
 export const useInventory = (initialData = []) => {
   const [inventory, setInventory] = useState(initialData);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const stored = sessionStorage.getItem('inventoryData');
-  
+
     if (stored) {
       const decrypted = decryptData(stored);
       if (decrypted && decrypted.length > 0) {
@@ -564,3 +620,4 @@ export const useInventory = (initialData = []) => {
 
   return { inventory, loading };
 };
+
