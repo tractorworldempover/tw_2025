@@ -97,7 +97,7 @@ const Layout = ({ children, currentPage, locale }) => {
     <>
 
       <Head>
-        <title>{t("Navbar.title")}</title>
+        {/* <title>{t("Navbar.title")}</title> */}
         <meta name="author" content="Corteva" />
         <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
         <meta http-equiv="Pragma" content="no-cache" />
