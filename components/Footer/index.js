@@ -50,7 +50,7 @@ export default function Footer() {
             <div className="relative mb-[-10px] z-[10]">
                 <div className="bg-primaryColor xl:w-[33%] lg:w-[40%] md:w-[45%] sm:w-[55%] w-[95%] mx-auto mb-[-10px] 
         relative sm:px-8 px-4 py-4 rounded-md text-white sm:text-sm text-xs flex justify-between">
-                    <Link href='./dealers' legacyBehavior>
+                    <Link href='./dealer-locator' legacyBehavior>
                         <a className="flex items-center">
                             <Image src={Location} className="mt-4" alt="location" />
                             <span className="ml-2">{t('Footer.Find_a_Dealer')}</span>

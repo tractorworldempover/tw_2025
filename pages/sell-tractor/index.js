@@ -19,6 +19,9 @@ import {
   getDealersData,
   getFilteredDistricts,
 } from "../../utils";
+import Head from "next/head";
+import { staticMetaByRoute } from "../../utils";
+
 
 export async function getServerSideProps(context) {
   return await getLocaleProps(context);
@@ -33,6 +36,7 @@ export default function SellTractor() {
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [locations, setLocations] = useState({});
   const dealerRightData = getDealersData();
+  const meta = staticMetaByRoute["/sell-tractor"];
 
   // Form state
   const [form, setForm] = useState({
@@ -188,6 +192,12 @@ export default function SellTractor() {
   }, []);
 
   return (
+    <>
+    <Head>
+        <title>{meta.title}</title>
+        <meta name="description" content={meta.description} />
+        <meta name="keywords" content={meta.keywords} />
+      </Head>
     <div>
       <Layout currentPage={"sellTractor"}>
         <Banner
@@ -383,5 +393,6 @@ export default function SellTractor() {
         </div>
       </Layout>
     </div>
+    </>
   );
 }

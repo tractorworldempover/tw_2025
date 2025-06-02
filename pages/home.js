@@ -65,6 +65,8 @@ import {
 } from "@utils";
 import { useInventory } from "@utils";
 import { customImageLoader } from "@utils/constants";
+import Head from "next/head";
+import { staticMetaByRoute } from "../utils";
 
 export default function HomePage({ locale, Inventorydata }) {
   const [isMobile, setIsMobile] = useState(false);
@@ -78,6 +80,7 @@ export default function HomePage({ locale, Inventorydata }) {
   const { t, i18n } = useTranslation("common");
   const { inventory, loading } = useInventory(Inventorydata);
   const [inventoryList, setInventoryList] = useState([]);
+  const meta = staticMetaByRoute["/"];
 
   useEffect(() => {
     const processInventory = async () => {
@@ -248,7 +251,7 @@ export default function HomePage({ locale, Inventorydata }) {
   const handleAllExclusiveOffers = () => handleNavigation("/exclusive-offers");
   const handleAllLiveInventory = () => handleNavigation("/inventory");
   const handleAllContentHub = () => handleNavigation("/content-hub");
-  const handleContentGallery = () => handleNavigation("/content-gallery");
+  const handleContentGallery = () => handleNavigation("/content-hub");
 
   const handleShareClick = () => {
     const MessageText =
@@ -414,6 +417,12 @@ export default function HomePage({ locale, Inventorydata }) {
   return (
     <>
       {/* Home SLider */}
+      
+      <Head>
+        <title>{meta.title}</title>
+        <meta name="description" content={meta.description} />
+        <meta name="keywords" content={meta.keywords} />
+      </Head>
 
       <div className="relative">
         <MultipleItemsSlide

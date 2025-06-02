@@ -28,6 +28,8 @@ import {
 import Link from "next/link";
 import { useInventory } from "@utils";
 import DefaultTractor from "@Images/default_tractor.svg";
+import Head from "next/head";
+import { staticMetaByRoute } from "../../utils";
 
 export async function getStaticProps(context) {
   return await getLocaleProps(context);
@@ -57,6 +59,7 @@ export default function CompareTractor({ locale }) {
   const [SelectedModelId, setSelectedModelId] = useState("");
   const [selectedTractorDetails, setSelectedTractorDetails] = useState([]);
   const { t, i18n } = useTranslation("common");
+  const meta = staticMetaByRoute["/compare"];
 
   const handleClose = () => {
     setShowBrandsModal(false);
@@ -285,6 +288,13 @@ export default function CompareTractor({ locale }) {
   console.log("selectedTractorDetails"+JSON.stringify(selectedTractorDetails))
 
   return (
+
+    <>
+      <Head>
+        <title>{meta.title}</title>
+        <meta name="description" content={meta.description} />
+        <meta name="keywords" content={meta.keywords} />
+      </Head>
     <div>
       <Layout currentPage={"compare"}>
         <Banner
@@ -587,5 +597,6 @@ export default function CompareTractor({ locale }) {
         />
       </Layout>
     </div>
+      </>
   );
 }

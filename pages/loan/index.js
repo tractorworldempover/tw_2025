@@ -13,21 +13,25 @@ import Yesbank from "@Images/bank/yesbank.svg";
 import Axis from "@Images/bank/axis.svg";
 import videoThumbnail from "@Images/loan/videoThumbnail.svg";
 import BannerStrip from "@components/BannerStrip";
-import bannerImg from '@Images/sellTractor/engineering-excellence-banner.svg';
-import { useQuery } from '@apollo/client';
+import bannerImg from "@Images/sellTractor/engineering-excellence-banner.svg";
+import { useQuery } from "@apollo/client";
 import { GET_ALL_STATES } from "@utils/constants";
 import { getLocaleProps } from "@helpers";
 import { useTranslation } from "next-i18next";
-import { fetchLocations, getDealersData, getFilteredDistricts } from "../../utils";
+import {
+  fetchLocations,
+  getDealersData,
+  getFilteredDistricts,
+} from "../../utils";
+import Head from "next/head";
+import { staticMetaByRoute } from "../../utils";
 
 export async function getServerSideProps(context) {
   return await getLocaleProps(context);
 }
 
-
 export default function ApplyNewTractorLoan() {
-
-  const { t, i18n } = useTranslation('common');
+  const { t, i18n } = useTranslation("common");
   const [states, setStates] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [selectedState, setSelectedState] = useState("");
@@ -35,37 +39,38 @@ export default function ApplyNewTractorLoan() {
   const [locations, setLocations] = useState({});
   const dealerRightData = getDealersData();
   const [loading, setLoading] = useState(false);
+  const meta = staticMetaByRoute["/loan"];
 
   // Form state
-    const [form, setForm] = useState({
-      name: "",
-      phone: "",
-      state: selectedState,
-      district: selectedDistrict,
-      leadType: "loan",
-    });
-    const [error, setError] = useState({});
-    const [successMsg, setSuccessMsg] = useState("");
+  const [form, setForm] = useState({
+    name: "",
+    phone: "",
+    state: selectedState,
+    district: selectedDistrict,
+    leadType: "loan",
+  });
+  const [error, setError] = useState({});
+  const [successMsg, setSuccessMsg] = useState("");
 
-    // Validation function
-    const validate = () => {
-      let errs = {};
-      if (!form.name.trim()) errs.name = "Name is required"; 
-      if (!form.phone.trim()) {
-        errs.phone = "Phone number is required";
-      } else if (!/^\d{10}$/.test(form.phone)) {
-        errs.phone = "Enter a valid 10-digit phone number";
-      }
-      if (!form.state.trim()) errs.state = "State is required";
-      if (!form.district.trim()) errs.district = "District is required";
+  // Validation function
+  const validate = () => {
+    let errs = {};
+    if (!form.name.trim()) errs.name = "Name is required";
+    if (!form.phone.trim()) {
+      errs.phone = "Phone number is required";
+    } else if (!/^\d{10}$/.test(form.phone)) {
+      errs.phone = "Enter a valid 10-digit phone number";
+    }
+    if (!form.state.trim()) errs.state = "State is required";
+    if (!form.district.trim()) errs.district = "District is required";
 
-      return errs;
-    };
+    return errs;
+  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.id]: e.target.value });
   };
- 
+
   useEffect(() => {
     fetchLocations(setLocations, setStates);
   }, []);
@@ -85,44 +90,91 @@ export default function ApplyNewTractorLoan() {
   };
 
   const breadcrumbData = [
-    { label: t('Home.Home'), link: "/" },
-    { label: t('Loan.Loan'), link: "#" },
+    { label: t("Home.Home"), link: "/" },
+    { label: t("Loan.Loan"), link: "#" },
   ];
 
-
   function TractorLoanEMIContent() {
-    return <div>
-      <p>A Tractor Loan EMI (Equated Monthly Instalment) is the monthly payment you make until your tractor loan is fully repaid. This amount comprises both the principal loan amount and the interest accrued.</p>
-      <div className="grid sm:grid-cols-4 grid-cols-1 mt-2 gap-2">
-        <div className="border cursor-pointer">
-          <Image src={videoThumbnail} alt="videoThumbnail" layout="responsive" />
+    return (
+      <div>
+        <p>
+          A Tractor Loan EMI (Equated Monthly Instalment) is the monthly payment
+          you make until your tractor loan is fully repaid. This amount
+          comprises both the principal loan amount and the interest accrued.
+        </p>
+        <div className="grid sm:grid-cols-4 grid-cols-1 mt-2 gap-2">
+          <div className="border cursor-pointer">
+            <Image
+              src={videoThumbnail}
+              alt="videoThumbnail"
+              layout="responsive"
+            />
+          </div>
+          <div className="border cursor-pointer">
+            <Image
+              src={videoThumbnail}
+              alt="videoThumbnail"
+              layout="responsive"
+            />
+          </div>
+          <div className="border cursor-pointer">
+            <Image
+              src={videoThumbnail}
+              alt="videoThumbnail"
+              layout="responsive"
+            />
+          </div>
+          <div className="border cursor-pointer">
+            <Image
+              src={videoThumbnail}
+              alt="videoThumbnail"
+              layout="responsive"
+            />
+          </div>
         </div>
-        <div className="border cursor-pointer">
-          <Image src={videoThumbnail} alt="videoThumbnail" layout="responsive" />
-        </div>
-        <div className="border cursor-pointer">
-          <Image src={videoThumbnail} alt="videoThumbnail" layout="responsive" />
-        </div>
-        <div className="border cursor-pointer">
-          <Image src={videoThumbnail} alt="videoThumbnail" layout="responsive" />
-        </div>
-
       </div>
-    </div>;
+    );
   }
 
-  // end Specifications 
+  // end Specifications
   const accordionData = [
-    { id: 1, heading: "Tractor Loan EMI: What Is It?", content: TractorLoanEMIContent(), },
-    { id: 2, heading: "Tractor Loan EMI: How Is It Calculated?", content: TractorLoanEMIContent(), },
-    { id: 3, heading: "Benefits of Using a Tractor Loan EMI Calculator", content: TractorLoanEMIContent(), },
-    { id: 4, heading: "How to Use Mahindra Finance Tractor Loan EMI Calculator?", content: TractorLoanEMIContent(), },
-    { id: 5, heading: "Loan Eligibility", content: TractorLoanEMIContent(), },
-    { id: 6, heading: "Loan Documents", content: TractorLoanEMIContent(), },
-    { id: 7, heading: "Interest Rate All Bank 2024", content: TractorLoanEMIContent(), },
-    { id: 8, heading: "Why Is Tractor World Best For Tractor Loans?", content: TractorLoanEMIContent(), },
-    { id: 9, heading: "Get your Tractor Loan from leading lenders today!", content: TractorLoanEMIContent(), },
-
+    {
+      id: 1,
+      heading: "Tractor Loan EMI: What Is It?",
+      content: TractorLoanEMIContent(),
+    },
+    {
+      id: 2,
+      heading: "Tractor Loan EMI: How Is It Calculated?",
+      content: TractorLoanEMIContent(),
+    },
+    {
+      id: 3,
+      heading: "Benefits of Using a Tractor Loan EMI Calculator",
+      content: TractorLoanEMIContent(),
+    },
+    {
+      id: 4,
+      heading: "How to Use Mahindra Finance Tractor Loan EMI Calculator?",
+      content: TractorLoanEMIContent(),
+    },
+    { id: 5, heading: "Loan Eligibility", content: TractorLoanEMIContent() },
+    { id: 6, heading: "Loan Documents", content: TractorLoanEMIContent() },
+    {
+      id: 7,
+      heading: "Interest Rate All Bank 2024",
+      content: TractorLoanEMIContent(),
+    },
+    {
+      id: 8,
+      heading: "Why Is Tractor World Best For Tractor Loans?",
+      content: TractorLoanEMIContent(),
+    },
+    {
+      id: 9,
+      heading: "Get your Tractor Loan from leading lenders today!",
+      content: TractorLoanEMIContent(),
+    },
   ];
 
   // for accordion
@@ -134,63 +186,72 @@ export default function ApplyNewTractorLoan() {
   const bankImgs = [
     {
       src: MahindraFinance,
-      alt: "mahindraFinance"
+      alt: "mahindraFinance",
     },
     {
       src: CanaraBank,
-      alt: "canaraBank"
+      alt: "canaraBank",
     },
     {
       src: Yesbank,
-      alt: "Yesbank"
+      alt: "Yesbank",
     },
     {
       src: Axis,
-      alt: "axis"
+      alt: "axis",
     },
     {
       src: MahindraFinance,
-      alt: "mahindraFinance"
+      alt: "mahindraFinance",
     },
     {
       src: CanaraBank,
-      alt: "canaraBank"
+      alt: "canaraBank",
     },
     {
       src: Yesbank,
-      alt: "Yesbank"
+      alt: "Yesbank",
     },
     {
       src: Axis,
-      alt: "axis"
-    }
+      alt: "axis",
+    },
   ];
   const handleApplyNow = async (e) => {
     debugger;
     setLoading(true);
     e.preventDefault();
-  
+
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setError(validationErrors);
       return;
     }
-  
+
     try {
-      const res = await fetch('https://mazutwmwpbackend002.azurewebsites.net/wp-json/custom/v1/contact', {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
-  
+      const res = await fetch(
+        "https://mazutwmwpbackend002.azurewebsites.net/wp-json/custom/v1/contact",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(form),
+        }
+      );
+
       const data = await res.json();
-  
+
       if (data.success) {
-        setLoading(false); 
+        setLoading(false);
         alert("Successfully applied!");
-        setForm({ name: "", phone: "", state: "", district: "", leadType: "loan" });
+        setForm({
+          name: "",
+          phone: "",
+          state: "",
+          district: "",
+          leadType: "loan",
+        });
         setSelectedState("");
         setSelectedDistrict("");
         setError({});
@@ -204,23 +265,29 @@ export default function ApplyNewTractorLoan() {
   };
 
   return (
-    <div>
-      <Layout currentPage={'loan'}>
-        <Banner
-          breadcrumbs={breadcrumbData}
-          heading={""}
-          bannerImg={bannerImg}
-          BannerUnderlineImg={false}
-        />
+    <>
+      <div>
+        <Layout currentPage={"loan"}>
+          <Banner
+            breadcrumbs={breadcrumbData}
+            heading={""}
+            bannerImg={bannerImg}
+            BannerUnderlineImg={false}
+          />
 
-        <BannerStrip
-          heading={t('Loan.Apply_Loan')}
-          content={
-            <>
-              <div>
-                <form id="applyForm" onSubmit={handleApplyNow}>
-                  <div className="flex sm:flex-row flex-col gap-4 mt-4 items-end">
-                    {/* <div className="sm:w-1/4 w-full">
+          <BannerStrip
+            heading={t("Loan.Apply_Loan")}
+            content={
+              <>
+                <Head>
+                  <title>{meta.title}</title>
+                  <meta name="description" content={meta.description} />
+                  <meta name="keywords" content={meta.keywords} />
+                </Head>
+                <div>
+                  <form id="applyForm" onSubmit={handleApplyNow}>
+                    <div className="flex sm:flex-row flex-col gap-4 mt-4 items-end">
+                      {/* <div className="sm:w-1/4 w-full">
                       <label htmlFor="location" className="block mb-2">
                         State
                       </label>
@@ -286,84 +353,112 @@ export default function ApplyNewTractorLoan() {
                       </select>
                     </div> */}
 
-                    <div className="sm:w-1/4 w-full">
-                      <label htmlFor="name" className="block mb-2">
-                        {t('Loan.Name')}
-                      </label>
-                      <input
-                        type="text"
-                        id="name"
-                        className="bg-white border 
+                      <div className="sm:w-1/4 w-full">
+                        <label htmlFor="name" className="block mb-2">
+                          {t("Loan.Name")}
+                        </label>
+                        <input
+                          type="text"
+                          id="name"
+                          className="bg-white border 
                       border-gray-300 text-black rounded-md block w-full 
                         p-2.5 dark:bg-gray-700 dark:border-gray-600 
                        dark:placeholder-gray-400 dark:text-white"
-                        placeholder={t('Loan.Enter_Name')}
-                        onChange={handleChange}
-                        value={form.name}
-                      />
-                       {error.name && <span className="text-red-500 text-sm">{error.name}</span>}
-                    </div>
+                          placeholder={t("Loan.Enter_Name")}
+                          onChange={handleChange}
+                          value={form.name}
+                        />
+                        {error.name && (
+                          <span className="text-red-500 text-sm">
+                            {error.name}
+                          </span>
+                        )}
+                      </div>
 
-                    <div className="sm:w-1/4 w-full">
-                      <label htmlFor="number" className="block mb-2">
-                        {t('Loan.Mobile_No')}
-                      </label>
-                      <input
-                        type="number"
-                        id="phone"
-                        className="bg-white border 
+                      <div className="sm:w-1/4 w-full">
+                        <label htmlFor="number" className="block mb-2">
+                          {t("Loan.Mobile_No")}
+                        </label>
+                        <input
+                          type="number"
+                          id="phone"
+                          className="bg-white border 
                       border-gray-300 text-black rounded-md block w-full 
                         p-2.5 dark:bg-gray-700 dark:border-gray-600 
                        dark:placeholder-gray-400 dark:text-white"
-                        placeholder={t('Loan.Enter_Mobile_NO')}
-                        onChange={handleChange}
-                        value={form.phone}
-                      />
-                       {error.phone && <span className="text-red-500 text-sm">{error.phone}</span>}
-                    </div>
+                          placeholder={t("Loan.Enter_Mobile_NO")}
+                          onChange={handleChange}
+                          value={form.phone}
+                        />
+                        {error.phone && (
+                          <span className="text-red-500 text-sm">
+                            {error.phone}
+                          </span>
+                        )}
+                      </div>
 
-                    <div className="sm:w-1/4 w-full">
-                      <label htmlFor="state" className="block mb-2" style={{marginBottom:'14px'}}> {t('Dealer.State')}</label>
-                      <select
-                        className="bg-white border 
+                      <div className="sm:w-1/4 w-full">
+                        <label
+                          htmlFor="state"
+                          className="block mb-2"
+                          style={{ marginBottom: "14px" }}
+                        >
+                          {" "}
+                          {t("Dealer.State")}
+                        </label>
+                        <select
+                          className="bg-white border 
                       border-gray-300 text-black rounded-md block w-full 
                         p-2.5 dark:bg-gray-700 dark:border-gray-600 
                        dark:placeholder-gray-400 dark:text-white"
-                         id="state"
-                        onChange={handleStateChange}
-                        value={form.state}
-                      >
-                        <option value="">{t("Dealer.Select_State")}</option>
-                        {states.map((state, index) => (
-                          <option key={index} value={state}>
-                            {state}
+                          id="state"
+                          onChange={handleStateChange}
+                          value={form.state}
+                        >
+                          <option value="">{t("Dealer.Select_State")}</option>
+                          {states.map((state, index) => (
+                            <option key={index} value={state}>
+                              {state}
+                            </option>
+                          ))}
+                        </select>
+                        {error.state && (
+                          <span className="text-red-500 text-sm">
+                            {error.state}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="sm:w-1/4 w-full">
+                        <label className="block mb-2">
+                          {t("Dealer.District")}
+                        </label>
+                        <select
+                          className="bg-white border 
+                      border-gray-300 text-black rounded-md block w-full 
+                        p-2.5 dark:bg-gray-700 dark:border-gray-600 
+                       dark:placeholder-gray-400 dark:text-white"
+                          id="district"
+                          value={form.district}
+                          onChange={handleDistrictChange}
+                        >
+                          <option value="">
+                            {t("Dealer.Select_District")}
                           </option>
-                        ))}
-                      </select>
-                      {error.state && <span className="text-red-500 text-sm">{error.state}</span>}
-                    </div>
+                          {districts.map((district, index) => (
+                            <option key={index} value={district}>
+                              {district}
+                            </option>
+                          ))}
+                        </select>
+                        {error.district && (
+                          <span className="text-red-500 text-sm">
+                            {error.district}
+                          </span>
+                        )}
+                      </div>
 
-                    <div className="sm:w-1/4 w-full">
-                      <label className="block mb-2">{t('Dealer.District')}</label>
-                      <select
-                        className="bg-white border 
-                      border-gray-300 text-black rounded-md block w-full 
-                        p-2.5 dark:bg-gray-700 dark:border-gray-600 
-                       dark:placeholder-gray-400 dark:text-white"
-                       id="district"
-                       value={form.district}
-                       onChange={handleDistrictChange}>
-                        <option value="">{t("Dealer.Select_District")}</option>
-                        {districts.map((district, index) => (
-                          <option key={index} value={district}>
-                            {district}
-                          </option>
-                        ))}
-                      </select>
-                      {error.district && <span className="text-red-500 text-sm">{error.district}</span>}
-                    </div>
-
-                    {/* <div className="sm:w-1/4 w-full">
+                      {/* <div className="sm:w-1/4 w-full">
                       <label className="form-label mb-2">{t('Dealer.Tehsil_or_Taluka')}</label>
                       <select className="block w-full px-2 py-[7px] border border-gray-300 
                     rounded-md text-[14px] text-[#B9B9B9]">
@@ -373,199 +468,198 @@ export default function ApplyNewTractorLoan() {
                       </select>
                     </div> */}
 
-                    <div className="sm:w-1/4 w-full">
-                      <button type="submit"
-                        className="bg-secondaryColor px-2 py-3 text-white 
+                      <div className="sm:w-1/4 w-full">
+                        <button
+                          type="submit"
+                          className="bg-secondaryColor px-2 py-3 text-white 
                         text-center rounded-md w-full font-semibold cursor-pointer"
-                        disabled={loading}
-                      >
-                        {loading ? "Submitting..." : t('Loan.Apply_Now')}
-                      </button>
+                          disabled={loading}
+                        >
+                          {loading ? "Submitting..." : t("Loan.Apply_Now")}
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                </form>
-              </div>
-            </>
-          }
-        />
-
-        <div className="bg-white lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-2 my-3">
-          <Heading
-            heading={t('Loan.Loan_Steps')}
-            BannerUnderlineImg={false}
+                  </form>
+                </div>
+              </>
+            }
           />
-          <span className="text-sm text-[#333333]">
-            {t('Loan.Get_New_Tractor_Loan')}
-          </span>
 
-          <div className="grid sm:grid-cols-4 grid-cols-2 gap-4 mt-10">
-            <div>
-              <div className="grid items-center justify-center gap-2">
-                <Image
-                  src={personalInfo}
-                  alt="personal-info"
-                  className="max-w-full h-auto"
-                  width={120}
-                  height={120}
-                />
-                <span className="sm:text-medium text-sm text-center">
-                  {t('Loan.Fill_The_Form')} <br />
-                  {t('Loan.These_Details')}
-                  <br /> {t('Loan.Process_Quick')}{" "}
-                </span>
-              </div>
-            </div>
-
-            <div>
-              <div className="grid items-center justify-center gap-2">
-                <Image
-                  src={OfferIcon}
-                  alt="offer-icon"
-                  className="max-w-full h-auto" width={120}
-                  height={120}
-                />
-                <span className="sm:text-medium text-medium text-center">
-                  {t('Loan.Compare_Offers')}
-                  <br />
-                  {t('Loan.Best_Loan')}
-                  <br /> {t('Loan.For_You')}{" "}
-                </span>
-              </div>
-            </div>
-
-            <div>
-              <div className="grid items-center justify-center gap-2">
-                <Image
-                  src={HassleFree}
-                  alt="hassle-free-icon"
-                  className="max-w-full h-auto" width={120}
-                  height={120}
-                />
-                <span className="sm:text-medium text-sm text-center">
-                  {t('Loan.Instant_Approval')}
-                  <br /> {t('Loan.Immediate_Approval_From')} <br />
-                  {t('Loan.The_Bank')}{" "}
-                </span>
-              </div>
-            </div>
-
-            <div>
-              <div className="grid items-center justify-center gap-2">
-                <Image
-                  src={BankIcon}
-                  alt="bank-icon"
-                  className="max-w-full h-auto" width={120}
-                  height={120}
-                />
-                <span className="sm:text-medium text-sm text-center">
-                  {t('Loan.Money_In_Acc')}
-                  <br /> {t('Loan.You_Gett_Instant')}
-                  <br /> {t('Loan.Account')}{" "}
-                </span>
-              </div>
-            </div>
-
-          </div>
-
-          <div className="py-4">
+          <div className="bg-white lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-2 my-3">
             <Heading
-              heading={t('Loan.New_Way_Farming')}
+              heading={t("Loan.Loan_Steps")}
               BannerUnderlineImg={false}
             />
-            <p className="text-sm">
-              {t('Loan.Tractors_Are_Essential_Text')}
-            </p>
-          </div>
-
-          <p>{t('Loan.EMI_cal')}</p>
-
-          <div className="overflow-x-auto sm:overflow-visible">
-            <div className="py-4 grid sm:grid-cols-8 grid-cols-4 gap-3">
-
-              {bankImgs.map((image, index) => (
-                <Image
-                  key={index}
-                  src={image.src}
-                  className="cursor-pointer"
-                  alt={image.alt}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div className="py-4">
-            <Heading
-              heading={t('Loan.Int_Rate_Comparison')}
-              BannerUnderlineImg={false}
-            />
-
-            <span className="text-sm">
-              {t('Loan.Compare_The_New_Tractor_Loan_Int')}
+            <span className="text-sm text-[#333333]">
+              {t("Loan.Get_New_Tractor_Loan")}
             </span>
-          </div>
 
+            <div className="grid sm:grid-cols-4 grid-cols-2 gap-4 mt-10">
+              <div>
+                <div className="grid items-center justify-center gap-2">
+                  <Image
+                    src={personalInfo}
+                    alt="personal-info"
+                    className="max-w-full h-auto"
+                    width={120}
+                    height={120}
+                  />
+                  <span className="sm:text-medium text-sm text-center">
+                    {t("Loan.Fill_The_Form")} <br />
+                    {t("Loan.These_Details")}
+                    <br /> {t("Loan.Process_Quick")}{" "}
+                  </span>
+                </div>
+              </div>
 
-          <div
-            className="mt-4"
-            id="accordion-collapse"
-            data-accordion="collapse"
-          >
-            {accordionData.map((item) => (
-              <div key={item.id}>
-                <h2
-                  id={`accordion-collapse-heading-${item.id}`}
-                  className="mt-3"
-                >
-                  <button
-                    type="button"
-                    className="flex justify-between w-full p-3 font-semibold text-left border bg-[#EEEEF0]
+              <div>
+                <div className="grid items-center justify-center gap-2">
+                  <Image
+                    src={OfferIcon}
+                    alt="offer-icon"
+                    className="max-w-full h-auto"
+                    width={120}
+                    height={120}
+                  />
+                  <span className="sm:text-medium text-medium text-center">
+                    {t("Loan.Compare_Offers")}
+                    <br />
+                    {t("Loan.Best_Loan")}
+                    <br /> {t("Loan.For_You")}{" "}
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <div className="grid items-center justify-center gap-2">
+                  <Image
+                    src={HassleFree}
+                    alt="hassle-free-icon"
+                    className="max-w-full h-auto"
+                    width={120}
+                    height={120}
+                  />
+                  <span className="sm:text-medium text-sm text-center">
+                    {t("Loan.Instant_Approval")}
+                    <br /> {t("Loan.Immediate_Approval_From")} <br />
+                    {t("Loan.The_Bank")}{" "}
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <div className="grid items-center justify-center gap-2">
+                  <Image
+                    src={BankIcon}
+                    alt="bank-icon"
+                    className="max-w-full h-auto"
+                    width={120}
+                    height={120}
+                  />
+                  <span className="sm:text-medium text-sm text-center">
+                    {t("Loan.Money_In_Acc")}
+                    <br /> {t("Loan.You_Gett_Instant")}
+                    <br /> {t("Loan.Account")}{" "}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="py-4">
+              <Heading
+                heading={t("Loan.New_Way_Farming")}
+                BannerUnderlineImg={false}
+              />
+              <p className="text-sm">{t("Loan.Tractors_Are_Essential_Text")}</p>
+            </div>
+
+            <p>{t("Loan.EMI_cal")}</p>
+
+            <div className="overflow-x-auto sm:overflow-visible">
+              <div className="py-4 grid sm:grid-cols-8 grid-cols-4 gap-3">
+                {bankImgs.map((image, index) => (
+                  <Image
+                    key={index}
+                    src={image.src}
+                    className="cursor-pointer"
+                    alt={image.alt}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="py-4">
+              <Heading
+                heading={t("Loan.Int_Rate_Comparison")}
+                BannerUnderlineImg={false}
+              />
+
+              <span className="text-sm">
+                {t("Loan.Compare_The_New_Tractor_Loan_Int")}
+              </span>
+            </div>
+
+            <div
+              className="mt-4"
+              id="accordion-collapse"
+              data-accordion="collapse"
+            >
+              {accordionData.map((item) => (
+                <div key={item.id}>
+                  <h2
+                    id={`accordion-collapse-heading-${item.id}`}
+                    className="mt-3"
+                  >
+                    <button
+                      type="button"
+                      className="flex justify-between w-full p-3 font-semibold text-left border bg-[#EEEEF0]
                                 border-gray-200 focus:ring-4 focus:ring-gray-200
                                 dark:focus:ring-gray-800 dark:border-gray-700
                                 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800
                                 gap-3"
-                    onClick={() => toggleAccordion(item.id)}
-                    aria-expanded={openAccordion === item.id}
-                    aria-controls={`accordion-collapse-body-${item.id}`}
-                  >
-                    <span>{item.heading}</span>
-                    <svg
-                      data-accordion-icon
-                      className={`w-3 h-3 ${openAccordion === item.id ? "rotate-180" : ""
-                        } shrink-0`}
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 10 6"
+                      onClick={() => toggleAccordion(item.id)}
+                      aria-expanded={openAccordion === item.id}
+                      aria-controls={`accordion-collapse-body-${item.id}`}
                     >
-                      <path
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M9 5 5 1 1 5"
-                      />
-                    </svg>
-                  </button>
-                </h2>
+                      <span>{item.heading}</span>
+                      <svg
+                        data-accordion-icon
+                        className={`w-3 h-3 ${
+                          openAccordion === item.id ? "rotate-180" : ""
+                        } shrink-0`}
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 10 6"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M9 5 5 1 1 5"
+                        />
+                      </svg>
+                    </button>
+                  </h2>
 
-                <div
-                  id={`accordion-collapse-body-${item.id}`}
-                  className={`${openAccordion === item.id ? "" : "hidden"}`}
-                  aria-labelledby={`accordion-collapse-heading-${item.id}`}
-                >
-                  <div className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900">
-                    {/* <Table data={item.content.data} /> */}
-                    <div className="p-3">
-                      {item.content}
+                  <div
+                    id={`accordion-collapse-body-${item.id}`}
+                    className={`${openAccordion === item.id ? "" : "hidden"}`}
+                    aria-labelledby={`accordion-collapse-heading-${item.id}`}
+                  >
+                    <div className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900">
+                      {/* <Table data={item.content.data} /> */}
+                      <div className="p-3">{item.content}</div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+            {/* </div> */}
           </div>
-          {/* </div> */}
-        </div>
-      </Layout>
-    </div>
+        </Layout>
+      </div>
+    </>
   );
 }

@@ -39,12 +39,14 @@ import { GET_ALL_STATES } from "@utils/constants";
 import Link from "next/link";
 import { formatPrice, getValidImageUrl } from "@utils";
 import { useInventory } from "@utils";
+import Head from "next/head";
+import { staticMetaByRoute } from "../../utils";
 
 // Define the Inventory function
 export default function Inventory({ locale }) {
   const { locale: activeLocale, locales, asPath } = useRouter();
-
   const { inventory: inventoryData } = useInventory();
+  const meta = staticMetaByRoute["/inventory"];
 
   // 'common' refers to common.json
   const { t, i18n } = useTranslation("common");
@@ -492,79 +494,90 @@ export default function Inventory({ locale }) {
   }, [inventoryLoading]);
 
   return (
-    <div>
-      <div
-        className={`${showFilter ? "overlay sm:hidden block" : "hidden"}`}
-      ></div>
+    <>
+      <Head>
+        <title>{meta.title}</title>
+        <meta name="description" content={meta.description} />
+        <meta name="keywords" content={meta.keywords} />
+      </Head>
+      <div>
+        <div
+          className={`${showFilter ? "overlay sm:hidden block" : "hidden"}`}
+        ></div>
 
-      <Layout>
-        <Banner
-          breadcrumbs={breadcrumbData}
-          heading={"Live Inventory - June 2024"}
-          bannerImg={bannerImg}
-        />
+        <Layout>
+          <Banner
+            breadcrumbs={breadcrumbData}
+            heading={"Live Inventory - June 2024"}
+            bannerImg={bannerImg}
+          />
 
-        {isVisible && (
-          <div className="sm:hidden block">
-            <div
-              className="fixed bottom-0 w-full z-40
+          {isVisible && (
+            <div className="sm:hidden block">
+              <div
+                className="fixed bottom-0 w-full z-40
            bg-white rounded-tl-3xl rounded-tr-3xl text-secondaryColor"
-            >
-              <div className="flex text-[15px] p-3">
-                <div
-                  className="text-center border-r border-[#F37021] border-opacity-25 w-1/2"
-                  onClick={isShowFilter}
-                >
-                  <Image
-                    src={filterIcon}
-                    alt="filterIcon"
-                    width={25}
-                    height={25}
-                  />
-                  <p>Filter</p>
-                </div>
+              >
+                <div className="flex text-[15px] p-3">
+                  <div
+                    className="text-center border-r border-[#F37021] border-opacity-25 w-1/2"
+                    onClick={isShowFilter}
+                  >
+                    <Image
+                      src={filterIcon}
+                      alt="filterIcon"
+                      width={25}
+                      height={25}
+                    />
+                    <p>Filter</p>
+                  </div>
 
-                <div className="text-center w-1/2" onClick={isShowSorting}>
-                  <Image src={sortIcon} alt="sortIcon" width={25} height={25} />
-                  <p>Sort</p>
+                  <div className="text-center w-1/2" onClick={isShowSorting}>
+                    <Image
+                      src={sortIcon}
+                      alt="sortIcon"
+                      width={25}
+                      height={25}
+                    />
+                    <p>Sort</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        <div
-          className={`${
-            showFilter ? "sm:hidden block" : "hidden"
-          } transition-max-height duration-300 
-        ease-in-out w-full  sm:w-auto`}
-          id="navbar-default"
-        >
           <div
-            className="sm:w-auto w-[362px] sm:h-auto max-h-max min-h-screen h-screen
-         sm:bg-transparent z-[99] sm:relative flex fixed top-0 sm:pb-4 sm:pt-4 Navbar"
+            className={`${
+              showFilter ? "sm:hidden block" : "hidden"
+            } transition-max-height duration-300 
+        ease-in-out w-full  sm:w-auto`}
+            id="navbar-default"
           >
-            <div className="px-4 py-4 min-h-screen max-h-fit h-fit bg-white w-[76%]">
-              <div className="flex">
-                <div className="w-1/2">
-                  <Btn
-                    text={"Reset"}
-                    bgColor={resetBgColor}
-                    roundednone={true}
-                    onClick={handleResetClick}
-                  />
+            <div
+              className="sm:w-auto w-[362px] sm:h-auto max-h-max min-h-screen h-screen
+         sm:bg-transparent z-[99] sm:relative flex fixed top-0 sm:pb-4 sm:pt-4 Navbar"
+            >
+              <div className="px-4 py-4 min-h-screen max-h-fit h-fit bg-white w-[76%]">
+                <div className="flex">
+                  <div className="w-1/2">
+                    <Btn
+                      text={"Reset"}
+                      bgColor={resetBgColor}
+                      roundednone={true}
+                      onClick={handleResetClick}
+                    />
+                  </div>
+                  <div className="w-1/2">
+                    <Btn
+                      text={"Apply Filter"}
+                      bgColor={applyBgColor}
+                      roundednone={true}
+                      onClick={handleApplyClick}
+                    />
+                  </div>
                 </div>
-                <div className="w-1/2">
-                  <Btn
-                    text={"Apply Filter"}
-                    bgColor={applyBgColor}
-                    roundednone={true}
-                    onClick={handleApplyClick}
-                  />
-                </div>
-              </div>
 
-              {/* <div className="mt-2 w-full">
+                {/* <div className="mt-2 w-full">
                 <div className="w-full flex">
                   <input
                     type="search"
@@ -577,100 +590,103 @@ export default function Inventory({ locale }) {
                 </div>
               </div> */}
 
-              <div className="border mt-4 bg-white">
-                {filters.map((filter) => (
-                  // Mobile view
-                  <div key={filter.title}>
-                    <div
-                      className="bg-[#EEEEEE] cursor-pointer m-[2px] font-semibold p-2 flex items-center justify-between"
-                      onClick={() => onToggle(filter.showKey)}
-                    >
-                      <div>{filter.title}</div>
-                      <div>
-                        {showStates[filter.showKey] ? (
-                          <svg
-                            data-accordion-icon
-                            className="w-5"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              stroke="currentColor"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M5 12h14"
-                            />
-                          </svg>
-                        ) : (
-                          <svg
-                            data-accordion-icon
-                            className="w-3 h-3 rotate-180"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 10 6"
-                          >
-                            <path
-                              stroke="currentColor"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M9 5 5 1 1 5"
-                            />
-                          </svg>
-                        )}
+                <div className="border mt-4 bg-white">
+                  {filters.map((filter) => (
+                    // Mobile view
+                    <div key={filter.title}>
+                      <div
+                        className="bg-[#EEEEEE] cursor-pointer m-[2px] font-semibold p-2 flex items-center justify-between"
+                        onClick={() => onToggle(filter.showKey)}
+                      >
+                        <div>{filter.title}</div>
+                        <div>
+                          {showStates[filter.showKey] ? (
+                            <svg
+                              data-accordion-icon
+                              className="w-5"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M5 12h14"
+                              />
+                            </svg>
+                          ) : (
+                            <svg
+                              data-accordion-icon
+                              className="w-3 h-3 rotate-180"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 10 6"
+                            >
+                              <path
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M9 5 5 1 1 5"
+                              />
+                            </svg>
+                          )}
+                        </div>
                       </div>
+                      {showStates[filter.showKey] && (
+                        <>
+                          {noResults ? (
+                            <p className="my-2 text-center text-primaryColor">
+                              No search data available
+                            </p>
+                          ) : (
+                            <div className="p-2 flex flex-col w-full gap-2">
+                              {filter.options.map((option, index) => (
+                                <div key={index}>
+                                  <input
+                                    type="radio"
+                                    name={filter.showKey}
+                                    value={option.value}
+                                    checked={filter.selected === option.value}
+                                    onChange={() =>
+                                      onSelectFilter(
+                                        filter.showKey,
+                                        option.value
+                                      )
+                                    }
+                                  />
+                                  <label className="ml-2">{option.label}</label>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </>
+                      )}
                     </div>
-                    {showStates[filter.showKey] && (
-                      <>
-                        {noResults ? (
-                          <p className="my-2 text-center text-primaryColor">
-                            No search data available
-                          </p>
-                        ) : (
-                          <div className="p-2 flex flex-col w-full gap-2">
-                            {filter.options.map((option, index) => (
-                              <div key={index}>
-                                <input
-                                  type="radio"
-                                  name={filter.showKey}
-                                  value={option.value}
-                                  checked={filter.selected === option.value}
-                                  onChange={() =>
-                                    onSelectFilter(filter.showKey, option.value)
-                                  }
-                                />
-                                <label className="ml-2">{option.label}</label>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </div>
-                ))}
+                  ))}
+                </div>
+              </div>
+
+              <div className="right-0 top-0 z-50 pt-4 pl-2 w-[24%]">
+                <Image
+                  src={Crossmark}
+                  width={35}
+                  height={35}
+                  onClick={isHideFilter}
+                  alt="Crossmark"
+                />
               </div>
             </div>
-
-            <div className="right-0 top-0 z-50 pt-4 pl-2 w-[24%]">
-              <Image
-                src={Crossmark}
-                width={35}
-                height={35}
-                onClick={isHideFilter}
-                alt="Crossmark"
-              />
-            </div>
           </div>
-        </div>
 
-        <div className="bg-white lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-2 my-3">
-          <div className="flex sm:flex-row flex-col gap-2">
-            <label className="mb-1 sm:hidden block">Your Location</label>
-            {/* <div className="relative w-full sm:hidden block">
+          <div className="bg-white lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-2 my-3">
+            <div className="flex sm:flex-row flex-col gap-2">
+              <label className="mb-1 sm:hidden block">Your Location</label>
+              {/* <div className="relative w-full sm:hidden block">
               <input type="text" placeholder="search..." className="w-full rounded border-[1px] px-8 border-[#D0D0D0] py-3" />
               <div className="absolute top-[55%] transform -translate-y-1/2 left-2">
                 <Image src={mapIcon} alt="search" width={22} height={22} />
@@ -681,52 +697,52 @@ export default function Inventory({ locale }) {
               </div>
             </div> */}
 
-            <div className="relative w-full sm:hidden block">
-              <div className="absolute top-[55%] transform -translate-y-1/2 left-2">
-                <Image src={mapIcon} alt="search" width={22} height={22} />
-              </div>
-              <select
-                id="location"
-                className="bg-white border border-gray-300 text-black rounded-md block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white px-8"
-                onChange={handleStateChange}
-                value={locationDetails || ""}
-              >
-                <option value="" disabled selected>
-                  Your Location
-                </option>
-                {stateList.length > 0 ? (
-                  stateList.map((item, index) => (
-                    <option key={index} value={item.state}>
-                      {item.state}
-                    </option>
-                  ))
-                ) : (
-                  <option disabled>Loading states...</option> // Show this if stateList is empty
-                )}
-              </select>
-            </div>
-
-            <div className="bg-[#F6F6F6] p-4 sm:w-[25%] w-full sm:block hidden">
-              <div className="flex">
-                <div className="w-1/2">
-                  <Btn
-                    text={"Reset"}
-                    bgColor={resetBgColor}
-                    roundednone={true}
-                    onClick={handleResetClick}
-                  />
+              <div className="relative w-full sm:hidden block">
+                <div className="absolute top-[55%] transform -translate-y-1/2 left-2">
+                  <Image src={mapIcon} alt="search" width={22} height={22} />
                 </div>
-                <div className="w-1/2">
-                  <Btn
-                    text={"Apply Filter"}
-                    bgColor={applyBgColor}
-                    roundednone={true}
-                    onClick={handleApplyClick}
-                  />
-                </div>
+                <select
+                  id="location"
+                  className="bg-white border border-gray-300 text-black rounded-md block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white px-8"
+                  onChange={handleStateChange}
+                  value={locationDetails || ""}
+                >
+                  <option value="" disabled selected>
+                    Your Location
+                  </option>
+                  {stateList.length > 0 ? (
+                    stateList.map((item, index) => (
+                      <option key={index} value={item.state}>
+                        {item.state}
+                      </option>
+                    ))
+                  ) : (
+                    <option disabled>Loading states...</option> // Show this if stateList is empty
+                  )}
+                </select>
               </div>
 
-              {/* <div className="mt-2 w-full">
+              <div className="bg-[#F6F6F6] p-4 sm:w-[25%] w-full sm:block hidden">
+                <div className="flex">
+                  <div className="w-1/2">
+                    <Btn
+                      text={"Reset"}
+                      bgColor={resetBgColor}
+                      roundednone={true}
+                      onClick={handleResetClick}
+                    />
+                  </div>
+                  <div className="w-1/2">
+                    <Btn
+                      text={"Apply Filter"}
+                      bgColor={applyBgColor}
+                      roundednone={true}
+                      onClick={handleApplyClick}
+                    />
+                  </div>
+                </div>
+
+                {/* <div className="mt-2 w-full">
                 <div className="w-full flex">
                   <input type="search" placeholder="Type Here"
                     className="border-secondaryColor border-r-0 w-full"
@@ -737,227 +753,476 @@ export default function Inventory({ locale }) {
                 </div>
               </div> */}
 
-              <div className="border mt-4 bg-white">
-                {filters.map((filter) => (
-                  <div key={filter.title}>
-                    <div
-                      className="bg-[#EEEEEE] cursor-pointer m-[2px] font-semibold p-2 flex items-center justify-between"
-                      onClick={() => onToggle(filter.showKey)}
-                    >
-                      <div>{filter.title}</div>
-                      {/* WEB VIEW */}
-                      <div>
-                        {showStates[filter.showKey] ? (
-                          <svg
-                            data-accordion-icon
-                            className="w-5"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              stroke="currentColor"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M5 12h14"
-                            />
-                          </svg>
-                        ) : (
-                          <svg
-                            data-accordion-icon
-                            className="w-3 h-3 rotate-180"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 10 6"
-                          >
-                            <path
-                              stroke="currentColor"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M9 5 5 1 1 5"
-                            />
-                          </svg>
-                        )}
-                      </div>
-                    </div>
-                    {showStates[filter.showKey] && (
-                      <>
-                        {noResults ? (
-                          <p className="my-2 text-center text-primaryColor">
-                            No search data available
-                          </p>
-                        ) : (
-                          <div className="p-2 flex flex-col w-full gap-2">
-                            {filter.options.map((option, index) => (
-                              <div key={index}>
-                                <input
-                                  type="radio"
-                                  name={filter.title.toLowerCase()}
-                                  value={option.value}
-                                  checked={filter.selected === option.value} // ✅ Controlled by state
-                                  onChange={() =>
-                                    onSelectFilter(filter.showKey, option.value)
-                                  } // ✅ Updates state
-                                />
-                                <label className="ml-2">{option.label}</label>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="sm:w-[75%] w-full">
-              <div className="flex justify-between items-center">
-                <div className="w-auto">
-                  <Heading heading={t("Inventory.PopularTractors")} />
-                </div>
-                <div className="sm:hidden flex">
-                  <Tab
-                    id="listData"
-                    image={true}
-                    activeTab={activeTab}
-                    onClick={handleTabClick}
-                  >
-                    {activeTab === "listData" ? (
-                      <Image
-                        src={listActiveView}
-                        alt="listActiveView"
-                        width={50}
-                        height={50}
-                      />
-                    ) : (
-                      <Image
-                        src={listView}
-                        alt="listView"
-                        width={50}
-                        height={50}
-                      />
-                    )}
-                  </Tab>
-
-                  <Tab
-                    id="gridData"
-                    image={true}
-                    activeTab={activeTab}
-                    onClick={handleTabClick}
-                  >
-                    {activeTab === "gridData" ? (
-                      <Image
-                        src={gridActiveView}
-                        alt="gridActiveView"
-                        width={50}
-                        height={50}
-                      />
-                    ) : (
-                      <Image
-                        src={gridView}
-                        alt="gridView"
-                        width={50}
-                        height={50}
-                      />
-                    )}
-                  </Tab>
-                </div>
-
-                <div className="sm:flex hidden items-center gap-3">
-                  <div>
-                    <div className="relative w-full">
-                      <div className="absolute top-[55%] transform -translate-y-1/2 left-2">
-                        <Image
-                          src={mapIcon}
-                          alt="search"
-                          width={22}
-                          height={22}
-                        />
-                      </div>
-                      <select
-                        id="location"
-                        className="bg-white border border-gray-300 text-black rounded-md block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white px-8"
-                        onChange={(event) => {
-                          const selectedValue = event.target.value;
-                          setSelectedState(selectedValue); // Update the selectedState
-                          setLiveInventoryFilters((prevFilters) => {
-                            const newFilters = [...prevFilters];
-                            newFilters[3] =
-                              selectedValue === "all" ? "" : selectedValue; // Clear filter if "All" is selected
-                            return newFilters;
-                          });
-                        }}
-                        value={selectedState || "all"} // Default to "All"
+                <div className="border mt-4 bg-white">
+                  {filters.map((filter) => (
+                    <div key={filter.title}>
+                      <div
+                        className="bg-[#EEEEEE] cursor-pointer m-[2px] font-semibold p-2 flex items-center justify-between"
+                        onClick={() => onToggle(filter.showKey)}
                       >
-                        <option value="all">All</option>{" "}
-                        {/* Default option to show all inventory */}
-                        {stateList.length > 0 ? (
-                          stateList.map((item) => (
-                            <option key={item.id} value={item.state}>
-                              {item.state}
-                            </option>
-                          ))
-                        ) : (
-                          <option disabled>Loading states...</option>
-                        )}
-                      </select>
+                        <div>{filter.title}</div>
+                        {/* WEB VIEW */}
+                        <div>
+                          {showStates[filter.showKey] ? (
+                            <svg
+                              data-accordion-icon
+                              className="w-5"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M5 12h14"
+                              />
+                            </svg>
+                          ) : (
+                            <svg
+                              data-accordion-icon
+                              className="w-3 h-3 rotate-180"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 10 6"
+                            >
+                              <path
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M9 5 5 1 1 5"
+                              />
+                            </svg>
+                          )}
+                        </div>
+                      </div>
+                      {showStates[filter.showKey] && (
+                        <>
+                          {noResults ? (
+                            <p className="my-2 text-center text-primaryColor">
+                              No search data available
+                            </p>
+                          ) : (
+                            <div className="p-2 flex flex-col w-full gap-2">
+                              {filter.options.map((option, index) => (
+                                <div key={index}>
+                                  <input
+                                    type="radio"
+                                    name={filter.title.toLowerCase()}
+                                    value={option.value}
+                                    checked={filter.selected === option.value} // ✅ Controlled by state
+                                    onChange={() =>
+                                      onSelectFilter(
+                                        filter.showKey,
+                                        option.value
+                                      )
+                                    } // ✅ Updates state
+                                  />
+                                  <label className="ml-2">{option.label}</label>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </>
+                      )}
                     </div>
-                  </div>
+                  ))}
                 </div>
               </div>
 
-              <div className="sm:hidden block">
-                {activeTab == "gridData" && (
-                  <div className="">
-                    {inventoryLoading && !hasLoadedOnce ? (
-                      <div className="flex justify-center items-center min-h-[600px]">
-                        <Loader
-                          loaderImage={
+              <div className="sm:w-[75%] w-full">
+                <div className="flex justify-between items-center">
+                  <div className="w-auto">
+                    <Heading heading={t("Inventory.PopularTractors")} />
+                  </div>
+                  <div className="sm:hidden flex">
+                    <Tab
+                      id="listData"
+                      image={true}
+                      activeTab={activeTab}
+                      onClick={handleTabClick}
+                    >
+                      {activeTab === "listData" ? (
+                        <Image
+                          src={listActiveView}
+                          alt="listActiveView"
+                          width={50}
+                          height={50}
+                        />
+                      ) : (
+                        <Image
+                          src={listView}
+                          alt="listView"
+                          width={50}
+                          height={50}
+                        />
+                      )}
+                    </Tab>
+
+                    <Tab
+                      id="gridData"
+                      image={true}
+                      activeTab={activeTab}
+                      onClick={handleTabClick}
+                    >
+                      {activeTab === "gridData" ? (
+                        <Image
+                          src={gridActiveView}
+                          alt="gridActiveView"
+                          width={50}
+                          height={50}
+                        />
+                      ) : (
+                        <Image
+                          src={gridView}
+                          alt="gridView"
+                          width={50}
+                          height={50}
+                        />
+                      )}
+                    </Tab>
+                  </div>
+
+                  <div className="sm:flex hidden items-center gap-3">
+                    <div>
+                      <div className="relative w-full">
+                        <div className="absolute top-[55%] transform -translate-y-1/2 left-2">
+                          <Image
+                            src={mapIcon}
+                            alt="search"
+                            width={22}
+                            height={22}
+                          />
+                        </div>
+                        <select
+                          id="location"
+                          className="bg-white border border-gray-300 text-black rounded-md block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white px-8"
+                          onChange={(event) => {
+                            const selectedValue = event.target.value;
+                            setSelectedState(selectedValue); // Update the selectedState
+                            setLiveInventoryFilters((prevFilters) => {
+                              const newFilters = [...prevFilters];
+                              newFilters[3] =
+                                selectedValue === "all" ? "" : selectedValue; // Clear filter if "All" is selected
+                              return newFilters;
+                            });
+                          }}
+                          value={selectedState || "all"} // Default to "All"
+                        >
+                          <option value="all">All</option>{" "}
+                          {/* Default option to show all inventory */}
+                          {stateList.length > 0 ? (
+                            stateList.map((item) => (
+                              <option key={item.id} value={item.state}>
+                                {item.state}
+                              </option>
+                            ))
+                          ) : (
+                            <option disabled>Loading states...</option>
+                          )}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="sm:hidden block">
+                  {activeTab == "gridData" && (
+                    <div className="">
+                      {inventoryLoading && !hasLoadedOnce ? (
+                        <div className="flex justify-center items-center min-h-[600px]">
+                          <Loader
+                            loaderImage={
+                              language === "HI"
+                                ? LoaderHi
+                                : language === "MR"
+                                ? LoaderMr
+                                : LoaderEn
+                            }
+                          />
+                        </div>
+                      ) : inventoryError ? (
+                        <div className="flex justify-center items-center min-h-[600px]">
+                          <p className="text-center text-red-500">
+                            Error loading inventory. Please try again later.
+                          </p>
+                        </div>
+                      ) : !filteredTractors || filteredTractors.length === 0 ? (
+                        <div className="col-span-full flex justify-center items-center min-h-[600px]">
+                          <p className="text-center text-gray-500">
+                            No data available. Try refreshing or checking
+                            filters.
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+                          {currentCards.map((item, idx) => (
+                            <div
+                              key={idx}
+                              className="gap-4 bg-white border-[#D9D9D9] border-[1px] overflow-hidden shadow-lg flex-none cursor-pointer"
+                            >
+                              <div
+                                className="relative"
+                                onClick={() => {
+                                  router.push(
+                                    `/tractor-details/${
+                                      item.tractorId
+                                    }-${item.title
+                                      .replace(/\s+/g, "-")
+                                      .toLowerCase()}`
+                                  );
+                                }}
+                              >
+                                <Image
+                                  className="w-full"
+                                  src={item.imageLink || DefaultTractor}
+                                  alt="cardImage"
+                                  layout="responsive"
+                                  width={100}
+                                  height={70}
+                                />
+
+                                {item.isVerified && (
+                                  <div className="bg-secondaryColor px-2 text-white text-sm absolute top-4 left-4 uppercase font-medium border-gradient">
+                                    {formatPrice(item.price)}
+                                  </div>
+                                )}
+                                <div className="bg-black font-semibold text-white w-auto px-2 py-1 float-right">
+                                  {formatPrice(item.price)}
+                                </div>
+                              </div>
+                              <div className="xl:px-4 bg-[#eeeeee] lg:px-2 sm:px-2 px-2 pt-1 h-24">
+                                <div className="ellipsis font-bold xl:text-lg md:text-[16px] sm:text-[14px] text-base tractorTitle">
+                                  {item.title}
+                                </div>
+                                <div className="flex items-center xl:text-base lg:text-sm sm:text-sm text-base my-3">
+                                  {item.features.map((feature, fIdx) => (
+                                    <div
+                                      key={fIdx}
+                                      className={`flex gap-1 h-[14px] items-center ${
+                                        fIdx < item.features.length - 1
+                                          ? "border-r-[1px] border-black"
+                                          : ""
+                                      }  ${
+                                        fIdx > 0 ? "px-[6px] " : "pr-[6px]"
+                                      }`}
+                                    >
+                                      <Image
+                                        src={feature.icon}
+                                        alt={feature.icon}
+                                        width={10}
+                                        height={10}
+                                      />
+                                      <span>{feature.text}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                              <div className="border-t-[1px] border-[#D9D9D9] relative bottom-0">
+                                <div className="m-[1px] xl:px-6 px-4 pt-4 pb-2 bg-secondaryColor cursor-pointer">
+                                  <span className="flex items-center gap-1 font-semibold text-white mr-2 mb-2 text-base justify-center">
+                                    <Image
+                                      src="/images/phnIcon.svg"
+                                      width={15}
+                                      height={15}
+                                      className="w-4 mr-1"
+                                      alt="phnIcon"
+                                    />{" "}
+                                    Interested
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {activeTab == "listData" && (
+                    <div className="">
+                      <div className="grid grid-cols-1 gap-4 my-6">
+                        {currentCards.length === 0 ? (
+                          <div className="col-span-full flex justify-center items-center min-h-[600px]">
+                            <Image
+                              loader={customImageLoader}
+                              src={
+                                language === "HI"
+                                  ? LoaderHi
+                                  : language === "MR"
+                                  ? LoaderMr
+                                  : LoaderEn
+                              }
+                              alt="Loading..."
+                              width={120}
+                              height={120}
+                            />
+                          </div>
+                        ) : (
+                          currentCards.slice(0, 3).map((item, idx) => (
+                            <Link
+                              key={idx}
+                              className="tractor-details-info cursor-pointer"
+                              href={`/tractor-details/${item.slug}`}
+                              passHref
+                            >
+                              <div
+                                key={idx}
+                                className="gap-4 bg-white border-[#D9D9D9] border-[1px] overflow-hidden shadow-lg flex-none  cursor-pointer"
+                              >
+                                <div className="flex">
+                                  <div className="w-[40%] relative">
+                                    <div className="w-full h-[175px]">
+                                      <Image
+                                        className="w-full h-[600px]"
+                                        src={item.imageLink || DefaultTractor}
+                                        height={600}
+                                        alt="cardImage"
+                                        layout="responsive"
+                                      />
+                                    </div>
+
+                                    {item.certified && (
+                                      <div
+                                        className="bg-secondaryColor px-2
+                                   text-white text-sm absolute top-2 left-2 uppercase font-medium border-gradient"
+                                      >
+                                        CERTIFIED
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="w-[60%]">
+                                    <div className="p-2">
+                                      <div className="ellipsis font-bold xl:text-lg md:text-[16px] sm:text-[14px] text-base tractorTitle">
+                                        {item.title}
+                                      </div>
+
+                                      <div className="bg-black font-semibold text-white w-max px-2 py-1 mt-2">
+                                        {formatPrice(item.price)}
+                                      </div>
+
+                                      <div className="flex items-center xl:text-base lg:text-sm sm:text-sm text-[0.7rem] my-3">
+                                        {item.features
+                                          .slice(0, -1)
+                                          .map((feature, fIdx) => (
+                                            <div
+                                              key={fIdx}
+                                              className={`flex gap-1 items-center ${
+                                                fIdx < item.features.length - 2
+                                                  ? "border-r-[1px] border-black"
+                                                  : ""
+                                              }  ${
+                                                fIdx > 0
+                                                  ? "px-[6px]"
+                                                  : "pr-[6px]"
+                                              }`}
+                                            >
+                                              <div className="w-2 h-2 sm:w-3 sm:h-3">
+                                                <Image
+                                                  src={feature.icon}
+                                                  alt={feature.icon}
+                                                  layout="responsive"
+                                                  width={2}
+                                                  height={2}
+                                                />
+                                              </div>
+                                              <span>{feature.text}</span>
+                                            </div>
+                                          ))}
+                                      </div>
+
+                                      {item.features
+                                        .slice(-1)
+                                        .map((feature, fIdx) => (
+                                          <>
+                                            <div className="flex items-center xl:text-base lg:text-sm sm:text-sm text-[0.7rem] my-3">
+                                              <div
+                                                key={fIdx}
+                                                className={`flex gap-1 items-center ${
+                                                  fIdx > 0
+                                                    ? "px-[6px]"
+                                                    : "pr-[6px]"
+                                                }`}
+                                              >
+                                                <div className="w-3 h-3 sm:w-3 sm:h-3">
+                                                  <Image
+                                                    src={feature.icon}
+                                                    alt={feature.icon}
+                                                    layout="responsive"
+                                                    width={2}
+                                                    height={2}
+                                                  />
+                                                </div>
+                                                <span>{feature.text}</span>
+                                              </div>
+                                            </div>
+                                            <div className="cursor-pointer w-fit">
+                                              <div className="px-1 py-1 bg-secondaryColor cursor-pointer rounded">
+                                                <span className="flex items-center gap-1 font-semibold text-white mr-2 text-medium justify-center">
+                                                  <Image
+                                                    src="/images/phnIcon.svg"
+                                                    width={12}
+                                                    height={12}
+                                                    className="w-4 mr-1"
+                                                    alt="phnIcon"
+                                                  />{" "}
+                                                  Interested{" "}
+                                                </span>
+                                              </div>
+                                            </div>
+                                          </>
+                                        ))}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </Link>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="sm:block hidden">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+                    {currentCards.length === 0 ? (
+                      <div className="col-span-full flex justify-center items-center min-h-[600px]">
+                        <Image
+                          loader={customImageLoader}
+                          src={
                             language === "HI"
                               ? LoaderHi
                               : language === "MR"
                               ? LoaderMr
                               : LoaderEn
                           }
+                          alt="Loading..."
+                          width={150}
+                          height={150}
                         />
                       </div>
-                    ) : inventoryError ? (
-                      <div className="flex justify-center items-center min-h-[600px]">
-                        <p className="text-center text-red-500">
-                          Error loading inventory. Please try again later.
-                        </p>
-                      </div>
-                    ) : !filteredTractors || filteredTractors.length === 0 ? (
-                      <div className="col-span-full flex justify-center items-center min-h-[600px]">
-                        <p className="text-center text-gray-500">
-                          No data available. Try refreshing or checking filters.
-                        </p>
-                      </div>
                     ) : (
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
-                        {currentCards.map((item, idx) => (
-                          <div
-                            key={idx}
-                            className="gap-4 bg-white border-[#D9D9D9] border-[1px] overflow-hidden shadow-lg flex-none cursor-pointer"
-                          >
-                            <div
-                              className="relative"
-                              onClick={() => {
-                                router.push(
-                                  `/tractor-details/${
-                                    item.tractorId
-                                  }-${item.title
-                                    .replace(/\s+/g, "-")
-                                    .toLowerCase()}`
-                                );
-                              }}
-                            >
+                      currentCards.slice(0, 3).map((item, idx) => (
+                        <div
+                          key={idx}
+                          className="gap-4 bg-white border-[#D9D9D9] border-[1px] overflow-hidden shadow-lg flex-none cursor-pointer"
+                        >
+                          <div className="wholeCard cursor-pointer">
+                            <div className="relative">
                               <Image
+                                onClick={() =>
+                                  router.push(
+                                    `/tractor-details/${
+                                      item.tractorId
+                                    }-${item.title
+                                      .replace(/\s+/g, "-")
+                                      .toLowerCase()}`
+                                  )
+                                }
                                 className="w-full"
                                 src={item.imageLink || DefaultTractor}
                                 alt="cardImage"
@@ -965,29 +1230,28 @@ export default function Inventory({ locale }) {
                                 width={100}
                                 height={70}
                               />
-
-                              {item.isVerified && (
+                              {item.certified && (
                                 <div className="bg-secondaryColor px-2 text-white text-sm absolute top-4 left-4 uppercase font-medium border-gradient">
-                                  {formatPrice(item.price)}
+                                  CERTIFIED
                                 </div>
                               )}
                               <div className="bg-black font-semibold text-white w-auto px-2 py-1 float-right">
                                 {formatPrice(item.price)}
                               </div>
                             </div>
-                            <div className="xl:px-4 bg-[#eeeeee] lg:px-2 sm:px-2 px-2 pt-1 h-24">
+                            <div className="xl:px-4 sm:bg-white bg-[#eeeeee] lg:px-2 sm:px-2 px-2 pt-1 h-24">
                               <div className="ellipsis font-bold xl:text-lg md:text-[16px] sm:text-[14px] text-base tractorTitle">
                                 {item.title}
                               </div>
                               <div className="flex items-center xl:text-base lg:text-sm sm:text-sm text-base my-3">
-                                {item.features.map((feature, fIdx) => (
+                                {item.features?.map((feature, fIdx) => (
                                   <div
                                     key={fIdx}
                                     className={`flex gap-1 h-[14px] items-center ${
                                       fIdx < item.features.length - 1
                                         ? "border-r-[1px] border-black"
                                         : ""
-                                    }  ${fIdx > 0 ? "px-[6px] " : "pr-[6px]"}`}
+                                    }  ${fIdx > 0 ? "px-[6px]" : "pr-[6px]"}`}
                                   >
                                     <Image
                                       src={feature.icon}
@@ -1000,268 +1264,28 @@ export default function Inventory({ locale }) {
                                 ))}
                               </div>
                             </div>
-                            <div className="border-t-[1px] border-[#D9D9D9] relative bottom-0">
-                              <div className="m-[1px] xl:px-6 px-4 pt-4 pb-2 bg-secondaryColor cursor-pointer">
-                                <span className="flex items-center gap-1 font-semibold text-white mr-2 mb-2 text-base justify-center">
-                                  <Image
-                                    src="/images/phnIcon.svg"
-                                    width={15}
-                                    height={15}
-                                    className="w-4 mr-1"
-                                    alt="phnIcon"
-                                  />{" "}
-                                  Interested
-                                </span>
-                              </div>
+                          </div>
+
+                          <div className="border-t-[1px] border-[#D9D9D9] relative bottom-0">
+                            <div className="m-[1px] xl:px-6 px-4 pt-4 pb-2 bg-secondaryColor cursor-pointer">
+                              <span className="flex items-center gap-1 font-semibold text-white mr-2 mb-2 text-base justify-center">
+                                <Image
+                                  src="/images/phnIcon.svg"
+                                  width={15}
+                                  height={15}
+                                  className="w-4 mr-1"
+                                  alt="phnIcon"
+                                />{" "}
+                                Interested{" "}
+                              </span>
                             </div>
                           </div>
-                        ))}
-                      </div>
+                        </div>
+                      ))
                     )}
                   </div>
-                )}
-                {activeTab == "listData" && (
-                  <div className="">
-                    <div className="grid grid-cols-1 gap-4 my-6">
-                      {currentCards.length === 0 ? (
-                        <div className="col-span-full flex justify-center items-center min-h-[600px]">
-                          <Image
-                            loader={customImageLoader}
-                            src={
-                              language === "HI"
-                                ? LoaderHi
-                                : language === "MR"
-                                ? LoaderMr
-                                : LoaderEn
-                            }
-                            alt="Loading..."
-                            width={120}
-                            height={120}
-                          />
-                        </div>
-                      ) : (
-                        currentCards.slice(0, 3).map((item, idx) => (
-                          <Link
-                            key={idx}
-                            className="tractor-details-info cursor-pointer"
-                            href={`/tractor-details/${item.slug}`}
-                            passHref
-                          >
-                            <div
-                              key={idx}
-                              className="gap-4 bg-white border-[#D9D9D9] border-[1px] overflow-hidden shadow-lg flex-none  cursor-pointer"
-                            >
-                              <div className="flex">
-                                <div className="w-[40%] relative">
-                                  <div className="w-full h-[175px]">
-                                    <Image
-                                      className="w-full h-[600px]"
-                                      src={item.imageLink || DefaultTractor}
-                                      height={600}
-                                      alt="cardImage"
-                                      layout="responsive"
-                                    />
-                                  </div>
-
-                                  {item.certified && (
-                                    <div
-                                      className="bg-secondaryColor px-2
-                                   text-white text-sm absolute top-2 left-2 uppercase font-medium border-gradient"
-                                    >
-                                      CERTIFIED
-                                    </div>
-                                  )}
-                                </div>
-                                <div className="w-[60%]">
-                                  <div className="p-2">
-                                    <div className="ellipsis font-bold xl:text-lg md:text-[16px] sm:text-[14px] text-base tractorTitle">
-                                      {item.title}
-                                    </div>
-
-                                    <div className="bg-black font-semibold text-white w-max px-2 py-1 mt-2">
-                                      {formatPrice(item.price)}
-                                    </div>
-
-                                    <div className="flex items-center xl:text-base lg:text-sm sm:text-sm text-[0.7rem] my-3">
-                                      {item.features
-                                        .slice(0, -1)
-                                        .map((feature, fIdx) => (
-                                          <div
-                                            key={fIdx}
-                                            className={`flex gap-1 items-center ${
-                                              fIdx < item.features.length - 2
-                                                ? "border-r-[1px] border-black"
-                                                : ""
-                                            }  ${
-                                              fIdx > 0 ? "px-[6px]" : "pr-[6px]"
-                                            }`}
-                                          >
-                                            <div className="w-2 h-2 sm:w-3 sm:h-3">
-                                              <Image
-                                                src={feature.icon}
-                                                alt={feature.icon}
-                                                layout="responsive"
-                                                width={2}
-                                                height={2}
-                                              />
-                                            </div>
-                                            <span>{feature.text}</span>
-                                          </div>
-                                        ))}
-                                    </div>
-
-                                    {item.features
-                                      .slice(-1)
-                                      .map((feature, fIdx) => (
-                                        <>
-                                          <div className="flex items-center xl:text-base lg:text-sm sm:text-sm text-[0.7rem] my-3">
-                                            <div
-                                              key={fIdx}
-                                              className={`flex gap-1 items-center ${
-                                                fIdx > 0
-                                                  ? "px-[6px]"
-                                                  : "pr-[6px]"
-                                              }`}
-                                            >
-                                              <div className="w-3 h-3 sm:w-3 sm:h-3">
-                                                <Image
-                                                  src={feature.icon}
-                                                  alt={feature.icon}
-                                                  layout="responsive"
-                                                  width={2}
-                                                  height={2}
-                                                />
-                                              </div>
-                                              <span>{feature.text}</span>
-                                            </div>
-                                          </div>
-                                          <div className="cursor-pointer w-fit">
-                                            <div className="px-1 py-1 bg-secondaryColor cursor-pointer rounded">
-                                              <span className="flex items-center gap-1 font-semibold text-white mr-2 text-medium justify-center">
-                                                <Image
-                                                  src="/images/phnIcon.svg"
-                                                  width={12}
-                                                  height={12}
-                                                  className="w-4 mr-1"
-                                                  alt="phnIcon"
-                                                />{" "}
-                                                Interested{" "}
-                                              </span>
-                                            </div>
-                                          </div>
-                                        </>
-                                      ))}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </Link>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="sm:block hidden">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
-                  {currentCards.length === 0 ? (
-                    <div className="col-span-full flex justify-center items-center min-h-[600px]">
-                      <Image
-                        loader={customImageLoader}
-                        src={
-                          language === "HI"
-                            ? LoaderHi
-                            : language === "MR"
-                            ? LoaderMr
-                            : LoaderEn
-                        }
-                        alt="Loading..."
-                        width={150}
-                        height={150}
-                      />
-                    </div>
-                  ) : (
-                    currentCards.slice(0, 3).map((item, idx) => (
-                      <div
-                        key={idx}
-                        className="gap-4 bg-white border-[#D9D9D9] border-[1px] overflow-hidden shadow-lg flex-none cursor-pointer"
-                      >
-                        <div className="wholeCard cursor-pointer">
-                          <div className="relative">
-                            <Image
-                              onClick={() =>
-                                router.push(
-                                  `/tractor-details/${
-                                    item.tractorId
-                                  }-${item.title
-                                    .replace(/\s+/g, "-")
-                                    .toLowerCase()}`
-                                )
-                              }
-                              className="w-full"
-                              src={item.imageLink || DefaultTractor}
-                              alt="cardImage"
-                              layout="responsive"
-                              width={100}
-                              height={70}
-                            />
-                            {item.certified && (
-                              <div className="bg-secondaryColor px-2 text-white text-sm absolute top-4 left-4 uppercase font-medium border-gradient">
-                                CERTIFIED
-                              </div>
-                            )}
-                            <div className="bg-black font-semibold text-white w-auto px-2 py-1 float-right">
-                              {formatPrice(item.price)}
-                            </div>
-                          </div>
-                          <div className="xl:px-4 sm:bg-white bg-[#eeeeee] lg:px-2 sm:px-2 px-2 pt-1 h-24">
-                            <div className="ellipsis font-bold xl:text-lg md:text-[16px] sm:text-[14px] text-base tractorTitle">
-                              {item.title}
-                            </div>
-                            <div className="flex items-center xl:text-base lg:text-sm sm:text-sm text-base my-3">
-                              {item.features?.map((feature, fIdx) => (
-                                <div
-                                  key={fIdx}
-                                  className={`flex gap-1 h-[14px] items-center ${
-                                    fIdx < item.features.length - 1
-                                      ? "border-r-[1px] border-black"
-                                      : ""
-                                  }  ${fIdx > 0 ? "px-[6px]" : "pr-[6px]"}`}
-                                >
-                                  <Image
-                                    src={feature.icon}
-                                    alt={feature.icon}
-                                    width={10}
-                                    height={10}
-                                  />
-                                  <span>{feature.text}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="border-t-[1px] border-[#D9D9D9] relative bottom-0">
-                          <div className="m-[1px] xl:px-6 px-4 pt-4 pb-2 bg-secondaryColor cursor-pointer">
-                            <span className="flex items-center gap-1 font-semibold text-white mr-2 mb-2 text-base justify-center">
-                              <Image
-                                src="/images/phnIcon.svg"
-                                width={15}
-                                height={15}
-                                className="w-4 mr-1"
-                                alt="phnIcon"
-                              />{" "}
-                              Interested{" "}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  )}
                 </div>
-              </div>
-              {/* <Heading heading={"Tractors by Brands "} viewButton={false} />
+                {/* <Heading heading={"Tractors by Brands "} viewButton={false} />
               <div className="grid sm:grid-cols-6 grid-cols-3 sm:gap-6 gap-4">
                 {brandsLogos.slice(0, 12).map((brandlogo, index) => (
                   <div
@@ -1281,193 +1305,112 @@ export default function Inventory({ locale }) {
                 ))}
               </div> */}
 
-              {/*Tractors Dealers by Brands sec*/}
-              <div className="bg-white mt-4 lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-4 sm:pb-8 py-2">
-                <Heading
-                  heading={t("About.Tractors_By_Brands")}
-                  viewButton={false}
-                />
-                <div className="grid sm:grid-cols-6 grid-cols-3 sm:gap-6 gap-4 mt-6">
-                  <Image
-                    width={259}
-                    height={252}
-                    src="/images/about/brands/mahindra.svg"
-                    alt="mahindra"
-                    className="w-full"
+                {/*Tractors Dealers by Brands sec*/}
+                <div className="bg-white mt-4 lg:px-14 md:px-6 sm:px-3 px-2 sm:pt-4 pt-4 sm:pb-8 py-2">
+                  <Heading
+                    heading={t("About.Tractors_By_Brands")}
+                    viewButton={false}
                   />
-                  <Image
-                    width={259}
-                    height={252}
-                    src="/images/about/brands/swaraj.svg"
-                    alt="swaraj"
-                    className="w-full"
-                  />
-                  <Image
-                    width={259}
-                    height={252}
-                    src="/images/about/brands/elcher.svg"
-                    alt="Elcher"
-                    className="w-full"
-                  />
-                  <Image
-                    width={259}
-                    height={252}
-                    src="/images/about/brands/masseyFerguson.svg"
-                    alt="masseyFerguson"
-                    className="w-full"
-                  />
-                  <Image
-                    width={259}
-                    height={252}
-                    src="/images/about/brands/tillersTractors.svg"
-                    alt="tillersTractors"
-                    className="w-full"
-                  />
-                  <Image
-                    width={259}
-                    height={252}
-                    src="/images/about/brands/escorts.svg"
-                    alt="escorts"
-                    className="w-full"
-                  />
-                  <Image
-                    width={259}
-                    height={252}
-                    src="/images/about/brands/kartar.svg"
-                    alt="kartar"
-                    className="w-full"
-                  />
-                  <Image
-                    width={259}
-                    height={252}
-                    src="/images/about/brands/captain.svg"
-                    alt="captain"
-                    className="w-full"
-                  />
-                  <Image
-                    width={259}
-                    height={252}
-                    src="/images/about/brands/preet.svg"
-                    alt="preet"
-                    className="w-full"
-                  />
-                  <Image
-                    width={259}
-                    height={252}
-                    src="/images/about/brands/forceMotors.svg"
-                    alt="forceMotors"
-                    className="w-full"
-                  />
-                  <Image
-                    width={259}
-                    height={252}
-                    src="/images/about/brands/aceTractors.svg"
-                    alt="aceTractors"
-                    className="w-full"
-                  />
-                  <Image
-                    width={259}
-                    height={252}
-                    src="/images/about/brands/autonxt.svg"
-                    alt="autonxt"
-                    className="w-full"
-                  />
+                  <div className="grid sm:grid-cols-6 grid-cols-3 sm:gap-6 gap-4 mt-6">
+                    <Image
+                      width={259}
+                      height={252}
+                      src="/images/about/brands/mahindra.svg"
+                      alt="mahindra"
+                      className="w-full"
+                    />
+                    <Image
+                      width={259}
+                      height={252}
+                      src="/images/about/brands/swaraj.svg"
+                      alt="swaraj"
+                      className="w-full"
+                    />
+                    <Image
+                      width={259}
+                      height={252}
+                      src="/images/about/brands/elcher.svg"
+                      alt="Elcher"
+                      className="w-full"
+                    />
+                    <Image
+                      width={259}
+                      height={252}
+                      src="/images/about/brands/masseyFerguson.svg"
+                      alt="masseyFerguson"
+                      className="w-full"
+                    />
+                    <Image
+                      width={259}
+                      height={252}
+                      src="/images/about/brands/tillersTractors.svg"
+                      alt="tillersTractors"
+                      className="w-full"
+                    />
+                    <Image
+                      width={259}
+                      height={252}
+                      src="/images/about/brands/escorts.svg"
+                      alt="escorts"
+                      className="w-full"
+                    />
+                    <Image
+                      width={259}
+                      height={252}
+                      src="/images/about/brands/kartar.svg"
+                      alt="kartar"
+                      className="w-full"
+                    />
+                    <Image
+                      width={259}
+                      height={252}
+                      src="/images/about/brands/captain.svg"
+                      alt="captain"
+                      className="w-full"
+                    />
+                    <Image
+                      width={259}
+                      height={252}
+                      src="/images/about/brands/preet.svg"
+                      alt="preet"
+                      className="w-full"
+                    />
+                    <Image
+                      width={259}
+                      height={252}
+                      src="/images/about/brands/forceMotors.svg"
+                      alt="forceMotors"
+                      className="w-full"
+                    />
+                    <Image
+                      width={259}
+                      height={252}
+                      src="/images/about/brands/aceTractors.svg"
+                      alt="aceTractors"
+                      className="w-full"
+                    />
+                    <Image
+                      width={259}
+                      height={252}
+                      src="/images/about/brands/autonxt.svg"
+                      alt="autonxt"
+                      className="w-full"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              {/* <div className="my-4 sm:hidden block">
+                {/* <div className="my-4 sm:hidden block">
                 <Btn text={'view all'} />
               </div> */}
 
-              <div className="sm:block hidden">
-                <div className="grid sm:grid-cols-3 grid-cols-1 gap-4 my-6">
-                  {currentCards.slice(3).map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="gap-4 bg-white border-[#D9D9D9] border-[1px] overflow-hidden shadow-lg flex-none w-80 sm:w-auto"
-                    >
-                      <div className="wholeCard cursor-pointer">
-                        <div
-                          className="relative"
-                          onClick={() =>
-                            router.push(
-                              `/tractor-details/${item.tractorId}-${item.title
-                                .replace(/\s+/g, "-")
-                                .toLowerCase()}`
-                            )
-                          }
-                        >
-                          <Image
-                            className="w-full"
-                            src={item.imageLink || DefaultTractor}
-                            alt="cardImage"
-                            layout="responsive"
-                            width={100}
-                            height={70}
-                          />
-                          {item.certified && (
-                            <div className="bg-secondaryColor px-2 text-white text-sm absolute top-4 left-4 uppercase font-medium border-gradient">
-                              CERTIFIED
-                            </div>
-                          )}
-                          <div className="bg-black font-semibold text-white w-auto px-2 py-1 float-right">
-                            {formatPrice(item.price)}
-                          </div>
-                        </div>
-                        <div className="xl:px-4  sm:bg-white bg-[#eeeeee] lg:px-2 sm:px-2 px-2 pt-1 h-24">
-                          <div className="ellipsis font-bold xl:text-lg md:text-[16px] sm:text-[14px] text-base tractorTitle">
-                            {item.title}
-                          </div>
-                          <div className="flex items-center xl:text-base lg:text-sm sm:text-sm text-base my-3">
-                            {item.features.map((feature, fIdx) => (
-                              <div
-                                key={fIdx}
-                                className={`flex gap-1 h-[14px] items-center  ${
-                                  fIdx < item.features.length - 1
-                                    ? "border-r-[1px] border-black"
-                                    : ""
-                                }  ${fIdx > 0 ? "px-[6px]" : "pr-[6px]"}`}
-                              >
-                                <Image
-                                  src={feature.icon}
-                                  alt={feature.icon}
-                                  width={10}
-                                  height={10}
-                                />
-                                <span>{feature.text}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="border-t-[1px] border-[#D9D9D9] relative bottom-0">
-                        <div className="m-[1px] xl:px-6 px-4 pt-4 pb-2 bg-secondaryColor cursor-pointer">
-                          <span className="flex items-center gap-1 font-semibold text-white mr-2 mb-2 text-base justify-center">
-                            <Image
-                              src="/images/phnIcon.svg"
-                              width={15}
-                              height={15}
-                              className="w-4 mr-1"
-                              alt="phnIcon"
-                            />{" "}
-                            Interested{" "}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="sm:hidden block">
-                {activeTab == "gridData" && (
-                  <div className="">
-                    <div className="grid grid-cols-1 gap-4 my-6">
-                      {filters.slice(3).map((item, idx) => (
-                        <div
-                          key={idx}
-                          className="gap-4 bg-white border-[#D9D9D9] border-[1px] overflow-hidden shadow-lg flex-none"
-                        >
+                <div className="sm:block hidden">
+                  <div className="grid sm:grid-cols-3 grid-cols-1 gap-4 my-6">
+                    {currentCards.slice(3).map((item, idx) => (
+                      <div
+                        key={idx}
+                        className="gap-4 bg-white border-[#D9D9D9] border-[1px] overflow-hidden shadow-lg flex-none w-80 sm:w-auto"
+                      >
+                        <div className="wholeCard cursor-pointer">
                           <div
                             className="relative"
                             onClick={() =>
@@ -1495,7 +1438,7 @@ export default function Inventory({ locale }) {
                               {formatPrice(item.price)}
                             </div>
                           </div>
-                          <div className="xl:px-4 lg:px-2 sm:px-2 px-2 pt-1 h-24">
+                          <div className="xl:px-4  sm:bg-white bg-[#eeeeee] lg:px-2 sm:px-2 px-2 pt-1 h-24">
                             <div className="ellipsis font-bold xl:text-lg md:text-[16px] sm:text-[14px] text-base tractorTitle">
                               {item.title}
                             </div>
@@ -1507,7 +1450,7 @@ export default function Inventory({ locale }) {
                                     fIdx < item.features.length - 1
                                       ? "border-r-[1px] border-black"
                                       : ""
-                                  } ${fIdx > 0 ? "px-[6px]" : "pr-[6px]"}`}
+                                  }  ${fIdx > 0 ? "px-[6px]" : "pr-[6px]"}`}
                                 >
                                   <Image
                                     src={feature.icon}
@@ -1520,36 +1463,37 @@ export default function Inventory({ locale }) {
                               ))}
                             </div>
                           </div>
-                          <div className="border-t-[1px] border-[#D9D9D9] relative bottom-0">
-                            <div className="m-[1px] xl:px-6 px-4 pt-4 pb-2 bg-secondaryColor cursor-pointer">
-                              <span className="flex items-center gap-1 font-semibold text-white mr-2 mb-2 text-base justify-center">
-                                <Image
-                                  src="/images/phnIcon.svg"
-                                  width={15}
-                                  height={15}
-                                  className="w-4 mr-1"
-                                  alt="phnIcon"
-                                />{" "}
-                                Interested{" "}
-                              </span>
-                            </div>
+                        </div>
+                        <div className="border-t-[1px] border-[#D9D9D9] relative bottom-0">
+                          <div className="m-[1px] xl:px-6 px-4 pt-4 pb-2 bg-secondaryColor cursor-pointer">
+                            <span className="flex items-center gap-1 font-semibold text-white mr-2 mb-2 text-base justify-center">
+                              <Image
+                                src="/images/phnIcon.svg"
+                                width={15}
+                                height={15}
+                                className="w-4 mr-1"
+                                alt="phnIcon"
+                              />{" "}
+                              Interested{" "}
+                            </span>
                           </div>
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </div>
-                )}
-                {activeTab == "listData" && (
-                  <div className="">
-                    <div className="grid grid-cols-1 gap-4 my-6">
-                      {currentCards.slice(3).map((item, idx) => (
-                        <div
-                          key={idx}
-                          className="gap-4 bg-white border-[#D9D9D9] border-[1px] overflow-hidden shadow-lg flex-none"
-                        >
-                          <div className="flex">
+                </div>
+
+                <div className="sm:hidden block">
+                  {activeTab == "gridData" && (
+                    <div className="">
+                      <div className="grid grid-cols-1 gap-4 my-6">
+                        {filters.slice(3).map((item, idx) => (
+                          <div
+                            key={idx}
+                            className="gap-4 bg-white border-[#D9D9D9] border-[1px] overflow-hidden shadow-lg flex-none"
+                          >
                             <div
-                              className="w-[40%] relative"
+                              className="relative"
                               onClick={() =>
                                 router.push(
                                   `/tractor-details/${
@@ -1566,68 +1510,125 @@ export default function Inventory({ locale }) {
                                 alt="cardImage"
                                 layout="responsive"
                                 width={100}
-                                height={100}
+                                height={70}
                               />
-
                               {item.certified && (
-                                <div
-                                  className="bg-secondaryColor px-2
-                                   text-white text-sm absolute top-2 left-2 uppercase font-medium border-gradient"
-                                >
+                                <div className="bg-secondaryColor px-2 text-white text-sm absolute top-4 left-4 uppercase font-medium border-gradient">
                                   CERTIFIED
                                 </div>
                               )}
+                              <div className="bg-black font-semibold text-white w-auto px-2 py-1 float-right">
+                                {formatPrice(item.price)}
+                              </div>
                             </div>
-                            <div className="w-[60%]">
-                              <div className="p-2">
-                                <div className="ellipsis font-bold xl:text-lg md:text-[16px] sm:text-[14px] text-base tractorTitle">
-                                  {item.title}
-                                </div>
+                            <div className="xl:px-4 lg:px-2 sm:px-2 px-2 pt-1 h-24">
+                              <div className="ellipsis font-bold xl:text-lg md:text-[16px] sm:text-[14px] text-base tractorTitle">
+                                {item.title}
+                              </div>
+                              <div className="flex items-center xl:text-base lg:text-sm sm:text-sm text-base my-3">
+                                {item.features.map((feature, fIdx) => (
+                                  <div
+                                    key={fIdx}
+                                    className={`flex gap-1 h-[14px] items-center  ${
+                                      fIdx < item.features.length - 1
+                                        ? "border-r-[1px] border-black"
+                                        : ""
+                                    } ${fIdx > 0 ? "px-[6px]" : "pr-[6px]"}`}
+                                  >
+                                    <Image
+                                      src={feature.icon}
+                                      alt={feature.icon}
+                                      width={10}
+                                      height={10}
+                                    />
+                                    <span>{feature.text}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                            <div className="border-t-[1px] border-[#D9D9D9] relative bottom-0">
+                              <div className="m-[1px] xl:px-6 px-4 pt-4 pb-2 bg-secondaryColor cursor-pointer">
+                                <span className="flex items-center gap-1 font-semibold text-white mr-2 mb-2 text-base justify-center">
+                                  <Image
+                                    src="/images/phnIcon.svg"
+                                    width={15}
+                                    height={15}
+                                    className="w-4 mr-1"
+                                    alt="phnIcon"
+                                  />{" "}
+                                  Interested{" "}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {activeTab == "listData" && (
+                    <div className="">
+                      <div className="grid grid-cols-1 gap-4 my-6">
+                        {currentCards.slice(3).map((item, idx) => (
+                          <div
+                            key={idx}
+                            className="gap-4 bg-white border-[#D9D9D9] border-[1px] overflow-hidden shadow-lg flex-none"
+                          >
+                            <div className="flex">
+                              <div
+                                className="w-[40%] relative"
+                                onClick={() =>
+                                  router.push(
+                                    `/tractor-details/${
+                                      item.tractorId
+                                    }-${item.title
+                                      .replace(/\s+/g, "-")
+                                      .toLowerCase()}`
+                                  )
+                                }
+                              >
+                                <Image
+                                  className="w-full"
+                                  src={item.imageLink || DefaultTractor}
+                                  alt="cardImage"
+                                  layout="responsive"
+                                  width={100}
+                                  height={100}
+                                />
 
-                                <div className="bg-black font-semibold text-white w-max px-2 py-1 mt-2">
-                                  {formatPrice(item.price)}
-                                </div>
+                                {item.certified && (
+                                  <div
+                                    className="bg-secondaryColor px-2
+                                   text-white text-sm absolute top-2 left-2 uppercase font-medium border-gradient"
+                                  >
+                                    CERTIFIED
+                                  </div>
+                                )}
+                              </div>
+                              <div className="w-[60%]">
+                                <div className="p-2">
+                                  <div className="ellipsis font-bold xl:text-lg md:text-[16px] sm:text-[14px] text-base tractorTitle">
+                                    {item.title}
+                                  </div>
 
-                                <div className="flex items-center xl:text-base lg:text-sm sm:text-sm text-[0.7rem] my-3">
-                                  {item.features
-                                    .slice(0, -1)
-                                    .map((feature, fIdx) => (
-                                      <div
-                                        key={fIdx}
-                                        className={`flex gap-1 items-center  ${
-                                          fIdx < item.features.length - 2
-                                            ? "border-r-[1px] border-black"
-                                            : ""
-                                        } ${
-                                          fIdx > 0 ? "px-[6px]" : "pr-[6px]"
-                                        }`}
-                                      >
-                                        <div className="w-2 h-2 sm:w-3 sm:h-3">
-                                          <Image
-                                            src={feature.icon}
-                                            alt={feature.icon}
-                                            layout="responsive"
-                                            width={2}
-                                            height={2}
-                                          />
-                                        </div>
-                                        <span>{feature.text}</span>
-                                      </div>
-                                    ))}
-                                </div>
+                                  <div className="bg-black font-semibold text-white w-max px-2 py-1 mt-2">
+                                    {formatPrice(item.price)}
+                                  </div>
 
-                                {item.features
-                                  .slice(-1)
-                                  .map((feature, fIdx) => (
-                                    <>
-                                      <div className="flex items-center xl:text-base lg:text-sm sm:text-sm text-[0.7rem] my-3">
+                                  <div className="flex items-center xl:text-base lg:text-sm sm:text-sm text-[0.7rem] my-3">
+                                    {item.features
+                                      .slice(0, -1)
+                                      .map((feature, fIdx) => (
                                         <div
                                           key={fIdx}
-                                          className={`flex gap-1 items-center ${
+                                          className={`flex gap-1 items-center  ${
+                                            fIdx < item.features.length - 2
+                                              ? "border-r-[1px] border-black"
+                                              : ""
+                                          } ${
                                             fIdx > 0 ? "px-[6px]" : "pr-[6px]"
                                           }`}
                                         >
-                                          <div className="w-3 h-3 sm:w-3 sm:h-3">
+                                          <div className="w-2 h-2 sm:w-3 sm:h-3">
                                             <Image
                                               src={feature.icon}
                                               alt={feature.icon}
@@ -1638,85 +1639,111 @@ export default function Inventory({ locale }) {
                                           </div>
                                           <span>{feature.text}</span>
                                         </div>
-                                      </div>
-                                      <div className="cursor-pointer w-fit">
-                                        <div className="px-1 py-1 bg-secondaryColor cursor-pointer rounded">
-                                          <span className="flex items-center gap-1 font-semibold text-white mr-2 text-medium justify-center">
-                                            <Image
-                                              src="/images/phnIcon.svg"
-                                              width={12}
-                                              height={12}
-                                              className="w-4 mr-1"
-                                              alt="phnIcon"
-                                            />{" "}
-                                            Interested{" "}
-                                          </span>
+                                      ))}
+                                  </div>
+
+                                  {item.features
+                                    .slice(-1)
+                                    .map((feature, fIdx) => (
+                                      <>
+                                        <div className="flex items-center xl:text-base lg:text-sm sm:text-sm text-[0.7rem] my-3">
+                                          <div
+                                            key={fIdx}
+                                            className={`flex gap-1 items-center ${
+                                              fIdx > 0 ? "px-[6px]" : "pr-[6px]"
+                                            }`}
+                                          >
+                                            <div className="w-3 h-3 sm:w-3 sm:h-3">
+                                              <Image
+                                                src={feature.icon}
+                                                alt={feature.icon}
+                                                layout="responsive"
+                                                width={2}
+                                                height={2}
+                                              />
+                                            </div>
+                                            <span>{feature.text}</span>
+                                          </div>
                                         </div>
-                                      </div>
-                                    </>
-                                  ))}
+                                        <div className="cursor-pointer w-fit">
+                                          <div className="px-1 py-1 bg-secondaryColor cursor-pointer rounded">
+                                            <span className="flex items-center gap-1 font-semibold text-white mr-2 text-medium justify-center">
+                                              <Image
+                                                src="/images/phnIcon.svg"
+                                                width={12}
+                                                height={12}
+                                                className="w-4 mr-1"
+                                                alt="phnIcon"
+                                              />{" "}
+                                              Interested{" "}
+                                            </span>
+                                          </div>
+                                        </div>
+                                      </>
+                                    ))}
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
 
-              <Pagination
-                data={filteredTractors}
-                TotalPages={totalPages}
-                CurrentPage={currentPage}
-                setCurrentPage={setCurrentPage}
-              />
+                <Pagination
+                  data={filteredTractors}
+                  TotalPages={totalPages}
+                  CurrentPage={currentPage}
+                  setCurrentPage={setCurrentPage}
+                />
+              </div>
             </div>
           </div>
-        </div>
-      </Layout>
+        </Layout>
 
-      <Modal
-        CloseIconShow={false}
-        showModal={showModal}
-        customStyles={customStyles}
-        handleClose={handleClose}
-        content={
-          <>
-            <div
-              className="block mb-4 text-center mx-auto"
-              onClick={handleClose}
-            >
-              <Image
-                src={Crossmark}
-                width={35}
-                height={35}
-                alt="Close Icon"
-                className="cursor-pointer"
-              />
-            </div>
-
-            {/* Modal Content */}
-            <div className="rounded-tl-[20px] rounded-tr-[20px] bg-white py-10 px-4 flex flex-col items-center sm:flex-row sm:items-start">
-              <div className="text-xl">
-                <p
-                  className="font-bold text-medium cursor-pointer"
-                  onClick={() => handleSort("highToLow")} // Sort by High to Low
-                >
-                  Price - High to Low
-                </p>
-                <p
-                  className="font-bold mt-6 text-medium cursor-pointer"
-                  onClick={() => handleSort("lowToHigh")} // Sort by Low to High
-                >
-                  Price - Low to High
-                </p>
+        <Modal
+          CloseIconShow={false}
+          showModal={showModal}
+          customStyles={customStyles}
+          handleClose={handleClose}
+          content={
+            <>
+              <div
+                className="block mb-4 text-center mx-auto"
+                onClick={handleClose}
+              >
+                <Image
+                  src={Crossmark}
+                  width={35}
+                  height={35}
+                  alt="Close Icon"
+                  className="cursor-pointer"
+                />
               </div>
-            </div>
-          </>
-        }
-      />
-    </div>
+
+              {/* Modal Content */}
+              <div className="rounded-tl-[20px] rounded-tr-[20px] bg-white py-10 px-4 flex flex-col items-center sm:flex-row sm:items-start">
+                <div className="text-xl">
+                  <p
+                    className="font-bold text-medium cursor-pointer"
+                    onClick={() => handleSort("highToLow")} // Sort by High to Low
+                  >
+                    Price - High to Low
+                  </p>
+                  <p
+                    className="font-bold mt-6 text-medium cursor-pointer"
+                    onClick={() => handleSort("lowToHigh")} // Sort by Low to High
+                  >
+                    Price - Low to High
+                  </p>
+                </div>
+              </div>
+            </>
+          }
+        />
+      </div>
+    </>
   );
 }
 

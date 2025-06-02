@@ -2,19 +2,17 @@ import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setAddressData } from "../store/slices/userDataSlice";
 import Dealer1 from "@Images/dealer/dealer1.svg";
-import CryptoJS from 'crypto-js';
-const SECRET_KEY = 'Tractorworldbymahindra@2025';  // This can be any secret key you want
-
+import CryptoJS from "crypto-js";
+const SECRET_KEY = "Tractorworldbymahindra@2025"; // This can be any secret key you want
 
 export const HomeHPRanges = [
-  { min: 0, max: 20, key: 'oneData', label: '0 - 20 HP' },
-  { min: 21, max: 30, key: 'twoData', label: '21 - 30 HP' },
-  { min: 31, max: 40, key: 'ThreeData', label: '31 - 40 HP' },
-  { min: 41, max: 45, key: 'FourData', label: '41 - 45 HP' },
-  { min: 46, max: 50, key: 'FifthData', label: '46 - 50 HP' },
-  { min: 51, max: Infinity, key: 'SixthData', label: 'Above 51 HP' },
+  { min: 0, max: 20, key: "oneData", label: "0 - 20 HP" },
+  { min: 21, max: 30, key: "twoData", label: "21 - 30 HP" },
+  { min: 31, max: 40, key: "ThreeData", label: "31 - 40 HP" },
+  { min: 41, max: 45, key: "FourData", label: "41 - 45 HP" },
+  { min: 46, max: 50, key: "FifthData", label: "46 - 50 HP" },
+  { min: 51, max: Infinity, key: "SixthData", label: "Above 51 HP" },
 ];
-
 
 // Function to encrypt data
 const encryptData = (data) => {
@@ -28,13 +26,13 @@ const decryptData = (encryptedData) => {
     const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
 
     if (!decryptedData) {
-      console.error('Decryption failed: No valid UTF-8 data returned');
+      console.error("Decryption failed: No valid UTF-8 data returned");
       return null;
     }
 
     return JSON.parse(decryptedData);
   } catch (error) {
-    console.error('Decryption error:', error);
+    console.error("Decryption error:", error);
     return null;
   }
 };
@@ -93,7 +91,12 @@ export const calculateEmi = ({ loanAmount, roi, tenure, downPayment }) => {
   const principal = loanAmount - downPayment; // Adjusted loan amount after downpayment
   const monthlyInterestRate = roi / (12 * 100); // Monthly interest rate
   return (
-    Math.round((principal * monthlyInterestRate * Math.pow(1 + monthlyInterestRate, tenure)) / (Math.pow(1 + monthlyInterestRate, tenure) - 1)) || 0
+    Math.round(
+      (principal *
+        monthlyInterestRate *
+        Math.pow(1 + monthlyInterestRate, tenure)) /
+        (Math.pow(1 + monthlyInterestRate, tenure) - 1)
+    ) || 0
   );
 };
 
@@ -102,7 +105,6 @@ export const calculateInterest = ({ emi, tenure, loanAmount, downPayment }) => {
   return emi * tenure - principal; // Total interest payable
 };
 
-
 export const calculateEMI = (maxPrice, interestRate = 8, months = 74) => {
   console.log("maxPrice" + maxPrice);
   if (!maxPrice || isNaN(maxPrice) || maxPrice <= 0) {
@@ -110,8 +112,11 @@ export const calculateEMI = (maxPrice, interestRate = 8, months = 74) => {
   }
 
   const principal = maxPrice;
-  const monthlyInterestRate = (interestRate / 100) / 12;
-  const emi = (principal * monthlyInterestRate * Math.pow(1 + monthlyInterestRate, months)) /
+  const monthlyInterestRate = interestRate / 100 / 12;
+  const emi =
+    (principal *
+      monthlyInterestRate *
+      Math.pow(1 + monthlyInterestRate, months)) /
     (Math.pow(1 + monthlyInterestRate, months) - 1);
 
   return `EMI starts from ₹ ${Math.round(emi).toLocaleString("en-IN")}*`;
@@ -120,7 +125,6 @@ export const calculateEMI = (maxPrice, interestRate = 8, months = 74) => {
 export const formatPrice = (price) => {
   return price ? `₹ ${price.toLocaleString("en-IN")}` : "N/A";
 };
-
 
 // Function to dynamically generate labels for tabs
 export const getTabLabel = (min, max) => {
@@ -139,7 +143,7 @@ const getRandomTractor = (tractors) => {
 export const filterByHorsepower = (tractors, min, max) => {
   return tractors.filter((tractor) => {
     const hp = parseInt(tractor.enginePower, 10); // Make sure to convert enginePower to a number
-    // const hp = parseInt(tractor.enginePower.split(' ')[0], 10); 
+    // const hp = parseInt(tractor.enginePower.split(' ')[0], 10);
     return hp >= min && hp <= max;
   });
 };
@@ -149,10 +153,14 @@ export const getHomePageTractorsListBasedOnInventory = (liveInventoryData) => {
 
   HomeHPRanges.forEach((range) => {
     // Filter tractors for the current range
-    const filteredTractors = filterByHorsepower(liveInventoryData, range.min, range.max);
+    const filteredTractors = filterByHorsepower(
+      liveInventoryData,
+      range.min,
+      range.max
+    );
 
     if (filteredTractors.length >= 2) {
-      compareTractorData[range.key] = [];  // ✅ Initialize as an array
+      compareTractorData[range.key] = []; // ✅ Initialize as an array
 
       while (filteredTractors.length >= 2) {
         // ✅ Randomly pick two tractors
@@ -178,7 +186,6 @@ export const getHomePageTractorsListBasedOnInventory = (liveInventoryData) => {
     }
   });
 
-
   return compareTractorData;
 };
 
@@ -189,7 +196,9 @@ export const getTractorDetailsById = (inventoryData, tractorId) => {
   }
 
   // Find the tractor details by ID
-  const tractorDetails = inventoryData.find(item => item.tractor_id === tractorId);
+  const tractorDetails = inventoryData.find(
+    (item) => item.tractor_id === tractorId
+  );
 
   if (!tractorDetails) {
     console.warn(`No tractor found for ID: ${tractorId}`);
@@ -199,14 +208,13 @@ export const getTractorDetailsById = (inventoryData, tractorId) => {
   return tractorDetails;
 };
 
-
 export const metaDetailsById = (inventoryData) => {
   const metaDetails = inventoryData;
   if (!metaDetails) {
     console.warn(`No tractor found for ID: ${tractorId}`);
     return null;
   }
-  // console.log(JSON.stringify(metaDetails) + "metaDetails"); 
+  // console.log(JSON.stringify(metaDetails) + "metaDetails");
   const {
     brand,
     model,
@@ -224,8 +232,10 @@ export const metaDetailsById = (inventoryData) => {
     tyre_condition,
   } = metaDetails;
 
-  const insuredText = is_insured ? 'insured' : 'not insured';
-  const financeText = finance ? `finance available up to ${finance}` : 'no finance available';
+  const insuredText = is_insured ? "insured" : "not insured";
+  const financeText = finance
+    ? `finance available up to ${finance}`
+    : "no finance available";
 
   // Generate Meta Description
   const description = `Buy ${year} ${brand} ${model} (${engine_power}) in ${user_location}, ${district}, ${state}. ${engine_hours} hours run, ${drive_type} drive, ${tyre_state} tyres, engine in ${engine_condition} condition. This tractor is ${insuredText} and ${financeText}.`;
@@ -246,14 +256,10 @@ export const metaDetailsById = (inventoryData) => {
     `tractor with ${drive_type}`,
     `${tyre_condition} tyres`,
     `${engine_condition} engine`,
-  ].join(', ');
+  ].join(", ");
 
   return { description, keywords };
-
-
 };
-
-
 
 /**
  * Gets the first valid processed image URL from image_links.
@@ -262,9 +268,12 @@ export const metaDetailsById = (inventoryData) => {
  * @returns {string} - The first valid processed image URL, or the default image if no valid processed image is found.
  */
 export async function getValidImageUrl(imageLinks, DefaultTractor) {
-  const authKey = "?sv=2021-12-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-04-01T14:30:38Z&st=2023-03-29T06:30:38Z&spr=https&sig=mk0i2ZPyaotRM5smvwnf9y9%2BcZljr9BrtLIK2%2FnnJ6k%3D";
+  const authKey =
+    "?sv=2021-12-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-04-01T14:30:38Z&st=2023-03-29T06:30:38Z&spr=https&sig=mk0i2ZPyaotRM5smvwnf9y9%2BcZljr9BrtLIK2%2FnnJ6k%3D";
 
-  const imageArray = Array.isArray(imageLinks) ? imageLinks : Object.values(imageLinks || {});
+  const imageArray = Array.isArray(imageLinks)
+    ? imageLinks
+    : Object.values(imageLinks || {});
 
   if (imageArray.length > 0) {
     for (let i = 0; i < imageArray.length; i++) {
@@ -296,9 +305,9 @@ export async function getValidImageUrl(imageLinks, DefaultTractor) {
   return ""; // Final fallback
 }
 
-
 export async function getValidImageArrayUrls(imageLinks, DefaultTractor) {
-  const authKey = "?sv=2021-12-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-04-01T14:30:38Z&st=2023-03-29T06:30:38Z&spr=https&sig=mk0i2ZPyaotRM5smvwnf9y9%2BcZljr9BrtLIK2%2FnnJ6k%3D";
+  const authKey =
+    "?sv=2021-12-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2026-04-01T14:30:38Z&st=2023-03-29T06:30:38Z&spr=https&sig=mk0i2ZPyaotRM5smvwnf9y9%2BcZljr9BrtLIK2%2FnnJ6k%3D";
 
   const imageArray = Array.isArray(imageLinks)
     ? imageLinks
@@ -337,7 +346,6 @@ export async function getValidImageArrayUrls(imageLinks, DefaultTractor) {
   return validImages;
 }
 
-
 export const getDealersData = () => {
   return [
     {
@@ -349,7 +357,7 @@ export const getDealersData = () => {
       email: "Narayana970541@gmail.com",
       address: "Solapur - Pune Highway, Tembhurni, Madha, Maharashtra - 413211",
       Google_Location: "https://maps.app.goo.gl/gkGGMSaZ9FLyRJiK6",
-      image: Dealer1
+      image: Dealer1,
     },
 
     {
@@ -359,9 +367,10 @@ export const getDealersData = () => {
       owner: "Jitesh Kantrod",
       phone: "+91 89834 32552",
       email: "example@gmail.com",
-      address: "Nevasa Road, Ashok Factory, Near HP Petrol Pump, Shrirampur, Ahmednagar",
+      address:
+        "Nevasa Road, Ashok Factory, Near HP Petrol Pump, Shrirampur, Ahmednagar",
       Google_Location: "https://maps.app.goo.gl/ArMsM2PsjmY8EwUP8",
-      image: Dealer1
+      image: Dealer1,
     },
     {
       name: "Om Motors",
@@ -370,9 +379,10 @@ export const getDealersData = () => {
       owner: "Nitin Bhise",
       phone: "+91 99605 73777",
       email: "example@gmail.com",
-      address: "Ring Road, Babalgaon Naka, in front of gramin police station, Latur - 413512",
+      address:
+        "Ring Road, Babalgaon Naka, in front of gramin police station, Latur - 413512",
       Google_Location: "https://maps.app.goo.gl/bJ75mNRqQ9oj6mKx7",
-      image: Dealer1
+      image: Dealer1,
     },
     {
       name: "Jai Kisan Tractors",
@@ -381,9 +391,10 @@ export const getDealersData = () => {
       owner: "Samir Tamboli, Ismail Tamboli",
       phone: "+91 98601 55763, +91 98909 01018",
       email: "example@gmail.com",
-      address: "Jai Kisan Tractors garage, In front of Siddhivinayak lawns, Sangamner - Nagar Road, Sangamner - 422605",
+      address:
+        "Jai Kisan Tractors garage, In front of Siddhivinayak lawns, Sangamner - Nagar Road, Sangamner - 422605",
       Google_Location: "https://maps.app.goo.gl/t3xTKpSQSZZSjBQs7",
-      image: Dealer1
+      image: Dealer1,
     },
     {
       name: "Aum Tractors",
@@ -392,9 +403,10 @@ export const getDealersData = () => {
       owner: "Kiran Ransingh",
       phone: "+91 95458 68555",
       email: "example@gmail.com",
-      address: "15/2A, Kegaon, near Dudh Pandhari, Pune Highway, Solapur - 413255",
+      address:
+        "15/2A, Kegaon, near Dudh Pandhari, Pune Highway, Solapur - 413255",
       Google_Location: "https://maps.app.goo.gl/cCGnPF1QQFDd3fLVA",
-      image: Dealer1
+      image: Dealer1,
     },
     {
       name: "Anuraj Tractors",
@@ -403,9 +415,10 @@ export const getDealersData = () => {
       owner: "Amol Ranshing",
       phone: "+91 8806667664",
       email: "example@gmail.com",
-      address: "Arangaon, Ahmednagar - Daund Road, ahead of VRD, Near Pranav Hotel, Ahmednagar - 414006",
+      address:
+        "Arangaon, Ahmednagar - Daund Road, ahead of VRD, Near Pranav Hotel, Ahmednagar - 414006",
       Google_Location: "https://maps.app.goo.gl/ucq9KM75Sir2Jka4A",
-      image: Dealer1
+      image: Dealer1,
     },
     {
       name: "Ambrish Tractors",
@@ -414,9 +427,10 @@ export const getDealersData = () => {
       owner: "Ambrish Ramkishan Lahoti",
       phone: "+91 94208 24716, +91 94222 16425",
       email: "example@gmail.com",
-      address: "5031, Saraswati Gining Factory Compound, Old Jalna Road, near Nagar Parishan, Jalna, Maharashtra- 431203",
+      address:
+        "5031, Saraswati Gining Factory Compound, Old Jalna Road, near Nagar Parishan, Jalna, Maharashtra- 431203",
       Google_Location: "https://maps.app.goo.gl/5FRWyTLjPbwykA2R6",
-      image: Dealer1
+      image: Dealer1,
     },
     {
       name: "Sainath Tractors",
@@ -425,9 +439,10 @@ export const getDealersData = () => {
       owner: "Sanjay Rathore",
       phone: "+91 97554 19104",
       email: "example@gmail.com",
-      address: "Sainath tractors, near Mandi Thane, Sehore, Sehore District, Madhya Pradesh - 466001",
+      address:
+        "Sainath tractors, near Mandi Thane, Sehore, Sehore District, Madhya Pradesh - 466001",
       Google_Location: "",
-      image: Dealer1
+      image: Dealer1,
     },
     {
       name: "Kartikeya Traders",
@@ -436,9 +451,10 @@ export const getDealersData = () => {
       owner: "Malti Sachan",
       phone: "+91 99261 84981",
       email: "example@gmail.com",
-      address: "Ward No 20, Zone 03,51/41/1, Shastri Ward, N.H 934, Sagar - 470002",
+      address:
+        "Ward No 20, Zone 03,51/41/1, Shastri Ward, N.H 934, Sagar - 470002",
       Google_Location: "",
-      image: Dealer1
+      image: Dealer1,
     },
     {
       name: "National Tractors",
@@ -447,9 +463,10 @@ export const getDealersData = () => {
       owner: "Amish Khandelwal",
       phone: "+91 97134 37232",
       email: "example@gmail.com",
-      address: "93, Near ISBT, Vijay Nagar, Deendayal Bus stand, Jabalpur, MP - 482001",
+      address:
+        "93, Near ISBT, Vijay Nagar, Deendayal Bus stand, Jabalpur, MP - 482001",
       Google_Location: "https://maps.app.goo.gl/NenPBbJcnxEwUAgK7",
-      image: Dealer1
+      image: Dealer1,
     },
     {
       name: "Kamala Tractors",
@@ -460,7 +477,7 @@ export const getDealersData = () => {
       email: "example@gmail.com",
       address: "Pali Road, Sheopur, Madhya Pradesh, Pin - 476337",
       Google_Location: "https://maps.app.goo.gl/UmbHr1922KUM9twa9",
-      image: Dealer1
+      image: Dealer1,
     },
     {
       name: "Leela Enterprises",
@@ -469,9 +486,10 @@ export const getDealersData = () => {
       owner: "Mahendra Dangi",
       phone: "+91 79998 62922",
       email: "example@gmail.com",
-      address: "Old AB Road, Near Madhumilan Factory, in front of Sanjivani Hospital, Talavada champapura, Biaora, MP - 465674",
+      address:
+        "Old AB Road, Near Madhumilan Factory, in front of Sanjivani Hospital, Talavada champapura, Biaora, MP - 465674",
       Google_Location: "https://maps.app.goo.gl/bp6LPej165MEJtQ46",
-      image: Dealer1
+      image: Dealer1,
     },
     {
       name: "Rainbow Tractors",
@@ -480,9 +498,10 @@ export const getDealersData = () => {
       owner: "Abdul Waheed Abdul Wali",
       phone: "+91 9765692317",
       email: "example@gmail.com",
-      address: "At Sangavi, Post Taroda Taroda Bk, Hingoli - Kalamnuri - Nanded Rd, opposite Airport, Nanded, Maharashtra 431605",
+      address:
+        "At Sangavi, Post Taroda Taroda Bk, Hingoli - Kalamnuri - Nanded Rd, opposite Airport, Nanded, Maharashtra 431605",
       Google_Location: "https://maps.app.goo.gl/ZAQY1yjFb1dsWKzk7",
-      image: Dealer1
+      image: Dealer1,
     },
     {
       name: "Tractor House",
@@ -493,7 +512,7 @@ export const getDealersData = () => {
       email: "example@gmail.com",
       address: "New Mumbai Agra Road, Dwarka, Nashik - 422011",
       Google_Location: "https://maps.app.goo.gl/zouqmehodeWm5YWK9",
-      image: Dealer1
+      image: Dealer1,
     },
     {
       name: "VENTILE COMPANY PRIVATE LIMITED",
@@ -502,24 +521,28 @@ export const getDealersData = () => {
       owner: "Tejas Pandit",
       phone: "+91 9922970720",
       email: "example@gmail.com",
-      address: "251/1, Pune Solapur Road, Kadamwak Vasti, Loni Kalbhor, Haveli, Pune - 412207",
+      address:
+        "251/1, Pune Solapur Road, Kadamwak Vasti, Loni Kalbhor, Haveli, Pune - 412207",
       Google_Location: "https://maps.app.goo.gl/YYVKFeBs1SVRphTz6",
-      image: Dealer1
-    }
+      image: Dealer1,
+    },
   ];
 };
 
-
 export const fetchLocations = async (setLocations, setStates) => {
   try {
-    const response = await fetch("https://used-tractor-backend.azurewebsites.net/user/web/user-location-details/");
+    const response = await fetch(
+      "https://used-tractor-backend.azurewebsites.net/user/web/user-location-details/"
+    );
     const data = await response.json();
     console.log("Fetched Data:", data);
 
     const locationData = data.data || {}; // Ensure it's an object
     setLocations(locationData);
 
-    const uniqueStates = [...new Set(Object.values(locationData).map(item => item.state))];
+    const uniqueStates = [
+      ...new Set(Object.values(locationData).map((item) => item.state)),
+    ];
     console.log("Extracted States:", uniqueStates);
     setStates(uniqueStates);
   } catch (error) {
@@ -534,51 +557,47 @@ export const getFilteredDistricts = (locations, selectedState) => {
   );
 };
 
-
 export default function InventoryPage({ inventoryData }) {
   const [inventory, setInventory] = useState(inventoryData);
 
   useEffect(() => {
     // Only run on client
-    if (typeof window !== 'undefined') {
-      const stored = sessionStorage.getItem('inventoryData');
+    if (typeof window !== "undefined") {
+      const stored = sessionStorage.getItem("inventoryData");
 
       if (stored) {
         setInventory(JSON.parse(stored));
       } else {
-        sessionStorage.setItem('inventoryData', JSON.stringify(inventoryData));
+        sessionStorage.setItem("inventoryData", JSON.stringify(inventoryData));
       }
     }
   }, [inventoryData]);
 
   return (
     <div>
-      {inventory.map(item => (
+      {inventory.map((item) => (
         <div key={item.id}>{item.name}</div>
       ))}
     </div>
   );
 }
 
-
-
 export async function getInventoryData() {
-
   let inventoryData = [];
 
   try {
-    const res = await fetch("https://used-tractor-backend.azurewebsites.net/inventory/web/v2/tractor/");
+    const res = await fetch(
+      "https://used-tractor-backend.azurewebsites.net/inventory/web/v2/tractor/"
+    );
     if (!res.ok) throw new Error(`Failed to fetch data: ${res.status}`);
     const rawData = await res.json();
     inventoryData = Array.isArray(rawData?.data)
-      ? rawData.data.filter(item => [1, 2, 3].includes(item.status)) // Filter by status
+      ? rawData.data.filter((item) => [1, 2, 3].includes(item.status)) // Filter by status
       : [];
-
   } catch (error) {
     console.error("❌ Error fetching data in getLocaleProps:", error);
   }
   return inventoryData;
-
 }
 
 export const useInventory = (initialData = []) => {
@@ -586,7 +605,7 @@ export const useInventory = (initialData = []) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const stored = sessionStorage.getItem('inventoryData');
+    const stored = sessionStorage.getItem("inventoryData");
 
     if (stored) {
       const decrypted = decryptData(stored);
@@ -603,21 +622,97 @@ export const useInventory = (initialData = []) => {
       }
       setLoading(false);
     } else {
-      getInventoryData().then(data => {
-        if (data && data.length > 0) {
-          if (JSON.stringify(data) !== JSON.stringify(inventory)) {
-            const encrypted = encryptData(data);
-            sessionStorage.setItem('inventoryData', encrypted);
-            setInventory(data);
+      getInventoryData()
+        .then((data) => {
+          if (data && data.length > 0) {
+            if (JSON.stringify(data) !== JSON.stringify(inventory)) {
+              const encrypted = encryptData(data);
+              sessionStorage.setItem("inventoryData", encrypted);
+              setInventory(data);
+            }
           }
-        }
-        setLoading(false);
-      }).catch(() => {
-        setLoading(false);
-      });
+          setLoading(false);
+        })
+        .catch(() => {
+          setLoading(false);
+        });
     }
   }, [initialData]);
 
   return { inventory, loading };
 };
 
+// utils/seo.ts
+export const staticMetaByRoute = {
+  "/": {
+    title: "Tractor World | Home",
+    description:
+      "Discover top-rated new and used tractors, compare models, apply for loans, and locate dealers across India.",
+    keywords:
+      "tractors in India, new tractors, used tractors, tractor comparison, tractor dealers, apply tractor loan",
+  },
+
+  "/compare": {
+    title: "Compare Tractors | Tractor World",
+    description:
+      "Compare two tractors side-by-side based on brand, horsepower, price, and features before buying.",
+    keywords:
+      "compare tractors, tractor comparison India, Mahindra vs Swaraj, tractor features, tractor price comparison",
+  },
+
+  "/about": {
+    title: "About Us | Tractor World",
+    description:
+      "Learn more about Tractor World—India's trusted platform for tractor buyers, dealers, and financing.",
+    keywords:
+      "about Tractor World, tractor platform India, trusted tractor marketplace, tractor portal information",
+  },
+
+  "/locate-dealer": {
+    title: "Locate Tractor Dealers Near You | Tractor World",
+    description:
+      "Find verified tractor dealers in your city or state. Search by brand, location, or dealership ratings.",
+    keywords:
+      "tractor dealers near me, locate tractor dealer, Mahindra dealers, Swaraj dealers, tractor dealerships India",
+  },
+
+  "/loan": {
+    title: "Apply for Tractor Loan Online | Tractor World",
+    description:
+      "Get quick tractor loans with easy EMI options. Check eligibility and apply online for agricultural financing.",
+    keywords:
+      "tractor loan, apply tractor loan online, EMI tractor finance, agricultural loan India, tractor EMI calculator",
+  },
+
+  "/content-gallery": {
+    title: "Tractor Videos & Blogs | Content Gallery | Tractor World",
+    description:
+      "Watch tractor reviews, learn tips for farming equipment, and explore in-depth blog content on Tractor World.",
+    keywords:
+      "tractor blogs, tractor videos, farming tips, agriculture content, tractor reviews, content gallery India",
+  },
+
+  "/contact-us": {
+    title: "Contact Us | Tractor World Support",
+    description:
+      "Reach out to the Tractor World team for inquiries, support, partnerships, or feedback.",
+    keywords:
+      "contact Tractor World, tractor support, dealer inquiry, tractor platform help, customer service tractor world",
+  },
+
+  "/inventory": {
+    title: "Browse Tractors for Sale | Inventory | Tractor World",
+    description:
+      "Explore our full inventory of new and used tractors from top brands. Filter by price, HP, location, and more.",
+    keywords:
+      "tractors for sale, used tractors India, new tractors, tractor inventory, Mahindra tractors, Swaraj tractors, buy tractor online",
+  },
+
+  "/sell-tractor": {
+    title: "Sell Your Tractor Online | Tractor World",
+    description:
+      "List your tractor for sale in just a few steps. Reach thousands of buyers across India through Tractor World.",
+    keywords:
+      "sell tractor, list tractor for sale, used tractor India, tractor seller portal, post tractor ad, sell second-hand tractor",
+  },
+};

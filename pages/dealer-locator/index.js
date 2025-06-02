@@ -25,6 +25,8 @@ import Phn from "@Images/dealer/phn.svg";
 import Mail from "@Images/dealer/mail.svg";
 import Location from "@Images/dealer/location.svg";
 import { getDealersData,fetchLocations, getFilteredDistricts  } from "../../utils";
+import Head from "next/head";
+import { staticMetaByRoute } from "../../utils";
 
 
 export async function getServerSideProps(context) {
@@ -44,6 +46,7 @@ export default function DealerLocator({ locale }) {
   
   const [locations, setLocations] = useState({});
   const dealerRightData = getDealersData();
+  const meta = staticMetaByRoute["/locate-dealer"];
 
   const breadcrumbData = [
     { label: t('Home.Home'), link: '/' },
@@ -103,6 +106,13 @@ export default function DealerLocator({ locale }) {
   const currentCards = filteredDealers.slice(indexOfFirstCard, indexOfLastCard);
 
   return (
+    <>
+    <Head>
+        <title>{meta.title}</title>
+        <meta name="description" content={meta.description} />
+        <meta name="keywords" content={meta.keywords} />
+      </Head>
+
     <Layout currentPage={'dealerLocator'}>
       <Banner
         breadcrumbs={breadcrumbData}
@@ -299,5 +309,6 @@ export default function DealerLocator({ locale }) {
         </div>
       </div>
     </Layout>
+        </>
   );
 }
