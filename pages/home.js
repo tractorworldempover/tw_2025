@@ -417,7 +417,7 @@ export default function HomePage({ locale, Inventorydata }) {
   return (
     <>
       {/* Home SLider */}
-      
+
       <Head>
         <title>{meta.title}</title>
         <meta name="description" content={meta.description} />
@@ -846,7 +846,15 @@ export default function HomePage({ locale, Inventorydata }) {
                     }}
                   ></p>
                 </div>
-                <ReadMore />
+                <Link
+                  href={`/content-hub/${encodeURIComponent(
+                    newsData.contentGalleyURL.replace(/\//g, "-")
+                  )}`}
+                >
+                  <a>
+                    <ReadMore />
+                  </a>
+                </Link>
               </div>
             ))}
           </div>
