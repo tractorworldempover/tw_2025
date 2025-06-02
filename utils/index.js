@@ -642,7 +642,7 @@ export const useInventory = (initialData = []) => {
   return { inventory, loading };
 };
 
-// utils/seo.ts
+// SEO-Meta-Data
 export const staticMetaByRoute = {
   "/": {
     title: "Tractor World | Home",
@@ -714,5 +714,13 @@ export const staticMetaByRoute = {
       "List your tractor for sale in just a few steps. Reach thousands of buyers across India through Tractor World.",
     keywords:
       "sell tractor, list tractor for sale, used tractor India, tractor seller portal, post tractor ad, sell second-hand tractor",
+  },
+
+  "/terms-and-conditions": {
+    title: "Terms & Conditions | Tractor World",
+    description:
+      "Review the terms and conditions that govern your use of Tractor World. Learn about user rights, responsibilities, and policies.",
+    keywords:
+      "Tractor World terms, terms and conditions, user agreement, tractor website policies, legal terms, platform rules",
   },
 };

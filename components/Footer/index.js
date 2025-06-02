@@ -103,7 +103,8 @@ export default function Footer() {
                             <Link href="/content-hub"><li className="mb-3 cursor-pointer"> {t('Footer.Latest_News')}</li></Link>
                             {/* <Link href="/exclusive-offers"><li className="mb-3 cursor-pointer"> Offers</li></Link> */}
                             <Link href="/inventory"><li className="mb-3 cursor-pointer"> {t('Footer.Live_Inventory')}</li></Link>
-                            <li className="mb-3 cursor-pointer"> {t('Footer.Terms_and_Conditions')}</li>
+                            <Link href="/terms-conditions"><li className="mb-3 cursor-pointer"> {t('Footer.Terms_and_Conditions')}</li>
+                            </Link>
                         </ul>
 
                     </div>
